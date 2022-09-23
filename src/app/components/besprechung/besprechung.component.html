@@ -1,0 +1,27 @@
+<div class="h-100 wrapper ms-2 overflow-auto">
+
+    <p-table [value]="agendaPunkte" [lazy]="true" (onLazyLoad)="loadAgendaDataLazy($event)" responsiveLayout="scroll"
+        dataKey="ID" [rows]="5" [loading]="loadingAgenda" class="h-100" [showLoader]="false">
+        <ng-template pTemplate="body" let-agendapunkt>
+            <app-agendapunktpanel [headerStyle]="headerStyle" [employee]="employee" [contacts]="contacts"
+                [agendapunkt]="agendapunkt"></app-agendapunktpanel>
+        </ng-template>
+
+        <ng-template pTemplate="loadingbody" let-i="rowIndex">
+            <div class="my-3 me-3 agendapunkt overflow-hidden" *ngFor="let item of createRange(3); let i = index">
+
+                <div class="w-100 d-flex justify-content-between align-items-center p-3" style="height: 75px;">
+                    <p-skeleton [width]="i % 2 == 0 ? '350px' : '500px'" height="45px"></p-skeleton>
+
+                    <p-skeleton width="90px" height="50px"></p-skeleton>
+                </div>
+
+                <div style="height: calc(100% - 75px) !important;">
+                    <app-agendapunktheader [headerStyle]="headerStyle"></app-agendapunktheader>
+
+                    <app-protokollmessageskeleton></app-protokollmessageskeleton>
+                </div>
+            </div>
+        </ng-template>
+    </p-table>
+</div>

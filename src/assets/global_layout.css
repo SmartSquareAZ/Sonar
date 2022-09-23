@@ -1,0 +1,7 @@
+html, body, app-root, app-layoutwrapper{
+    height: 100%!important;
+}
+i.pi.pi-info-circle {
+    font-size: 15pt;
+    margin-left: 5px;
+}

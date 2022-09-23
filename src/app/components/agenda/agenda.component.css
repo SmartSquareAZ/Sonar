@@ -1,0 +1,47 @@
+:host ::ng-deep .p-tree {
+    height: 100% !important;
+    padding: 5px;
+}
+
+:host ::ng-deep .p-tree .p-treenode-content {
+    padding: 0 !important
+}
+
+:host ::ng-deep .p-tree .p-tree-wrapper {
+    /*height: calc(100% - 60px) !important;*/
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header {
+    padding-bottom: 0.5rem;
+}
+
+:host ::ng-deep .p-treetable-scrollable-header{
+    height: 100%;
+}
+
+.pTreeFooter {
+    height: 60px;
+}
+
+.flyHigh{
+    position: absolute;
+    pointer-events: none;
+    margin-top: -0.5rem;
+    transition-property: all;
+    transition-timing-function: ease;
+    line-height: 1;
+
+    top: -0.75rem;
+    font-size: 12px;
+}
+
+.farbIndikator {
+    width: 80px;
+    height: 25px;
+    border-radius: 5px;
+}
+
+a.agendaLink{
+    text-decoration: none;
+    color: unset;
+}

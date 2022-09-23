@@ -1,0 +1,14 @@
+.onlineMarker {
+    border-radius: 100%;
+    background-color: #2eb82e;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+
+    box-shadow: 0 0 5px 1px #2eb82e;
+    padding: 8px;
+    margin: 7px;
+}
+.onlineLabel {
+    font-size: 13pt;
+}

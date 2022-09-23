@@ -1,0 +1,12 @@
+.wrapper {
+    background-color: #d8d8d8;
+}
+
+.wrapper>div {
+    background: transparent;
+}
+
+.wrapper .actionWrapper,
+.wrapper .besprechungWrapper {
+    transition: width 0.5s;
+}

@@ -1,0 +1,11 @@
+.wrapper {
+    border-radius: 5px;
+    background: transparent;
+}
+
+.agendapunkt {
+    border-radius: 10px;
+    background: white;
+    min-height: 500px;
+    height: 80vh;
+}

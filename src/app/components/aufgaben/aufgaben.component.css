@@ -1,0 +1,32 @@
+:host ::ng-deep .p-editor-content.ql-container {
+    height: 220px;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header {
+    padding-bottom: 0.5rem;
+}
+
+.decorLabel {
+    margin-left: 8px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.radioLabel {
+    margin-left: 10px;
+    margin-block: 3.5px;
+    padding-block: 5px;
+}
+
+:host ::ng-deep p-selectbutton {
+    height: 35px;
+    margin-bottom: 10px;
+}
+
+:host ::ng-deep p-selectbutton .p-selectbutton,
+:host ::ng-deep p-selectbutton .p-selectbutton .p-button {
+    height: 100%;
+}
+:host ::ng-deep p-selectbutton .p-selectbutton .p-button {
+    width: 50%;
+}

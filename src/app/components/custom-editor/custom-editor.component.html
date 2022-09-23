@@ -1,0 +1,4 @@
+<div [formGroup]="form" *ngIf="form != null">
+    <angular-editor [formControlName]="text" [config]="editorConfig" class="editor"></angular-editor>
+</div>
+<angular-editor *ngIf="form == null" [(ngModel)]="value" [config]="editorConfig" class="editor"></angular-editor>

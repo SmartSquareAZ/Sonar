@@ -1,0 +1,8 @@
+<div class="w-100 h-100 d-flex justify-content-center align-items-start wrapper p-2">
+    <div class="h-100 actionWrapper" [class]="showAction ? 'col-4' : 'col-1'">
+        <app-actionwrapper (toggleEvent)="toggleSize($event)"></app-actionwrapper>
+    </div>
+    <div class="h-100 besprechungWrapper" [class]="showAction ? 'col-8' : 'col-11'">
+        <app-besprechung></app-besprechung>
+    </div>
+</div>

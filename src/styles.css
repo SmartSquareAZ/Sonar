@@ -1,0 +1,18 @@
+:host ::ng-deep .p-dialog .p-dialog-content {
+    overflow: visible;
+}
+
+.p-dialog {
+    margin: 1.75rem auto;
+    max-width: 900px;
+    width: 99%;
+}
+
+.modal-dialog.modal-dialog-centered {
+    margin: 10px;
+}
+
+.p-button:disabled {
+    color: #b3b3b3 !important;
+    border-color: #b3b3b3 !important;
+}

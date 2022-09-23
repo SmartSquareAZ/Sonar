@@ -1,0 +1,166 @@
+<div class="h-100 d-flex justify-content-start flex-column overflow-auto">
+    <div class="h-100 d-flex justify-content-center align-items-start pt-5" *ngIf="loadingAufgaben">
+        <app-loading></app-loading>
+    </div>
+
+    <div class="h-100 overflow-hidden" *ngIf="!loadingAufgaben">
+        <div class="w-100 row justify-content-between align-items-center ps-3 py-1 mb-2"
+            style="background-color: var(--surface-b); border-bottom: 1px solid #bbb; height: 70px;">
+            <div class="col-8 fw-bold">Beschreibung</div>
+            <div class="col-4 text-end">
+                <button pButton pRipple type="button" icon="pi pi-plus" label="Neu" (click)="openDialog()"
+                    style="margin: 10px; margin-left: 25px; margin-right: 0; padding: 5px 10px;"></button>
+            </div>
+        </div>
+
+        <div class="ms-2 overflow-auto pt-2" style="height: calc(100% - 80px)">
+
+            <p-table [value]="aufgaben" responsiveLayout="scroll" [scrollable]="true" scrollHeight="flex"
+                dataKey="kurzbeschreibung">
+
+                <ng-template pTemplate="body" let-aufgabe let-expanded="expanded">
+                    <div class="w-100 row d-flex justify-content-center align-items-center mt-1 mb-2 pt-2 pb-3"
+                        style="border-bottom: 1px solid var(--surface-c);">
+                        <div class="col-1">
+                            <button type="button" pButton pRipple [pRowToggler]="aufgabe"
+                                style="width: 2.5rem; height: 2.5rem;"
+                                class="p-button-text p-button-rounded p-button-plain"
+                                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                        </div>
+                        <div class="col-5">
+                            {{aufgabe.kurzbeschreibung}}
+                        </div>
+                        <div class="col-3">
+                            <div class="w-100 d-flex justify-content-center align-items-center flex-column">
+                                <div style="margin-bottom: 3px;" [class]="aufgabe.readStatusBadge()">
+                                    {{aufgabe.readStatusText()}}</div>
+
+                                <div style="margin-top: 3px;" [class]="aufgabe.readSeverityBadge()">
+                                    {{aufgabe.readSeverityText()}}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-center align-items-center flex-column">
+                                    <div>{{aufgabe.ablaufdatum | date: "dd.MM.yyyy"}}</div>
+                                    <div>{{aufgabe.ablaufdatum | date: "HH:mm:ss"}}</div>
+                                </div>
+
+                                <button type="button" pButton pRipple style="width: 2.5rem; height: 2.5rem;"
+                                    (click)="openDialog(aufgabe)" class="p-button-text p-button-rounded p-button-plain"
+                                    icon="pi pi-pencil"></button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="rowexpansion" let-aufgabe>
+                    <tr>
+                        <td colspan="4">
+                            <app-html-output [text]="aufgabe.beschreibung"></app-html-output>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+        </div>
+    </div>
+</div>
+
+
+<p-dialog [(visible)]="displayDialog" [draggable]="false" [resizable]="false" position="top"
+    [contentStyle]="{height: 'auto', width: '100%'}" [transitionOptions]="'400ms'" [modal]="true">
+
+    <ng-template pTemplate="header">
+        <h4 class="modal-title">Aufgabe {{choosenAufgabe.ID == 0 ? 'erstellen' : 'bearbeiten'}}</h4>
+    </ng-template>
+
+    <form [formGroup]="aufgabenForm" (ngSubmit)="saveAufgabe()">
+        <div class="row mb-2 mt-4">
+            <div class="col-8">
+                <div class="row mb-2">
+                    <div class="col-8">
+                        <span class="p-float-label w-100">
+                            <input type="text" id="kurzbeschreibung" formControlName="kurzbeschreibung" pInputText
+                                style="width: 100%;">
+                            <label for="kurzbeschreibung">Kurzbeschreibung</label>
+                        </span>
+                    </div>
+
+                    <div class="col-4">
+                        <span class="p-float-label w-100">
+                            <p-calendar formControlName="expireDate" dateFormat="dd.mm.yy" [showTime]="true"
+                                [stepMinute]="15" appendTo="body"></p-calendar>
+                            <label for="expireDate">Ablaufdatum</label>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <label class="decorLabel">Beschreibung</label>
+
+                    <app-custom-editor [form]="aufgabenForm" text="beschreibung"></app-custom-editor>
+                </div>
+            </div>
+
+            <div class="col-4 d-flex justify-content-center align-items-start flex-column ps-4">
+                <div class="mt-2">
+                    <label class="decorLabel">Wichtigkeit</label>
+
+                    <div *ngFor="let severity of severities" class="field-checkbox">
+                        <div class="d-flex justify-content-start align-items-center">
+                            <p-radioButton [inputId]="severity.key" [value]="severity.key"
+                                formControlName="wichtigkeit">
+                            </p-radioButton>
+                            <label [for]="severity.key"
+                                class="radioLabel status-badge status-{{severity.class}}">{{severity.name}}</label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="mt-5">
+                    <label class="decorLabel">Verantwortlicher Typ</label>
+
+                    <div class="d-flex justify-content-center align-items-center">
+                        <p-selectButton [options]="typeOptions" formControlName="vType" optionLabel="name"
+                            optionValue="type" (onChange)="loadChoosenType($event)"></p-selectButton>
+                    </div>
+                </div>
+
+                <div class="mt-2">
+                    <label class="decorLabel">Verantwortlicher</label><br />
+
+                    <p-dropdown [options]="verantwortliche" formControlName="vID" optionLabel="name" optionValue="ID"
+                        [filter]="true" filterBy="name" placeholder="Person wählen" appendTo="body">
+
+                        <ng-template let-person pTemplate="item">
+                            <div>{{person.name}}</div>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-12">
+            </div>
+        </div>
+
+        <div class="row w-100 mt-4 d-flex justify-content-center align-items-center" style="margin-bottom: -2rem;">
+            <div class="w-50 d-flex justify-content-center align-items-center">
+                <button type="submit" class="p-button-outlined" pButton pRipple icon="pi pi-save" label="Speichern"
+                    [disabled]="aufgabenForm.invalid"></button>
+                <i class="pi pi-info-circle" pTooltip="Speichert die Aufgabe"></i>
+            </div>
+            <div class="w-50 d-flex justify-content-center align-items-center" *ngIf="choosenAufgabe.ID != 0">
+                <button type="button" class="p-button-outlined p-button-danger" pButton pRipple
+                    (click)="showConfirm($event)" icon="pi pi-trash" label="Löschen"></button>
+                <i class="pi pi-info-circle" pTooltip="Löscht die Aufgabe"></i>
+            </div>
+        </div>
+    </form>
+
+    <ng-template pTemplate="footer"></ng-template>
+</p-dialog>
+<p-confirmPopup></p-confirmPopup>

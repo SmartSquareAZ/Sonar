@@ -1,0 +1,49 @@
+:host ::ng-deep angular-editor.editor angular-editor-toolbar button {
+    padding: 0.6rem !important;
+    border-radius: 5px !important;
+    min-width: 2.3rem !important;
+}
+
+:host ::ng-deep angular-editor.editor angular-editor-toolbar ae-select button {
+    padding: 0.3rem !important;
+}
+
+:host ::ng-deep angular-editor.editor angular-editor-toolbar button i.fa {
+    font-size: 15px;
+}
+
+:host ::ng-deep angular-editor.editor angular-editor-toolbar .angular-editor-toolbar {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+:host ::ng-deep angular-editor.editor .angular-editor-wrapper .angular-editor-textarea {
+    margin: 0;
+    border-top: none !important;
+    height: 200px !important;
+
+    background-color: white !important;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+:host ::ng-deep angular-editor.editor .angular-editor-wrapper .angular-editor-textarea:focus-visible {
+    outline: none !important;
+}
+
+:host ::ng-deep angular-editor.editor .angular-editor {
+    margin-top: 3px;
+    border-radius: 6px;
+    border: 1px solid transparent !important;
+}
+
+:host ::ng-deep angular-editor.editor .angular-editor:hover {
+    border-color: var(--primary-color) !important;
+}
+
+:host ::ng-deep angular-editor.editor .angular-editor:focus-within {
+    outline-offset: 0;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    box-shadow: var(--focus-ring);
+    border: 1px solid var(--primary-color) !important;
+}

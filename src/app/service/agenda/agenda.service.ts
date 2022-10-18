@@ -1,30 +1,28 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { resolveAfter2Seconds } from 'src/app/Constants';
-import { mock_agendapunkte } from '../../mockdata/Mock_AgendaPunkte';
+import { AppComponent } from 'src/app/app.component';
+import { resolveAfterXSeconds } from 'src/app/Constants';
 import { AgendaPunkt } from '../../models/Agendapunkt';
+import { RequestUrlService } from '../requesturl/request-url.service';
+import { UtilsService } from '../utils/utils.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AgendaService {
 
-  private loadedData = false;
-  private root: AgendaPunkt = AgendaPunkt.buildFromEmpty();
-
-  constructor() { }
+  constructor(private requesturl: RequestUrlService, private utils: UtilsService) { }
 
   /**
    * Speichert den übergebenen AgendaPunkt mittels Websocket
    * @param agendaPunkt AgendaPunkt welcher gespeichert werden soll
    * @returns 
    */
-  async saveAgendaPunkt(agendaPunkt: AgendaPunkt): Promise<AgendaPunkt> {
+  saveAgendaPunkt(agendaPunkt: AgendaPunkt): AgendaPunkt {
     // Websocket Stuff
-    const value = <AgendaPunkt>await resolveAfter2Seconds(20);
+    //const value = <AgendaPunkt>await resolveAfterXSeconds();
 
     // Daten werden aktualisiert
-    this.readAgendaPunkte(this.root.agendaID);
+    //this.readAgendaPunkte(this.root.agendaID);
 
     return agendaPunkt;
   }
@@ -34,27 +32,25 @@ export class AgendaService {
    * @param agendaPunkt AgendaPunkt welcher gelöscht werden soll
    * @returns 
    */
-  async deleteAgendaPunkt(agendaPunkt: AgendaPunkt): Promise<AgendaPunkt> {
+  deleteAgendaPunkt(agendaPunkt: AgendaPunkt): AgendaPunkt {
     // Websocket Stuff
-    const value = <AgendaPunkt>await resolveAfter2Seconds(20);
-
-    // Daten werden aktualisiert
-    this.readAgendaPunkte(this.root.agendaID);
+    //const value = <AgendaPunkt>await resolveAfterXSeconds();
 
     return agendaPunkt;
   }
 
-  async readAgendaPunkte(agendaID: number): Promise<AgendaPunkt> {
-    // API Stuff
-    if (!this.loadedData) {
-      const value = <AgendaPunkt>await resolveAfter2Seconds(20);
-      this.root = mock_agendapunkte();
-      this.root.agendaID = agendaID;
+  readAgendaPunkte(success: Function, error: Function = new Function()) {
+    // Request wird ausgeführt
+    this.utils.GET(this.requesturl.AGENDAPUNKT_READAGENDAPUNKT + "?PROTOKOLLID=" + AppComponent.PROTOKOLLID, success, error);
+  }
 
-      // Flag wird gesetzt
-      this.loadedData = true;
-    }
+  readAgendaPunkteParents(success: Function, error: Function = new Function()) {
+    // Request wird ausgeführt
+    this.utils.GET(this.requesturl.AGENDAPUNKT_READAGENDAPUNKTPARENTS + "?PROTOKOLLID=" + AppComponent.PROTOKOLLID, success, error);
+  }
 
-    return this.root;
+  readAgenaPunkteSlaves(parent: AgendaPunkt, success: Function, error: Function = new Function()) {
+    // Request wird ausgeführt
+    this.utils.GET(this.requesturl.AGENDAPUNKT_READAGENDAPUNKTSLAVES + "?PARENTID=" + parent.ID, success, error);
   }
 }

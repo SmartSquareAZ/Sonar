@@ -21,6 +21,9 @@ import { CustomEditorComponent } from './components/custom-editor/custom-editor.
 import { AgendapunktheaderComponent } from './components/agendapunktheader/agendapunktheader.component';
 import { ProtokollmessageskeletonComponent } from './components/protokollmessageskeleton/protokollmessageskeleton.component';
 import { AgendapunktpanelComponent } from './components/agendapunktpanel/agendapunktpanel.component';
+import { AgendatableentryComponent } from './components/agendatableentry/agendatableentry.component';
+import { ProtokollmessagerowComponent } from './components/protokollmessagerow/protokollmessagerow.component';
+import { ProtokollmessageoutputComponent } from './components/protokollmessageoutput/protokollmessageoutput.component';
 import { CallbackPipe } from './pipes/callback.pipe';
 
 import { PaginatorModule } from 'primeng/paginator';
@@ -40,10 +43,14 @@ import { CalendarModule } from 'primeng/calendar';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { AngularEditorModule } from '@kolkov/angular-editor';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ScrollerModule } from 'primeng/scroller';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ListboxModule } from 'primeng/listbox';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { FileUploadModule } from 'primeng/fileupload';
+import { ValidationHttpInterceptor } from './ValidationHttpInterceptor';
+
 
 @NgModule({
   declarations: [
@@ -63,7 +70,10 @@ import { ListboxModule } from 'primeng/listbox';
     CustomEditorComponent,
     AgendapunktheaderComponent,
     ProtokollmessageskeletonComponent,
-    AgendapunktpanelComponent
+    AgendapunktpanelComponent,
+    AgendatableentryComponent,
+    ProtokollmessagerowComponent,
+    ProtokollmessageoutputComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -92,9 +102,17 @@ import { ListboxModule } from 'primeng/listbox';
     AngularEditorModule,
     ScrollerModule,
     SkeletonModule,
-    ListboxModule
+    ListboxModule,
+    InputTextareaModule,
+    FileUploadModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ValidationHttpInterceptor,
+      multi: true
+    } 
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

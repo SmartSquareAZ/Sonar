@@ -1,0 +1,30 @@
+.newElement {
+    font-style: italic;
+}
+
+.uploadState{
+    border: 1px solid;
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+.uploadState.green {
+    background: #C8E6C9;
+    color: #256029;
+}
+.uploadState.blue {
+    background-color: #B3E5FC;
+    color: #23547B;
+}
+.uploadState.yellow {
+    background: #FEEDAF;
+    color: #8A5340;
+}
+.uploadState.orange {
+    background: #FFD8B2;
+    color: #805B36;
+}
+.uploadState.red {
+    background: #FFCDD2;
+    color: #C63737;
+}

@@ -8,6 +8,7 @@ export class AgendaPunkt {
     farbe: string;
     agendaID: number;
     parentID: number;
+    protokollID: number;
     children: AgendaPunkt[];
 
     constructor(
@@ -17,6 +18,7 @@ export class AgendaPunkt {
         farbe: string,
         agendaID: number,
         parentID: number,
+        protokollID: number,
         children: AgendaPunkt[]
     ) {
         this.ID = ID
@@ -25,11 +27,42 @@ export class AgendaPunkt {
         this.farbe = farbe
         this.agendaID = agendaID
         this.parentID = parentID
+        this.protokollID = protokollID;
         this.children = children
     }
 
-    static buildFromEmpty(): AgendaPunkt{
-        return new AgendaPunkt(0, "", "", "#000", 0, 0, []);
+    static buildFromEmpty(): AgendaPunkt {
+        return new AgendaPunkt(0, "", "", "#000", 0, 0, 0, []);
+    }
+
+    static buildFromJSON(data: JSON): AgendaPunkt {
+        let dataObj: any = data;
+        let slaveObj = dataObj["SLAVES"];
+
+        let slaves = [];
+
+        for (let idx = 0; idx < slaveObj.length; idx++) {
+            slaves.push(AgendaPunkt.buildFromJSON(slaveObj[idx]));
+        }
+
+        return new AgendaPunkt(dataObj["ID"], dataObj["NAME"], dataObj["NUMMER"],
+            "#" + dataObj["FARBE"], dataObj["AGENDAID"], dataObj["PARENTID"],
+            dataObj["PROTOKOLLID"], slaves);
+    }
+
+    static buildFromJSONArray(data: JSON): AgendaPunkt[] {
+        // Datentypkonvertierung
+        let array: any = data;
+        // Array wird erstellt
+        let punkte: AgendaPunkt[] = [];
+
+        // Array wird durchlaufen
+        for (let idx = 0; idx < array.length; idx++) {
+            // AgendaPunkt wird erstellt
+            punkte.push(AgendaPunkt.buildFromJSON(array[idx]));
+        }
+
+        return punkte;
     }
 
     static createTreeNodeFromList(agendapunkte: AgendaPunkt[]): TreeNode[] {
@@ -49,7 +82,7 @@ export class AgendaPunkt {
         agendapunkt.children.forEach(child => {
             localChildren.push(this.createTreeNode(child));
         });
-        
+
         return {
             data: agendapunkt,
             key: '' + agendapunkt.ID,

@@ -1,3 +1,5 @@
+import moment from "moment";
+
 // Constructor: https://marketplace.visualstudio.com/items?itemName=toanchivu.tcv-typescript-constructor-generator#:~:text=VSCode%20Extension%20Market-,Usage,-Just%20place%20your
 export class Protokollmessage {
     ID: number;
@@ -8,7 +10,7 @@ export class Protokollmessage {
     ablaufdatum: Date;
     agendapunktID: number;
     nummer: number;
-    oldID: number;
+    previousProtokollmessage: Protokollmessage;
 
     isEditing: boolean = false;
     countDisplayVerantworliche: number = 2;
@@ -22,7 +24,7 @@ export class Protokollmessage {
         ablaufdatum: Date,
         agendapunktID: number,
         nummer: number,
-        oldID: number
+        previousProtokollmessage: Protokollmessage
     ) {
         this.ID = ID
         this.message = message
@@ -32,7 +34,7 @@ export class Protokollmessage {
         this.ablaufdatum = ablaufdatum
         this.agendapunktID = agendapunktID
         this.nummer = nummer
-        this.oldID = oldID
+        this.previousProtokollmessage = previousProtokollmessage
     }
 
     static vTypeText = [
@@ -58,11 +60,11 @@ export class Protokollmessage {
         let vType = Protokollmessage.vTypeText.find(x => x.type == this.vType);
         return vType == null ? "Kein Type " + this.vType : vType.label;
     }
-    readStatusBadge(): string {
-        return "status-badge status-" + Protokollmessage.statusList[this.status].class;
+    readStatusBadge(status: number = this.status): string {
+        return "status-badge status-" + Protokollmessage.statusList[status].class;
     }
-    readStatusText(): string {
-        return Protokollmessage.statusList[this.status].name;
+    readStatusText(status: number = this.status): string {
+        return Protokollmessage.statusList[status].name;
     }
     readStatus(): any[] {
         return Protokollmessage.statusList;
@@ -78,5 +80,42 @@ export class Protokollmessage {
             idx++;
         });
         return roles;
+    }
+
+    static buildFromEmpty(): Protokollmessage {
+        return new Protokollmessage(0, "", 0, [], 0, new Date(), 0, 0, null as any);
+    }
+
+    static buildNew(agendapunktID: number, lastNummer: number): Protokollmessage {
+        return new Protokollmessage(0, "", 0, [], 0, new Date(), agendapunktID, lastNummer, null as any)
+    }
+
+    static buildFromJSON(data: JSON): Protokollmessage {
+        let dataObj: any = data;
+
+        let oldMessage = Protokollmessage.buildFromEmpty();
+        oldMessage.ID = dataObj["OLDID"];
+
+        // Date wird konvertiert
+        let parsedDate = moment(dataObj["ABLAUFDATUM"], "DD_MM_YYYY_hh_mm_ss");
+
+        return new Protokollmessage(dataObj["ID"], dataObj["MESSAGE"], dataObj["VTYPE"],
+            dataObj["VIDS"], dataObj["STATUS"], parsedDate.toDate(),
+            dataObj["AGENDAPUNKTID"], dataObj["NUMMER"], oldMessage);
+    }
+
+    static buildFromJSONArray(data: JSON): Protokollmessage[] {
+        // Datentypkonvertierung
+        let array: any = data;
+        // Array wird erstellt
+        let punkte: Protokollmessage[] = [];
+
+        // Array wird durchlaufen
+        for (let idx = 0; idx < array.length; idx++) {
+            // Protokollmessage wird erstellt
+            punkte.push(Protokollmessage.buildFromJSON(array[idx]));
+        }
+
+        return punkte;
     }
 }

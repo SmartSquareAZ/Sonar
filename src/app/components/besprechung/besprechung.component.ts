@@ -35,7 +35,7 @@ export class BesprechungComponent implements OnInit {
 
   constructor(private agendaService: AgendaService) { }
 
-  async ngOnInit() {
+  ngOnInit() {
     for (let idx = 1; idx < 21; idx++) {
       this.employee.push({ ID: idx, name: 'Mitarbeiter ' + idx, type: 0 });
       this.contacts.push({ ID: idx, name: 'Kontakt ' + idx, type: 1 });
@@ -60,17 +60,21 @@ export class BesprechungComponent implements OnInit {
     return retVal;
   }
 
-  async loadAgendaDataLazy(event: LazyLoadEvent) {
+  loadAgendaDataLazy(event: LazyLoadEvent) {
     // Flag wird gesetzt
     this.loadingAgenda = true;
-    // Agenda wird geladen
-    this.root = await this.agendaService.readAgendaPunkte(0);
 
-    // AgendaPunkte werden geladen
-    this.agendaPunkte = this.fillAllAgendapunkte(this.root.children);
+    // Parents werden geladen
+    this.agendaService.readAgendaPunkte((data: JSON) => {
+      // Root wird gesetzt
+      this.root = new AgendaPunkt(0, "ROOT", "0", "#000", 1, -1, 0, AgendaPunkt.buildFromJSONArray(data));
 
-    // Flag wird gesetzt
-    this.loadingAgenda = false;
+      // AgendaPunkte werden geladen
+      this.agendaPunkte = this.fillAllAgendapunkte(this.root.children);
+
+      // Flag wird gesetzt
+      this.loadingAgenda = false;
+    });
   }
 
   createRange(number: number) {

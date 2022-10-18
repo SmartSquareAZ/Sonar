@@ -28,28 +28,18 @@ export class AgendapunktpanelComponent implements OnInit {
     this.headerStyle = "font-weight: bold; color: var(--primary-color);"
   }
 
-  /**
-   * Liest die Person aus der jeweiligen Liste und gibt diese zurück
-   * 
-   * @param vtype Verantwortlichen Type
-   * @param vID Verantwortlichen ID
-   * @returns Personenobject
-   */
-  readPersonFromProtokollmessage(vtype: number, vID: number) {
-    return (vtype == 3 ? this.employee : this.contacts).find(x => x.ID == vID);
-  }
-
-  startEdit(event: any, agendapunkt: AgendaPunkt, protokollmessage: Protokollmessage) {
-    protokollmessage.isEditing = true;
-  }
-
   async loadDataLazy(event: LazyLoadEvent, agendapunkt: AgendaPunkt) {
     // Flag wird gesetzt
     this.protokollMessageLoading = true;
-    // Protokollmessages werden geladen
-    this.protokollMessage = await this.protokollmessageService.readProtokollmessages(agendapunkt.ID);
-    // Flag wird gesetzt
-    this.protokollMessageLoading = false;
+
+    // Messages werden geladen
+    this.protokollmessageService.readProtokollmessagesFromAgendaPunkt(agendapunkt.ID, (data: JSON) => {
+      // Protokollmessages werden geladen
+      this.protokollMessage = Protokollmessage.buildFromJSONArray(data);
+
+      // Flag wird gesetzt
+      this.protokollMessageLoading = false;
+    });
   }
 
   addNewProtokollmessage(agendapunkt: AgendaPunkt) {
@@ -60,18 +50,10 @@ export class AgendapunktpanelComponent implements OnInit {
       lastNummer = sortedArray[sortedArray.length - 1].nummer + 1;
     }
 
-    this.protokollMessage.push(new Protokollmessage(0, "", 0, [], 0, new Date(), agendapunkt.ID, lastNummer, 0));
+    // Neue Protokollmessage wird Array hinzugefügt
+    this.protokollMessage.push(Protokollmessage.buildNew(agendapunkt.ID, lastNummer));
   }
 
-  saveProtokollmessage(protokollmessage: Protokollmessage) {
-
-    // Bearbeitung wird beendet
-    this.abortEditing(protokollmessage);
-  }
-
-  abortEditing(protokollmessage: Protokollmessage) {
-    protokollmessage.isEditing = false;
-  }
 
 
 }

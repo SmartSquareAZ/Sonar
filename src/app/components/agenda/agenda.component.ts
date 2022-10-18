@@ -23,7 +23,7 @@ export class AgendaComponent implements OnInit {
   /**
    * Array aller TreeNodes
    */
-  agendaPunkte: TreeNode<AgendaPunkt>[] = [];
+  agendaPunkteNode: TreeNode<AgendaPunkt>[] = [];
 
   /**
    * Gibt an, ob die Agenda aktuelle geladen wird
@@ -40,13 +40,9 @@ export class AgendaComponent implements OnInit {
   });
 
   /**
-   * AgendaPunkt welcher im Dialog bearbeitet wird
-   */
-  choosenAgendaPunkt: AgendaPunkt = AgendaPunkt.buildFromEmpty();
-  /**
    * Node welche im Dialog bearbeitet wird
    */
-  choosenAgendaPunktNode: any;
+  choosenAgendaPunktNode: TreeNode<AgendaPunkt> = AgendaPunkt.createTreeNode(AgendaPunkt.buildFromEmpty());
 
   constructor(private formBuilder: FormBuilder, private agendaService: AgendaService, private confirmationService: ConfirmationService) {
     // Agenda Dialog wird gebuildet
@@ -55,65 +51,58 @@ export class AgendaComponent implements OnInit {
     this.AgendaPunktDialog = Dialog.build(this.preDialogOpenAgendaPunkt.bind(this), this.postDialogOpenAgendaPunkt.bind(this), this.preDialogCloseAgendaPunkt.bind(this), this.postDialogCloseAgendaPunkt.bind(this));
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     // Flag wird gesetzt
     this.loadingAgenda = true;
-    // TreeNode wird erstellt
-    this.root = AgendaPunkt.createTreeNode(await this.agendaService.readAgendaPunkte(0));
-    // Flag wird gesetzt
-    this.loadingAgenda = false;
 
-    // AgendaPunkte werden geladen
-    this.agendaPunkte = this.root.children;
+    // Parents werden geladen
+    this.agendaService.readAgendaPunkte((data: JSON) => {
+      // Root wird gesetzt
+      this.root = AgendaPunkt.createTreeNode(new AgendaPunkt(0, "ROOT", "0", "#000", 1, -1, 0, AgendaPunkt.buildFromJSONArray(data)));
+
+      // AgendaPunkte werden geladen
+      this.agendaPunkteNode = this.root.children;
+
+      // Flag wird gesetzt
+      this.loadingAgenda = false;
+    });
   }
 
-  nodeSelect(element: any) {
-    // Daten werden gesetzt
-    this.choosenAgendaPunktNode = element.node;
-    this.choosenAgendaPunkt = this.choosenAgendaPunktNode.data;
-
-    // Dialog wird geöffnet
-    this.openDialogAgendaPunkt();
-  }
-
-  addNewAgendaPunkt(currentNode: any) {
+  addNewAgendaPunkt() {
     // Leerer AgendaPunkt wird erstellt
     let agendaPunkt = AgendaPunkt.buildFromEmpty();
 
-    // Überprüfung, ob übergebene Node null ist
-    if (currentNode == null) {
-      // Root wird als aktueller angenommen
-      currentNode = { node: this.root };
-    }
-
     // Daten werden gesetzt
     agendaPunkt.ID = 0;
-    agendaPunkt.agendaID = currentNode.node.data.agendaID;
-    agendaPunkt.parentID = currentNode.node.data.ID;
+    agendaPunkt.agendaID = this.root.data.agendaID;
+    agendaPunkt.parentID = this.root.data.ID;
     agendaPunkt.name = "Name";
 
     // Neuer AgendaPunkt wird zu Array hinzugefügt
-    currentNode.node.children.push(AgendaPunkt.createTreeNode(agendaPunkt));
+    this.root.children.push(AgendaPunkt.createTreeNode(agendaPunkt));
 
     // Ansicht wird aktualisiert
-    this.agendaPunkte = Array.from(this.agendaPunkte);
-    this.root.children = this.agendaPunkte;
+    this.agendaPunkteNode = Array.from(this.agendaPunkteNode);
+    this.root.children = this.agendaPunkteNode;
   }
 
   /**
    * Speichert bzw aktualisiert den gewählten AgendaPunkt
    */
   saveAgendaPunkt() {
-    // Werte der Form werden in Objekt übernommen
-    this.choosenAgendaPunkt.name = "" + this.agendaPunktForm.get('name')?.value;
-    this.choosenAgendaPunkt.farbe = "" + this.agendaPunktForm.get('farbe')?.value;
-    this.choosenAgendaPunkt.nummer = "" + this.agendaPunktForm.get('nummer')?.value;
+    if (this.choosenAgendaPunktNode.data != null) {
+      // Werte der Form werden in Objekt übernommen
+      this.choosenAgendaPunktNode.data.name = "" + this.agendaPunktForm.get('name')?.value;
+      this.choosenAgendaPunktNode.data.farbe = "" + this.agendaPunktForm.get('farbe')?.value;
+      this.choosenAgendaPunktNode.data.nummer = "" + this.agendaPunktForm.get('nummer')?.value;
 
-    // Daten werden zurückgesetzt
-    this.choosenAgendaPunkt = AgendaPunkt.buildFromEmpty();
+      // Agendapunkt wird im Service gespeichert
+      this.agendaService.saveAgendaPunkt(this.choosenAgendaPunktNode.data);
+    }
 
     // Ansicht wird aktualisiert
-    this.agendaPunkte = Array.from(this.agendaPunkte);
+    this.root = AgendaPunkt.createTreeNode(this.root.data);
+    this.agendaPunkteNode = this.root.children;
 
     // Dialog wird geschlossen
     this.closeDialogAgendaPunkt();
@@ -124,33 +113,47 @@ export class AgendaComponent implements OnInit {
       target: event.target,
       message: 'Sind Sie sicher?',
       icon: 'pi pi-exclamation-triangle',
-      accept: this.deleteAgendapunkt.bind(this)
+      accept: this.deleteAgendapunktTreeNode.bind(this)
     });
   }
 
-  deleteAgendapunkt() {
-    this.removeFromList(this.agendaPunkte);
+  private deleteAgendapunktTreeNode(element: TreeNode<AgendaPunkt> = this.choosenAgendaPunktNode) {
+    if (element.data != null) {
+      // Agendapunkt wird im Service gelöscht
+      this.agendaService.deleteAgendaPunkt(element.data);
+    }
+
+    if (element.parent != null && element.parent?.children != null) {
+      // Index des Elements wird gesucht
+      let index = element.parent.children.findIndex(x => x.data?.ID == element.data?.ID);
+      // Element wird aus Array entfernt
+      element.parent.children.splice(index, 1);
+      // Array wird neu erstellt
+      element.parent.children = [...element.parent.children];
+    }
 
     // Dialog wird geschlossen
     this.closeDialogAgendaPunkt();
+  }
+
+  private deleteAgendapunkt(element: AgendaPunkt){
+    
+  }
+
+  nodeSelectChild(element: TreeNode<AgendaPunkt>) {
+    // Daten werden gesetzt
+    this.choosenAgendaPunktNode = element;
+
+    // Dialog wird geöffnet
+    this.openDialogAgendaPunkt();
+  }
+
+  addAgendapunktChild(element: TreeNode<AgendaPunkt>) {
 
   }
 
-  private removeFromList(agendaPunkt: any[]) {
+  deleteAgendapunktChild(element: TreeNode<AgendaPunkt>) {
 
-    let index = agendaPunkt.findIndex(x => x.data.ID == this.choosenAgendaPunkt.ID);
-
-    if (index == -1) {
-      for (let idx = 0; idx < agendaPunkt.length; idx++) {
-        if (agendaPunkt[idx].children != null) {
-          this.removeFromList(agendaPunkt[idx].children);
-        }
-      }
-    } else {
-      agendaPunkt = agendaPunkt.splice(index, 1);
-
-      agendaPunkt = Array.from(agendaPunkt);
-    }
   }
 
   //#region Agenda Dialog
@@ -200,10 +203,12 @@ export class AgendaComponent implements OnInit {
    * Öffnet den AgendaPunkt Dialog
    */
   openDialogAgendaPunkt(): void {
-    // Werte werden in Form gesetzt
-    this.agendaPunktForm.controls['name'].setValue(this.choosenAgendaPunkt.name);
-    this.agendaPunktForm.controls['farbe'].setValue(this.choosenAgendaPunkt.farbe);
-    this.agendaPunktForm.controls['nummer'].setValue(this.choosenAgendaPunkt.nummer);
+    if (this.choosenAgendaPunktNode.data != null) {
+      // Werte werden in Form gesetzt
+      this.agendaPunktForm.controls['name'].setValue(this.choosenAgendaPunktNode.data.name);
+      this.agendaPunktForm.controls['farbe'].setValue(this.choosenAgendaPunktNode.data.farbe);
+      this.agendaPunktForm.controls['nummer'].setValue(this.choosenAgendaPunktNode.data.nummer);
+    }
 
     // Dialog wird geöffnet
     this.AgendaPunktDialog.openDialog();

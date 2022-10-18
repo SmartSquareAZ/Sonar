@@ -1,11 +1,11 @@
 let Mock_Duration = 2000;
 Mock_Duration = 0;
 
-export const resolveAfter2Seconds = (x: number) => {
+export const resolveAfterXSeconds = (duration: number = Mock_Duration) => {
     return new Promise(resolve => {
         setTimeout(() => {
-            resolve(x);
-        }, Mock_Duration);
+            resolve(123);
+        }, duration);
     });
 }
 

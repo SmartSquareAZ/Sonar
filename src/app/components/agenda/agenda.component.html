@@ -2,9 +2,9 @@
     <div class="h-100 d-flex justify-content-center align-items-start pt-5" *ngIf="loadingAgenda">
         <app-loading></app-loading>
     </div>
-    <p-tree [value]="agendaPunkte" class="pTree h-100" *ngIf="!loadingAgenda" scrollHeight="100%">
+    <p-tree [value]="agendaPunkteNode" class="pTree h-100" *ngIf="!loadingAgenda" scrollHeight="100%">
         <ng-template let-node pTemplate="default">
-            <a class="agendaLink" [href]="'#titel_' + node.data.ID">
+            <a class="agendaLink" [href]="'#titel_' + node.data?.ID">
                 <span [ngStyle]="{'color': node.farbe}">{{node.label}}</span>
             </a>
         </ng-template>
@@ -33,33 +33,11 @@
             <div class="col-3 fw-bold text-center">Aktionen</div>
         </div>
 
-        <div class="pb-2 overflow-auto" style="height: calc(100% - 80px)">
-            <p-treeTable [value]="agendaPunkte" dataKey="name">
-                <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-                    <tr [ttRow]="rowNode">
-                        <td (click)="nodeSelect(rowNode)">
-                            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-                            {{rowData.nummer}}
-                        </td>
-                        <td (click)="nodeSelect(rowNode)">{{rowData.name}}</td>
-                        <td (click)="nodeSelect(rowNode)">
-                            <div class="w-100 d-flex justify-content-center">
-                                <div class="farbIndikator" [ngStyle]="{'background': rowData.farbe}"></div>
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="w-100 d-flex justify-content-center">
-                                <button class="p-button-success" pButton pRipple icon="pi pi-plus"
-                                    (click)="addNewAgendaPunkt(rowNode)"
-                                    [style]="{'margin-right': '.5em', 'width': '2.5rem', 'height': '2.5rem'}"></button>
-                                <button class="p-button-warning" pButton pRipple icon="pi pi-trash"
-                                    [style]="{'width': '2.5rem', 'height': '2.5rem'}"></button>
-                            </div>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-treeTable>
+        <div class="pb-2 overflow-auto ps-2" style="height: calc(100% - 80px)">
+            <app-agendatableentry [rowNodeList]="agendaPunkteNode" [deepth]="0"
+                (addAgendapunktEvent)="addAgendapunktChild($event)"
+                (deleteAgendapunktEvent)="deleteAgendapunktChild($event)"
+                (selectAgendapunktEvent)="nodeSelectChild($event)"></app-agendatableentry>
         </div>
     </div>
 
@@ -67,7 +45,7 @@
     <ng-template pTemplate="footer">
         <div class="w-100 d-flex justify-content-end align-items-center">
             <button pButton pRipple type="button" label="Neu" icon="pi pi-plus" class="p-button-outlined"
-                (click)="addNewAgendaPunkt(null)"></button>
+                (click)="addNewAgendaPunkt()"></button>
         </div>
     </ng-template>
 </p-dialog>
@@ -109,7 +87,7 @@
                     [disabled]="agendaPunktForm.invalid"></button>
                 <i class="pi pi-info-circle" pTooltip="Speichert den Agendapunkt"></i>
             </div>
-            <div class="w-50 d-flex justify-content-center align-items-center" *ngIf="choosenAgendaPunkt.ID != 0">
+            <div class="w-50 d-flex justify-content-center align-items-center" *ngIf="choosenAgendaPunktNode.data?.ID != 0">
                 <button type="button" class="p-button-outlined p-button-danger" pButton pRipple
                     (click)="showConfirm($event)" icon="pi pi-trash" label="Löschen"></button>
                 <i class="pi pi-info-circle" pTooltip="Löscht den Agendapunkt"></i>

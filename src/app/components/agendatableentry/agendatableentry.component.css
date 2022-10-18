@@ -1,0 +1,14 @@
+.farbIndikator {
+    width: 80px;
+    height: 25px;
+    border-radius: 5px;
+}
+
+.row {
+    margin: 0;
+}
+
+.newElement {
+    font-style: italic;
+    text-decoration: underline;
+}

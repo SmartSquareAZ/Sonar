@@ -1,0 +1,36 @@
+<ng-template ngFor let-node [ngForOf]="rowNodeList">
+    <div class="w-100 row py-2">
+        <div class="col-3 d-flex justify-content-start align-items-center" [style]="{'padding-left': deepth + '5px'}"
+            style="margin-left:-10px;">
+            <div style="width: 30%;">
+                <button type="button" pButton pRipple class="p-button-text p-button-rounded p-button-plain"
+                    *ngIf="node.children != null && node.children.length > 0"
+                    [icon]="node.expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" (click)="node.expanded = !node.expanded"
+                    style="width: 30%; width: 2rem; height: 2rem;"></button>
+            </div>
+            <div class="ps-1" style="width: 70%;" (click)="nodeSelect(node)">{{node.data?.nummer}}</div>
+        </div>
+        <div class="col-5 d-flex justify-content-start align-items-center" [class.newElement]="node.data?.ID == 0"
+            (click)="nodeSelect(node)">{{node.data?.name}}
+        </div>
+        <div class="col-2 d-flex justify-content-end align-items-center" (click)="nodeSelect(node)">
+            <div class="farbIndikator" [ngStyle]="{'background': node.data?.farbe}"></div>
+        </div>
+        <div class="col-2 d-flex justify-content-end align-items-center">
+            <div class="w-100 d-flex justify-content-center align-items-center">
+                <button class="p-button-success" pButton pRipple icon="pi pi-plus" (click)="addNewAgendaPunkt(node)"
+                    [style]="{'margin-right': '.5em', 'width': '2.5rem', 'height': '2.5rem'}"></button>
+                <button class="p-button-warning" pButton pRipple icon="pi pi-trash" (click)="showConfirm($event, node)"
+                    [style]="{'width': '2.5rem', 'height': '2.5rem'}"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-100" style="height: 1px; background-color: var(--surface-d); margin-left:-10px;"></div>
+
+    <app-agendatableentry *ngIf="node.expanded && node.children != null" [rowNodeList]="node.children" [deepth]="deepth+1"
+        (addAgendapunktEvent)="addAgendapunktChild($event)" (deleteAgendapunktEvent)="deleteAgendapunktChild($event)"
+        (selectAgendapunktEvent)="nodeSelectChild($event)">
+    </app-agendatableentry>
+</ng-template>
+<p-confirmPopup></p-confirmPopup>

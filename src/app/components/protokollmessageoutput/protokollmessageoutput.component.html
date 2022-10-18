@@ -1,0 +1,38 @@
+<div class="w-100 row justify-content-between align-items-center" (click)="message.isEditing = editable ? true : false;"
+    *ngIf="!message.isEditing">
+
+    <div class="col-1">{{message.nummer}}</div>
+    <div class="col-6 protokollmessageText">
+        <app-html-output [text]="message.message"></app-html-output>
+    </div>
+    <div class="col-4">
+        <div class="row w-100 d-flex justify-content-center align-items-center">
+
+            <div class="col-8 d-flex justify-content-center align-items-center flex-column py-3">
+                <div *ngIf="message.vType != 3 && message.vType != 4">
+                    {{message.readVTypeText()}}
+                </div>
+                <div class="text-center" *ngIf="message.vType == 3 || message.vType == 4">
+                    <ng-template ngFor let-verantwortlicher [ngForOf]="message.vIDs" let-i="index">
+                        <div *ngIf="i < message.countDisplayVerantworliche">
+                            {{readPersonFromProtokollmessage(message.vType,
+                            verantwortlicher).name}}
+                        </div>
+                        <div style="letter-spacing: 2.5px; font-weight: bold;"
+                            *ngIf="i ==message.countDisplayVerantworliche"
+                            [pTooltip]="message.createVerantwortlichenTooltip(message.vType == 3 ? employee : contacts)"
+                            tooltipPosition="right" [escape]="false">
+                            ...</div>
+                    </ng-template>
+                </div>
+            </div>
+            <div class="col-4 d-flex justify-content-center align-items-center flex-column">
+                <div style="margin-bottom: 3px; word-wrap: break-word; white-space: nowrap;"
+                    [class]="message.readStatusBadge()">
+                    {{message.readStatusText()}}</div>
+                <div>{{message.ablaufdatum | date: "dd.MM.yyyy"}}</div>
+                <div>{{message.ablaufdatum | date: "HH:mm:ss"}}</div>
+            </div>
+        </div>
+    </div>
+</div>

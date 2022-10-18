@@ -1,0 +1,35 @@
+:host ::ng-deep .protokollmessage {
+    width: 100% !important;
+    height: 100% !important;
+    cursor: pointer;
+    flex-wrap: nowrap;
+}
+
+:host ::ng-deep .protokollmessage.choosen,
+:host ::ng-deep .protokollmessage:hover {
+    background-color: #BFDBFE !important;
+}
+
+:host ::ng-deep .protokollmessage .protokollmessageText {
+    box-shadow: 0 0 0 0.1rem #BFDBFE;
+    height: 100%;
+    min-height: 70px;
+    border-radius: 7px;
+    padding: 5px;
+    margin-right: 15px;
+    margin-block: 10px;
+}
+
+:host ::ng-deep .protokollmessage.choosen .protokollmessageText,
+:host ::ng-deep .protokollmessage:hover .protokollmessageText {
+    box-shadow: 0 0 0 0.1rem var(--primary-color);
+}
+
+:host ::ng-deep .protokollmessage .protokollmessageTextEditing {
+    height: 100%;
+    min-height: 250px;
+    border-radius: 7px;
+    padding: 5px;
+    margin-right: 15px;
+    margin-block: 10px;
+}

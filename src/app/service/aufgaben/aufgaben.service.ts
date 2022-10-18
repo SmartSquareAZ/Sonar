@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { resolveAfter2Seconds } from 'src/app/Constants';
+import { resolveAfterXSeconds } from 'src/app/Constants';
 import { mock_aufgaben } from 'src/app/mockdata/Mock_Aufgaben';
 import { Aufgabe } from 'src/app/models/Aufgabe';
 
@@ -20,7 +20,7 @@ export class AufgabenService {
    */
   async saveAufgabe(aufgabe: Aufgabe): Promise<Aufgabe> {
     // Websocket Stuff
-    const value = <Aufgabe>await resolveAfter2Seconds(20);
+    const value = <Aufgabe>await resolveAfterXSeconds();
 
     if (aufgabe.ID == 0) {
       let maxID = 0;
@@ -45,7 +45,7 @@ export class AufgabenService {
    */
   async deleteAufgabe(aufgabe: Aufgabe): Promise<Aufgabe> {
     // Websocket Stuff
-    const value = <Aufgabe>await resolveAfter2Seconds(20);
+    const value = <Aufgabe>await resolveAfterXSeconds();
 
     this.aufgaben.slice(this.aufgaben.indexOf(aufgabe), 1);
 
@@ -58,7 +58,7 @@ export class AufgabenService {
   async readAufgaben(masterID: number = 0, masterType: number = 0): Promise<Aufgabe[]> {
     // API Stuff
     if(!this.loadedData){
-      //const value = <Aufgabe>await this.resolveAfter2Seconds(20);
+      const value = <Aufgabe>await resolveAfterXSeconds();
       this.aufgaben = mock_aufgaben();
 
       // Flag wird gesetzt

@@ -105,6 +105,14 @@
 
             <div class="col-4 d-flex justify-content-center align-items-start flex-column ps-4">
                 <div class="mt-2">
+                    <label class="Agendapunkt">Agendapunkt</label>
+                    <!--
+                    <p-dropdown [options]="agendaPunkte" [(ngModel)]="choosenAufgabe.masterID" optionLabel="name" optionValue="ID" formControlName="agendaPunkt"></p-dropdown>
+                    -->
+                    <app-agenda [showEditField]="false" [(choosenAufgabe)]="choosenAufgabe"></app-agenda>
+                </div>
+
+                <div class="mt-4">
                     <label class="decorLabel">Wichtigkeit</label>
 
                     <div *ngFor="let severity of severities" class="field-checkbox">
@@ -119,7 +127,7 @@
                 </div>
 
 
-                <div class="mt-5">
+                <div class="mt-2">
                     <label class="decorLabel">Verantwortlicher Typ</label>
 
                     <div class="d-flex justify-content-center align-items-center">
@@ -131,11 +139,11 @@
                 <div class="mt-2">
                     <label class="decorLabel">Verantwortlicher</label><br />
 
-                    <p-dropdown [options]="verantwortliche" formControlName="vID" optionLabel="name" optionValue="ID"
+                    <p-dropdown [options]="verantwortliche" formControlName="vID" optionLabel="nachname" optionValue="ID"
                         [filter]="true" filterBy="name" placeholder="Person wählen" appendTo="body">
 
                         <ng-template let-person pTemplate="item">
-                            <div>{{person.name}}</div>
+                            <div>{{person.nachname}} {{person.vorname}}</div>
                         </ng-template>
                     </p-dropdown>
                 </div>

@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ConfirmationService, TreeNode } from 'primeng/api';
-import { Observable } from 'rxjs';
-import { mock_agendapunkte } from 'src/app/mockdata/Mock_AgendaPunkte';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
+import { Aufgabe } from 'src/app/models/Aufgabe';
 import { Dialog } from 'src/app/models/Dialog';
 import { AgendaService } from 'src/app/service/agenda/agenda.service';
 
@@ -14,6 +14,17 @@ import { AgendaService } from 'src/app/service/agenda/agenda.service';
   providers: [ConfirmationService]
 })
 export class AgendaComponent implements OnInit {
+
+  /**
+   * Ob man die Agenda bearbeiten kann oder nicht
+   */
+  @Input() showEditField: boolean = true;
+
+  /**
+   * Um den Agendapunkt zur Aufgabe hinzuzufügen
+   */
+  @Input() choosenAufgabe: Aufgabe = Aufgabe.buildFromEmpty();
+  @Output() choosenAufgabeChange = new EventEmitter<Aufgabe>();
 
   /**
    * Root Agendapunkt
@@ -44,7 +55,7 @@ export class AgendaComponent implements OnInit {
    */
   choosenAgendaPunktNode: TreeNode<AgendaPunkt> = AgendaPunkt.createTreeNode(AgendaPunkt.buildFromEmpty());
 
-  constructor(private formBuilder: FormBuilder, private agendaService: AgendaService, private confirmationService: ConfirmationService) {
+  constructor(private formBuilder: FormBuilder, private agendaService: AgendaService, private confirmationService: ConfirmationService, private router: Router) {
     // Agenda Dialog wird gebuildet
     this.AgendaDialog = Dialog.build(this.preDialogOpenAgenda.bind(this), this.postDialogOpenAgenda.bind(this), this.preDialogCloseAgenda.bind(this), this.postDialogCloseAgenda.bind(this));
     // AgendaPunkt Dialog wird gebuildet
@@ -66,6 +77,15 @@ export class AgendaComponent implements OnInit {
       // Flag wird gesetzt
       this.loadingAgenda = false;
     });
+  }
+
+  agendaPunktSelected(event: any) {
+    if(this.showEditField) {
+      this.router.navigate([], {fragment: 'titel_' + event.node.data?.ID});
+    } else {
+      this.choosenAufgabe.masterID = event.node.data?.ID;
+      this.choosenAufgabeChange.emit(this.choosenAufgabe);
+    }
   }
 
   addNewAgendaPunkt() {

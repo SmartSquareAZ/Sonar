@@ -2,13 +2,14 @@
     <div class="h-100 d-flex justify-content-center align-items-start pt-5" *ngIf="loadingAgenda">
         <app-loading></app-loading>
     </div>
-    <p-tree [value]="agendaPunkteNode" class="pTree h-100" *ngIf="!loadingAgenda" scrollHeight="100%">
+    <p-tree [value]="agendaPunkteNode" class="pTree h-100" *ngIf="!loadingAgenda" scrollHeight="100%" (onNodeSelect)="agendaPunktSelected($event)" selectionMode="single">
         <ng-template let-node pTemplate="default">
-            <a class="agendaLink" [href]="'#titel_' + node.data?.ID">
+            <!--<a class="agendaLink" [href]="'#titel_' + node.data?.ID">
                 <span [ngStyle]="{'color': node.farbe}">{{node.label}}</span>
-            </a>
+            </a>-->
+            <span [ngStyle]="{'color': node.farbe}">{{node.label}}</span>
         </ng-template>
-        <ng-template pTemplate="footer">
+        <ng-template pTemplate="footer" *ngIf="showEditField">
             <div class="pTreeFooter w-100 d-flex justify-content-end align-items-center mt-2">
                 <button pButton pRipple type="button" icon="pi pi-pencil" (click)="openDialogAgenda()"></button>
             </div>

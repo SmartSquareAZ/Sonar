@@ -35,7 +35,7 @@ export class AppComponent {
     this.route.queryParams
       .subscribe(params => {
         AppComponent.MANDANTID = this.validateUrlParam(params['MID']);
-        AppComponent.ABTEILUNGID = this.validateUrlParam(params['AID']);
+        AppComponent.ABTEILUNGID = this.validateUrlParam(params['ABTEILUNGID']);
         AppComponent.PROJEKTID = this.validateUrlParam(params['PROJEKTID']);
         AppComponent.AGENDAID = this.validateUrlParam(params['AGENDAID']);
         AppComponent.PROTOKOLLID = this.validateUrlParam(params['PROTOKOLLID']);

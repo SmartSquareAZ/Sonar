@@ -1,7 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { AppComponent } from 'src/app/app.component';
 import { resolveAfterXSeconds } from 'src/app/Constants';
 import { mock_aufgaben } from 'src/app/mockdata/Mock_Aufgaben';
 import { Aufgabe } from 'src/app/models/Aufgabe';
+import { UtilsService } from '../utils/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,16 +15,18 @@ export class AufgabenService {
   private loadedData = false;
   private aufgaben: Aufgabe[] = [];
 
-  constructor() { }
+  constructor(private httpClient: HttpClient, private utilsService: UtilsService) { }
 
   /**
    * Speichert die übergebene Aufgabe mittels Websocket
    * @param aufgabe Aufgabe welche gespeichert werden soll
    * @returns 
    */
-  async saveAufgabe(aufgabe: Aufgabe): Promise<Aufgabe> {
+  saveAufgabe(aufgabe: Aufgabe, success: Function): void {
+    aufgabe.type = 3;
+    this.utilsService.POST(`http://localhost:8075/AUFGABE/CREATE`, aufgabe.toJSONString(), success);
     // Websocket Stuff
-    const value = <Aufgabe>await resolveAfterXSeconds();
+    /*const value = <Aufgabe>await resolveAfterXSeconds();
 
     if (aufgabe.ID == 0) {
       let maxID = 0;
@@ -33,9 +39,13 @@ export class AufgabenService {
     }
 
     // Daten werden aktualisiert
-    this.readAufgaben();
+    //this.readAufgaben();*/
 
-    return aufgabe;
+    //return aufgabe;
+  }
+
+  updateAufgabe(aufgabe: Aufgabe, success: Function): void {
+    this.utilsService.POST(`http://localhost:8075/AUFGABE/UPDATE`, aufgabe.toJSONString(), success);
   }
 
   /**
@@ -43,21 +53,24 @@ export class AufgabenService {
    * @param aufgabe Aufgabe welcher gelöscht werden soll
    * @returns 
    */
-  async deleteAufgabe(aufgabe: Aufgabe): Promise<Aufgabe> {
+  deleteAufgabe(aufgabe: Aufgabe, success: Function): void{
     // Websocket Stuff
-    const value = <Aufgabe>await resolveAfterXSeconds();
+    /*const value = <Aufgabe>await resolveAfterXSeconds();
 
     this.aufgaben.slice(this.aufgaben.indexOf(aufgabe), 1);
 
     // Daten werden aktualisiert
     //this.readAufgaben();
 
-    return aufgabe;
+    return aufgabe;*/
+    this.utilsService.POST(`http://localhost:8075/AUFGABE/DELETE`, aufgabe.toJSONString(), success);
   }
 
-  async readAufgaben(masterID: number = 0, masterType: number = 0): Promise<Aufgabe[]> {
+  readAufgaben(success: Function): void {
     // API Stuff
-    if(!this.loadedData){
+    this.utilsService.GET(`http://localhost:8075/AUFGABE/READ?PROJEKTID=${AppComponent.PROJEKTID}&AGENDAID=${AppComponent.AGENDAID}`, success);
+
+    /*if(!this.loadedData){
       const value = <Aufgabe>await resolveAfterXSeconds();
       this.aufgaben = mock_aufgaben();
 
@@ -65,7 +78,6 @@ export class AufgabenService {
       this.loadedData = true;
     }
 
-    return this.aufgaben;
+    return this.aufgaben;*/
   }
-
 }

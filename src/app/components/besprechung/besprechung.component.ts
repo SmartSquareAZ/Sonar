@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { LazyLoadEvent } from 'primeng/api';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
+import { Kontakt } from 'src/app/models/Kontakt';
+import { Mitarbeiter } from 'src/app/models/Mitarbeiter';
 import { AgendaService } from 'src/app/service/agenda/agenda.service';
+import { PersonService } from 'src/app/service/person/person.service';
 
 @Component({
   selector: 'app-besprechung',
@@ -33,13 +36,24 @@ export class BesprechungComponent implements OnInit {
   employee: any[] = [];
   contacts: any[] = [];
 
-  constructor(private agendaService: AgendaService) { }
+  constructor(private agendaService: AgendaService, private personService: PersonService) { }
 
   ngOnInit() {
-    for (let idx = 1; idx < 21; idx++) {
+    /*for (let idx = 1; idx < 21; idx++) {
       this.employee.push({ ID: idx, name: 'Mitarbeiter ' + idx, type: 0 });
       this.contacts.push({ ID: idx, name: 'Kontakt ' + idx, type: 1 });
-    }
+    }*/
+    this.personService.getMitarbeiter((res: JSON[]) => {
+      for(let mitarbeiterObject of res) {
+        this.employee.push(Mitarbeiter.buildFromJSON(mitarbeiterObject));
+      }
+    });
+
+    this.personService.getMitarbeiter((res: JSON[]) => {
+      for(let kontaktObject of res) {
+        this.contacts.push(Kontakt.buildFromJSON(kontaktObject));
+      }
+    });
   }
 
   private fillAllAgendapunkte(agendapunktArray: AgendaPunkt[]): AgendaPunkt[] {

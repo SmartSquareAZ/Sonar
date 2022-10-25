@@ -12,6 +12,7 @@ import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 import { PersonService } from 'src/app/service/person/person.service';
 import { Mitarbeiter } from 'src/app/models/Mitarbeiter';
 import { Kontakt } from 'src/app/models/Kontakt';
+import { Person } from 'src/app/models/Person';
 
 @Component({
   selector: 'app-aufgaben',
@@ -53,10 +54,12 @@ export class AufgabenComponent implements OnInit {
   /**
    * Array aller Verantwortlichen
    */
-  verantwortliche: any[] = []
+  verantwortliche: Person[] = []
 
-  employee: any[] = [];
-  contacts: any[] = [];
+  selectedVerantwortlicher: Person = Person.buildFromEmpty();
+
+  employee: Mitarbeiter[] = [];
+  contacts: Kontakt[] = [];
 
   typeOptions: any[] = [
     { type: 0, name: "Mitarbeiter" },
@@ -93,7 +96,7 @@ export class AufgabenComponent implements OnInit {
       }
     });
 
-    this.personService.getMitarbeiter((res: JSON[]) => {
+    this.personService.getKontakte((res: JSON[]) => {
       for(let kontaktObject of res) {
         this.contacts.push(Kontakt.buildFromJSON(kontaktObject));
       }
@@ -124,6 +127,20 @@ export class AufgabenComponent implements OnInit {
 
   loadChoosenType(event: any = null) {
     this.verantwortliche = this.aufgabenForm.get("vType")?.value == 0 ? this.employee : this.contacts;
+    this.verantwortlicheDropdownChanged({value: this.choosenAufgabe.verantwortlicherID});
+    this.aufgabenForm.controls['vID'].setValue(this.choosenAufgabe.verantwortlicherID);
+  }
+  
+  verantwortlicheDropdownChanged(event: any = null) {
+    if(event.value == 0) {
+      this.selectedVerantwortlicher = Person.buildFromEmpty();
+      return;
+    }
+    for(let verantwortlicher of this.verantwortliche) {
+      if(event.value == verantwortlicher.ID) {
+        this.selectedVerantwortlicher = verantwortlicher;
+      }
+    }    
   }
 
   saveAufgabe() {
@@ -197,6 +214,12 @@ export class AufgabenComponent implements OnInit {
     this.aufgabenForm.controls['vType'].setValue(this.choosenAufgabe.verantwortlicherTyp);
     this.aufgabenForm.controls['vID'].setValue(this.choosenAufgabe.verantwortlicherID);
     this.aufgabenForm.controls['expireDate'].setValue(this.choosenAufgabe.ablaufdatum);
+
+    // Die korrekte Verantwortlichen-List wird geladen
+    this.loadChoosenType();
+
+    // Dropdown selectedVerantwortlicher wird gesetzt
+    this.verantwortlicheDropdownChanged({value: this.choosenAufgabe.verantwortlicherID});
 
     // Dialog wird geöffnet
     this.Dialog.openDialog();

@@ -17,11 +17,17 @@ export class Kontakt extends Person {
     ) {
         super(ID, anrede, titel, vorname, nachname, mobil, telefon, email, abteilungID);
         this.firmenname = firmenname;
-      }
+    }
+
+    override toOutput(): string {
+        if(this.firmenname == "") {
+            return `${this.nachname} ${this.vorname}`;
+        }
+        return `${this.nachname} ${this.vorname} - ${this.firmenname}`;
+    }
 
     static buildFromJSON(json: JSON) {
         let object: any = json;
-
         return new Kontakt(object["ID"], object["ANREDE"], object["TITEL"], object["VORNAME"], object["NACHNAME"], object["MOBIL"], object["TELEFON"], object["EMAIL"], object["FIRMENNAME"], object["ABTEILUNGID"]);
     }
 }

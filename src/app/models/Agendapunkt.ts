@@ -75,19 +75,19 @@ export class AgendaPunkt {
         return retVal;
     }
 
-    static createTreeNode(agendapunkt: AgendaPunkt): TreeNode {
+    static createTreeNode(agendapunkt: AgendaPunkt, expanded: boolean = true): TreeNode {
 
         let localChildren: TreeNode[] = [];
 
         agendapunkt.children.forEach(child => {
-            localChildren.push(this.createTreeNode(child));
+            localChildren.push(this.createTreeNode(child, expanded));
         });
 
         return {
             data: agendapunkt,
             key: '' + agendapunkt.ID,
             label: '' + agendapunkt.nummer + " " + agendapunkt.name,
-            expanded: true,
+            expanded: expanded,
             children: localChildren
         };
     }

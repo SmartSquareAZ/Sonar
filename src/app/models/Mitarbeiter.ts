@@ -3,6 +3,10 @@ import { Person } from "./Person";
 export class Mitarbeiter extends Person {
     isDisabled: boolean = false;
 
+    override toOutput(): string {
+        return `${this.nachname} ${this.vorname}`;
+    }
+
     static buildFromJSON(json: JSON) {
         let object: any = json;
 

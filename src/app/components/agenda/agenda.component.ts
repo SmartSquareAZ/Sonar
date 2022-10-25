@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfirmationService, TreeNode } from 'primeng/api';
@@ -53,7 +53,7 @@ export class AgendaComponent implements OnInit {
   /**
    * Node welche im Dialog bearbeitet wird
    */
-  choosenAgendaPunktNode: TreeNode<AgendaPunkt> = AgendaPunkt.createTreeNode(AgendaPunkt.buildFromEmpty());
+  choosenAgendaPunktNode: TreeNode<AgendaPunkt> = AgendaPunkt.createTreeNode(AgendaPunkt.buildFromEmpty(), this.showEditField);
 
   constructor(private formBuilder: FormBuilder, private agendaService: AgendaService, private confirmationService: ConfirmationService, private router: Router) {
     // Agenda Dialog wird gebuildet
@@ -63,13 +63,23 @@ export class AgendaComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.buildTree();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes["showEditField"]?.currentValue != undefined) {
+      this.buildTree();
+    }
+  }
+
+  buildTree(): void {
     // Flag wird gesetzt
     this.loadingAgenda = true;
 
     // Parents werden geladen
     this.agendaService.readAgendaPunkte((data: JSON) => {
       // Root wird gesetzt
-      this.root = AgendaPunkt.createTreeNode(new AgendaPunkt(0, "ROOT", "0", "#000", 1, -1, 0, AgendaPunkt.buildFromJSONArray(data)));
+      this.root = AgendaPunkt.createTreeNode(new AgendaPunkt(0, "ROOT", "0", "#000", 1, -1, 0, AgendaPunkt.buildFromJSONArray(data)), this.showEditField);
 
       // AgendaPunkte werden geladen
       this.agendaPunkteNode = this.root.children;
@@ -99,7 +109,7 @@ export class AgendaComponent implements OnInit {
     agendaPunkt.name = "Name";
 
     // Neuer AgendaPunkt wird zu Array hinzugefügt
-    this.root.children.push(AgendaPunkt.createTreeNode(agendaPunkt));
+    this.root.children.push(AgendaPunkt.createTreeNode(agendaPunkt), this.showEditField);
 
     // Ansicht wird aktualisiert
     this.agendaPunkteNode = Array.from(this.agendaPunkteNode);
@@ -121,7 +131,7 @@ export class AgendaComponent implements OnInit {
     }
 
     // Ansicht wird aktualisiert
-    this.root = AgendaPunkt.createTreeNode(this.root.data);
+    this.root = AgendaPunkt.createTreeNode(this.root.data, this.showEditField);
     this.agendaPunkteNode = this.root.children;
 
     // Dialog wird geschlossen

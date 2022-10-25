@@ -31,4 +31,12 @@ export class Person {
     this.email = email
     this.abteilungID = abteilungID;
   }
+
+  toOutput(): string {
+    return `${this.nachname} ${this.vorname}`;
+  }
+
+  static buildFromEmpty(): Person {
+    return new Person(0, "", "", "", "", "", "", "", 0);
+  }
 }

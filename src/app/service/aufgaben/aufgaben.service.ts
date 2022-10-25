@@ -1,10 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
 import { AppComponent } from 'src/app/app.component';
-import { resolveAfterXSeconds } from 'src/app/Constants';
-import { mock_aufgaben } from 'src/app/mockdata/Mock_Aufgaben';
 import { Aufgabe } from 'src/app/models/Aufgabe';
+import { RequestUrlService } from '../requesturl/request-url.service';
 import { UtilsService } from '../utils/utils.service';
 
 @Injectable({
@@ -12,10 +9,7 @@ import { UtilsService } from '../utils/utils.service';
 })
 export class AufgabenService {
 
-  private loadedData = false;
-  private aufgaben: Aufgabe[] = [];
-
-  constructor(private httpClient: HttpClient, private utilsService: UtilsService) { }
+  constructor(private utilsService: UtilsService, private requestURL: RequestUrlService) { }
 
   /**
    * Speichert die übergebene Aufgabe mittels Websocket
@@ -24,28 +18,12 @@ export class AufgabenService {
    */
   saveAufgabe(aufgabe: Aufgabe, success: Function): void {
     aufgabe.type = 3;
-    this.utilsService.POST(`http://localhost:8075/AUFGABE/CREATE`, aufgabe.toJSONString(), success);
+    this.utilsService.POST(this.requestURL.AUFGABE_CREATE, aufgabe.toJSONString(), success);
     // Websocket Stuff
-    /*const value = <Aufgabe>await resolveAfterXSeconds();
-
-    if (aufgabe.ID == 0) {
-      let maxID = 0;
-      this.aufgaben.forEach(element => {
-        if (maxID < element.ID) {
-          maxID = element.ID;
-        }
-      });
-      aufgabe.ID = maxID + 1;
-    }
-
-    // Daten werden aktualisiert
-    //this.readAufgaben();*/
-
-    //return aufgabe;
   }
 
   updateAufgabe(aufgabe: Aufgabe, success: Function): void {
-    this.utilsService.POST(`http://localhost:8075/AUFGABE/UPDATE`, aufgabe.toJSONString(), success);
+    this.utilsService.POST(this.requestURL.AUFGABE_UPDATE, aufgabe.toJSONString(), success);
   }
 
   /**
@@ -55,29 +33,11 @@ export class AufgabenService {
    */
   deleteAufgabe(aufgabe: Aufgabe, success: Function): void{
     // Websocket Stuff
-    /*const value = <Aufgabe>await resolveAfterXSeconds();
-
-    this.aufgaben.slice(this.aufgaben.indexOf(aufgabe), 1);
-
-    // Daten werden aktualisiert
-    //this.readAufgaben();
-
-    return aufgabe;*/
-    this.utilsService.POST(`http://localhost:8075/AUFGABE/DELETE`, aufgabe.toJSONString(), success);
+    this.utilsService.POST(this.requestURL.AUFGABE_DELETE, aufgabe.toJSONString(), success);
   }
 
   readAufgaben(success: Function): void {
     // API Stuff
-    this.utilsService.GET(`http://localhost:8075/AUFGABE/READ?PROJEKTID=${AppComponent.PROJEKTID}&AGENDAID=${AppComponent.AGENDAID}`, success);
-
-    /*if(!this.loadedData){
-      const value = <Aufgabe>await resolveAfterXSeconds();
-      this.aufgaben = mock_aufgaben();
-
-      // Flag wird gesetzt
-      this.loadedData = true;
-    }
-
-    return this.aufgaben;*/
+    this.utilsService.GET(`${this.requestURL.AUFGABE_READ}?PROJEKTID=${AppComponent.PROJEKTID}&AGENDAID=${AppComponent.AGENDAID}`, success);
   }
 }

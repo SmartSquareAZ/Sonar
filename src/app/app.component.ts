@@ -34,7 +34,7 @@ export class AppComponent {
   ngOnInit() {
     this.route.queryParams
       .subscribe(params => {
-        AppComponent.MANDANTID = this.validateUrlParam(params['MID']);
+        AppComponent.MANDANTID = this.validateUrlParam(params['MANDANTID']);
         AppComponent.ABTEILUNGID = this.validateUrlParam(params['ABTEILUNGID']);
         AppComponent.PROJEKTID = this.validateUrlParam(params['PROJEKTID']);
         AppComponent.AGENDAID = this.validateUrlParam(params['AGENDAID']);

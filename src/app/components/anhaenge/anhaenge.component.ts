@@ -68,7 +68,7 @@ export class AnhaengeComponent implements OnInit {
    */
   anhangForm = this.formBuilder.group({
     name: ["", Validators.required],
-    bemerkung: [""],
+    beschreibung: [""],
     kategorie: [null, Validators.required]
   });
   /**
@@ -102,10 +102,28 @@ export class AnhaengeComponent implements OnInit {
   async ngOnInit() {
     // Flag wird gesetzt
     this.loadingAnhaenge = true;
-    // Aufgaben werden geladen
-    this.anhangList = await this.anhangService.readAnhaenge();
+
     // Kategorien werden geladen
-    this.kategorienList = await this.anhangService.readKategorien();
+    this.anhangService.readKategorien(AppComponent.ABTEILUNGID, (res: JSON) => {
+      let objectArray: any = res;
+      let retVal: Anhangkategorie[] = [];
+      for(let anhangKategorieObject of objectArray) {
+        retVal.push(Anhangkategorie.buildFromObject(anhangKategorieObject));
+      }
+      this.kategorienList = retVal;
+      this.loadingAnhaenge = false;
+    });
+
+    // Anhänge werden geladen
+    this.anhangService.readAnhaenge(AppComponent.PROTOKOLLID, 1, (res: JSON) => {
+      let objectArray: any = res;
+      let retVal: Anhang[] = [];
+      for(let anhangObject of objectArray) {
+        retVal.push(Anhang.buildFromObject(anhangObject, this.kategorienList));
+      }
+      this.anhangList = retVal;
+    });
+
     // Flag wird gesetzt
     this.loadingAnhaenge = false;
   }
@@ -116,7 +134,7 @@ export class AnhaengeComponent implements OnInit {
 
     // Werte werden in Form gesetzt
     this.anhangForm.controls['name'].setValue(this.choosenAnhang.name);
-    this.anhangForm.controls['bemerkung'].setValue(this.choosenAnhang.bemerkung);
+    this.anhangForm.controls['beschreibung'].setValue(this.choosenAnhang.beschreibung);
     this.anhangForm.controls['kategorie'].setValue(this.choosenAnhang.anhangkategorie as any);
 
     // Uploadstatus wird gesetzt
@@ -146,34 +164,34 @@ export class AnhaengeComponent implements OnInit {
     });
   }
 
-  private async deleteAnhang() {
+  private deleteAnhang() {
     // Anhang wird im Service gelöscht
-    this.anhangService.deleteAnhang(this.choosenAnhang);
-
-    // Element wird aus Liste entfernt
-    this.anhangList.filter(x => x.ID == this.choosenAnhang.ID);
+    this.anhangService.deleteAnhang(this.choosenAnhang, (res: JSON) => {
+      let object: any = res;
+      let anhang: Anhang = Anhang.buildFromObject(object);
+      // Element wird aus Liste entfernt
+      this.anhangList = this.anhangList.filter(x => x.ID != anhang.ID);
+    });
 
     // Dialog wird geschlossen
     this.displayDialog = false;
   }
 
-  private async quitAnhang() {
+  private quitAnhang() {
     // Hochgeladene Datei muss gelöscht werden, falls Anhang neu ist
 
     // Dialog wird geschlossen
     this.displayDialog = false;
   }
 
-  private async deleteAnhangkategorie() {
+  private deleteAnhangkategorie() {
     // Kategorie wird gelöscht
-    this.anhangService.deleteKategorie(this.choosenAnhangkategorie);
-
-    console.log(this.choosenAnhangkategorie);
-
-    // Kategorie wird aus Array entfernt
-    this.kategorienList = this.kategorienList.filter(x => x.ID != this.choosenAnhangkategorie.ID);
-
-    console.log(this.kategorienList.length);
+    this.anhangService.deleteKategorie(this.choosenAnhangkategorie, (res: JSON) => {
+      let object: any = res;
+      let kategorie: Anhangkategorie = Anhangkategorie.buildFromObject(object);
+      // Kategorie wird aus Array entfernt
+      this.kategorienList = this.kategorienList.filter(x => x.ID != kategorie.ID);
+    });
 
     // Dialog wird geschlossen
     this.displayKategorieDialog = false;
@@ -182,14 +200,32 @@ export class AnhaengeComponent implements OnInit {
   saveAnhang() {
     // Werte der Form werden in Objekt übernommen
     this.choosenAnhang.name = "" + this.anhangForm.get('name')?.value;
-    this.choosenAnhang.bemerkung = "" + this.anhangForm.get('bemerkung')?.value;
+    this.choosenAnhang.beschreibung = "" + this.anhangForm.get('beschreibung')?.value;
     this.choosenAnhang.anhangkategorie = this.anhangForm.get('kategorie')?.value as any;
+    this.choosenAnhang.masterID = AppComponent.PROTOKOLLID;
+    this.choosenAnhang.masterType = 1;
 
-    // Anhang wird gespeichert
-    this.anhangService.saveAnhang(this.choosenAnhang);
+    if(this.choosenAnhang.ID == 0) {
+      // Anhang wird gespeichert
+      this.anhangService.saveAnhang(this.choosenAnhang, (res: JSON) => {
+        let object: any = res;
+        let anhang: Anhang = Anhang.buildFromObject(object);
+        // Element wird zur List hinzugefügt
+        this.anhangList.push(anhang);
+      });
+    } else {
+      this.anhangService.updateAnhang(this.choosenAnhang, (res: JSON) => {
+        let object: any = res;
+        let updatedAnhang: Anhang = Anhang.buildFromObject(object);
+        for(let anhang of this.anhangList) {
+          if(anhang.ID == updatedAnhang.ID) {
+            anhang = updatedAnhang;
+          }
+        }
+        this.anhangList = Array.from(this.anhangList);
+      });
+    }
 
-    // Anhang wird Service hinzugefügt
-    this.anhangList.push(this.choosenAnhang);
 
     // Dialog wird geschlossen
     this.displayDialog = false;
@@ -199,8 +235,27 @@ export class AnhaengeComponent implements OnInit {
     // Werte der Form werden in Objekt übernommen
     this.choosenAnhangkategorie.name = "" + this.anhangKategorieForm.get('name')?.value;
 
-    // Kategorie wird gespeichert
-    this.anhangService.saveKategorie(this.choosenAnhangkategorie);
+    if(this.choosenAnhangkategorie.ID == 0) {
+      // Kategorie wird gespeichert
+      this.anhangService.saveKategorie(this.choosenAnhangkategorie, (res: JSON) => {
+        let object: any = res;
+        let kategorie: Anhangkategorie = Anhangkategorie.buildFromObject(object);
+        this.kategorienList.push(kategorie);
+      });
+    } else {
+      // Kategorie wird aktualisiert
+      this.anhangService.updateKategorie(this.choosenAnhangkategorie, (res: JSON) => {
+        let object: any = res;
+        let updatedKategorie: Anhangkategorie = Anhangkategorie.buildFromObject(object);
+        for(let kategorie of this.kategorienList) {
+          if(kategorie.ID == updatedKategorie.ID) {
+            kategorie = updatedKategorie;
+          }
+        }
+        this.kategorienList = Array.from(this.kategorienList)
+      });
+    }
+    
 
     // Dialog wird geschlossen
     this.displayKategorieDialog = false;
@@ -227,9 +282,9 @@ export class AnhaengeComponent implements OnInit {
         .pipe(catchError(err => this.handleError(err)))
         .subscribe((response: any) => {
           let responseObj = JSON.parse(JSON.stringify(response));
-
+          console.log(responseObj);
           this.currentUploadState = 5;
-          this.choosenAnhang.uploadfilename = responseObj["NAME"];
+          this.choosenAnhang.filename = responseObj["NAME"];
           this.choosenAnhang.storagepath = responseObj["PATH"];
           this.fileUploader.clear();
         });
@@ -249,7 +304,7 @@ export class AnhaengeComponent implements OnInit {
 
     this.httpClient.get(this.downloadUrl + "?path=" + btoa(this.choosenAnhang.storagepath), {
       responseType: 'blob'
-    }).subscribe(blob => saveAs(blob, this.choosenAnhang.uploadfilename));
+    }).subscribe(blob => saveAs(blob, this.choosenAnhang.filename));
   }
 
 }

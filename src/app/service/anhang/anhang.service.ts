@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { resolveAfterXSeconds } from 'src/app/Constants';
-import { mock_anhaenge, mock_anhangkategorien } from 'src/app/mockdata/Mock_Anhaenge';
 import { Anhang, Anhangkategorie } from 'src/app/models/Anhang';
+import { RequestUrlService } from '../requesturl/request-url.service';
+import { UtilsService } from '../utils/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,31 +14,20 @@ export class AnhangService {
   private loadedKategorieData = false;
   private kategorien: Anhangkategorie[] = [];
 
-  constructor() { }
-
+  constructor(private utilsService: UtilsService, private requestURL: RequestUrlService) { }
+  //#region Anhang
   /**
    * Speichert den übergebene Anhang mittels Websocket
    * @param anhang Anhang welcher gespeichert werden soll
    * @returns 
    */
-  async saveAnhang(anhang: Anhang): Promise<Anhang> {
+  saveAnhang(anhang: Anhang, success: Function): void {
     // Websocket Stuff
-    const value = <Anhang>await resolveAfterXSeconds();
+    this.utilsService.POST(this.requestURL.ANHANG_CREATE, anhang.toJSONString(), success);
+  }
 
-    if (anhang.ID == 0) {
-      let maxID = 0;
-      this.anhaenge.forEach(element => {
-        if (maxID < element.ID) {
-          maxID = element.ID;
-        }
-      });
-      anhang.ID = maxID + 1;
-    }
-
-    // Daten werden aktualisiert
-    this.readAnhaenge();
-
-    return anhang;
+  updateAnhang(anhang: Anhang, success: Function): void {
+    this.utilsService.POST(this.requestURL.ANHANG_UPDATE, anhang.toJSONString(), success);
   }
 
   /**
@@ -46,18 +35,15 @@ export class AnhangService {
    * @param anhang Anhang welcher gelöscht werden soll
    * @returns 
    */
-  async deleteAnhang(anhang: Anhang): Promise<Anhang> {
+  deleteAnhang(anhang: Anhang, success: Function): void {
     // Websocket Stuff
-    const value = <Anhang>await resolveAfterXSeconds();
-
-    this.anhaenge.slice(this.anhaenge.indexOf(anhang), 1);
-
-    return anhang;
+    this.utilsService.POST(this.requestURL.ANHANG_DELETE, anhang.toJSONString(), success);
   }
 
-  async readAnhaenge(masterID: number = 0, masterType: number = 0): Promise<Anhang[]> {
+  readAnhaenge(masterID: number = 0, masterType: number = 0, success: Function): void {
     // API Stuff
-    if (!this.loadedData) {
+    this.utilsService.GET(`${this.requestURL.ANHANG_READ}?MASTERTYPE=${masterType}&MASTERID=${masterID}`, success);
+    /*if (!this.loadedData) {
       const value = <Anhang>await resolveAfterXSeconds();
       this.anhaenge = mock_anhaenge();
 
@@ -65,33 +51,28 @@ export class AnhangService {
       this.loadedData = true;
     }
 
-    return this.anhaenge;
+    return this.anhaenge;*/
   }
+  //#endregion
 
-  async readKategorien(abteilungID: number = 0): Promise<Anhangkategorie[]> {
+  //#region Kategorie
+  readKategorien(abteilungID: number = 0, success: Function): void {
     // API Stuff
-    if (!this.loadedKategorieData) {
-      const value = <Anhang>await resolveAfterXSeconds();
-      this.kategorien = mock_anhangkategorien();
-
-      // Flag wird gesetzt
-      this.loadedKategorieData = true;
-    }
-
-    return this.kategorien;
+    this.utilsService.GET(`${this.requestURL.ANHANGKATEGORIE_READ}?ABTEILUNGID=${abteilungID}`, success);
   }
 
-  async saveKategorie(kategorie: Anhangkategorie): Promise<Anhangkategorie> {
-    // Kategorie wird im Array gespeichert
-    this.kategorien.push(kategorie);
-
-    return kategorie;
+  saveKategorie(kategorie: Anhangkategorie, success: Function): void {
+    console.log(kategorie.toJSONString());
+    console.log(this.requestURL.ANHANGKATEGORIE_CREATE);
+    this.utilsService.POST(this.requestURL.ANHANGKATEGORIE_CREATE, kategorie.toJSONString(), success);
   }
 
-  async deleteKategorie(kategorie: Anhangkategorie): Promise<Anhangkategorie> {
-    // Kategorie wird aus Array entfernt
-    this.kategorien = this.kategorien.filter(x => x.ID != kategorie.ID);
-
-    return kategorie;
+  deleteKategorie(kategorie: Anhangkategorie, success: Function): void {
+    this.utilsService.POST(this.requestURL.ANHANGKATEGORIE_DELETE, kategorie.toJSONString(), success);
   }
+
+  updateKategorie(kategorie: Anhangkategorie, success: Function): void {
+    this.utilsService.POST(this.requestURL.ANHANGKATEGORIE_UPDATE, kategorie.toJSONString(), success);
+  }
+  //#endregion
 }

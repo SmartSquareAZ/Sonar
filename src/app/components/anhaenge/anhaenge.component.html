@@ -106,9 +106,9 @@
 
             <div class="col-6">
                 <span class="p-float-label">
-                    <textarea inputId="bemerkung" rows="6" style="resize: none;" class="w-100"
-                        formControlName="bemerkung" pInputTextarea></textarea>
-                    <label for="bemerkung">Bemerkung</label>
+                    <textarea inputId="beschreibung" rows="6" style="resize: none;" class="w-100"
+                        formControlName="beschreibung" pInputTextarea></textarea>
+                    <label for="beschreibung">Beschreibung</label>
                 </span>
             </div>
         </div>
@@ -118,7 +118,7 @@
 
                 <button type="button" pButton pRipple (click)="downloadAnhangFile()"
                     *ngIf="currentUploadState == 5" class="p-button-text p-button-rounded p-button-secondary"
-                    icon="pi pi-download" [label]="choosenAnhang.uploadfilename"></button>
+                    icon="pi pi-download" [label]="choosenAnhang.filename"></button>
 
                 <span *ngIf="currentUploadState != 5">{{uploadStates[currentUploadState]}}</span>
             </div>

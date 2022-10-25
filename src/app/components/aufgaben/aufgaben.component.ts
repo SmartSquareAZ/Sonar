@@ -108,7 +108,7 @@ export class AufgabenComponent implements OnInit {
     this.loadingAufgaben = true;
 
     // Aufgaben werden geladen 
-    this.aufgabenService.readAufgaben((res: JSON[]) => {
+    this.aufgabenService.readAufgaben((res: JSON) => {
       let objectArray: any = res;
       let retVal: Aufgabe[] = [];
       for(let aufgabenObject of objectArray) {

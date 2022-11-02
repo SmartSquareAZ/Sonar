@@ -6,7 +6,10 @@
     <div class="h-100 overflow-hidden" *ngIf="!loadingAufgaben">
         <div class="w-100 row justify-content-between align-items-center ps-3 py-1 mb-2"
             style="background-color: var(--surface-b); border-bottom: 1px solid #bbb; height: 70px;">
-            <div class="col-8 fw-bold">Beschreibung</div>
+            <div class="col-8">
+                <p-selectButton [options]="erledigtOptions" optionLabel="key"
+                    optionValue="value" [(ngModel)]="erledigt" (onChange)="loadAufgaben()" id="erledigtSelectButton"></p-selectButton>
+            </div>
             <div class="col-4 text-end">
                 <button pButton pRipple type="button" icon="pi pi-plus" label="Neu" (click)="openDialog()"
                     style="margin: 10px; margin-left: 25px; margin-right: 0; padding: 5px 10px;"></button>

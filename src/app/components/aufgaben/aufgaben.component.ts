@@ -13,6 +13,7 @@ import { PersonService } from 'src/app/service/person/person.service';
 import { Mitarbeiter } from 'src/app/models/Mitarbeiter';
 import { Kontakt } from 'src/app/models/Kontakt';
 import { Person } from 'src/app/models/Person';
+import { AufgabenWebsocketService } from 'src/app/service/websocket/aufgaben-websocket.service';
 
 @Component({
   selector: 'app-aufgaben',
@@ -66,6 +67,13 @@ export class AufgabenComponent implements OnInit {
     { type: 1, name: "Kontakte" }
   ]
 
+  erledigtOptions: any[] = [
+    { value: 0, key: "Nicht erledigt"},
+    { value: 1, key: "Erledigt"}
+  ]
+
+  erledigt: number = 0;
+
   /**
    * Eingabeform des Aufgaben Dialogs
    */
@@ -79,17 +87,12 @@ export class AufgabenComponent implements OnInit {
     agendaPunkt: [0, Validators.required]
   });
 
-  constructor(private formBuilder: FormBuilder, private agendaService: AgendaService, private aufgabenService: AufgabenService, private personService: PersonService, private confirmationService: ConfirmationService) {
+  constructor(private formBuilder: FormBuilder, private agendaService: AgendaService, private aufgabenService: AufgabenService, private personService: PersonService, private confirmationService: ConfirmationService, private socketService: AufgabenWebsocketService) {
     // Dialog wird gebuildet
     this.Dialog = Dialog.build(this.preDialogOpen.bind(this), this.postDialogOpen.bind(this), this.preDialogClose.bind(this), this.postDialogClose.bind(this));
   }
 
   async ngOnInit() {
-    /*for (let idx = 1; idx < 21; idx++) {
-      this.employee.push({ ID: idx, name: 'Mitarbeiter ' + idx, type: 0 });
-      this.contacts.push({ ID: idx, name: 'Kontakt ' + idx, type: 1 });
-    }*/
-
     this.personService.getMitarbeiter((res: JSON[]) => {
       for(let mitarbeiterObject of res) {
         this.employee.push(Mitarbeiter.buildFromJSON(mitarbeiterObject));
@@ -104,11 +107,40 @@ export class AufgabenComponent implements OnInit {
 
     this.loadChoosenType();
 
+    this.loadAufgaben();
+
+    // AgendaPunkte werden geladen
+    this.agendaService.readAgendaPunkte((res: JSON) => {
+      this.agendaPunkte = AgendaPunkt.buildFromJSONArray(res);
+    });
+
+    this.socketService.requestCallback = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
+      if(operation != "ONLINE" && operation != "REGISTER") {
+        data = JSON.parse(data);
+      }
+      // Überprüfung, auf den richtigen Befehl
+      if (operation == "CREATE") {
+        this.aufgaben.push(Aufgabe.buildFromObject(data));
+      }
+      if (operation == "UPDATE") {
+        this.aufgaben[this.aufgaben.findIndex((aufgabe => aufgabe.ID == data["ID"]))] = Aufgabe.buildFromObject(data);
+      }
+      if (operation == "DELETE") {
+        this.aufgaben = this.aufgaben.filter(aufgabe => aufgabe.ID !== data["ID"]);
+      }
+    }
+    
+  }
+
+  ngOnDestroy() {
+    this.socketService.completeWebsocket();
+  }
+
+  loadAufgaben(): void {
     // Flag wird gesetzt
     this.loadingAufgaben = true;
-
     // Aufgaben werden geladen 
-    this.aufgabenService.readAufgaben((res: JSON) => {
+    this.aufgabenService.readAufgaben(this.erledigt, (res: JSON) => {
       let objectArray: any = res;
       let retVal: Aufgabe[] = [];
       for(let aufgabenObject of objectArray) {
@@ -117,12 +149,6 @@ export class AufgabenComponent implements OnInit {
       this.aufgaben = retVal;
       this.loadingAufgaben = false;
     });
-
-    // AgendaPunkte werden geladen
-    this.agendaService.readAgendaPunkte((res: JSON) => {
-      this.agendaPunkte = AgendaPunkt.buildFromJSONArray(res);
-    });
-    
   }
 
   loadChoosenType(event: any = null) {
@@ -153,11 +179,17 @@ export class AufgabenComponent implements OnInit {
     this.choosenAufgabe.ablaufdatum = this.aufgabenForm.get('expireDate')?.value;
     // Überprüfung, ob neue Aufgabe
     if (this.choosenAufgabe.ID == 0) {
-      this.aufgaben.push(this.choosenAufgabe);
       // Daten wird gespeichert
-      this.aufgabenService.saveAufgabe(this.choosenAufgabe, (res: object) => res);
+      this.aufgabenService.saveAufgabe(this.choosenAufgabe, (res: object) => {
+        let retVal: Aufgabe = Aufgabe.buildFromObject(res);
+        this.aufgaben.push(retVal);
+        this.socketService.sendOperation("CREATE", "", retVal.toJSONString());
+      });
     } else {
-      this.aufgabenService.updateAufgabe(this.choosenAufgabe, (res: object) => res);
+      this.aufgabenService.updateAufgabe(this.choosenAufgabe, (res: object) => {
+        let retVal: Aufgabe = Aufgabe.buildFromObject(res);
+        this.socketService.sendOperation("UPDATE", "", retVal.toJSONString());
+      });
     }
 
     
@@ -179,8 +211,11 @@ export class AufgabenComponent implements OnInit {
   }
 
   deleteAufgabe() {
-    this.aufgaben = this.aufgaben.filter(obj => obj.ID !== this.choosenAufgabe.ID);
-    this.aufgabenService.deleteAufgabe(this.choosenAufgabe, (res: object) => res);
+    this.aufgabenService.deleteAufgabe(this.choosenAufgabe, (res: object) => {
+      let retVal: Aufgabe = Aufgabe.buildFromObject(res);
+      this.aufgaben = this.aufgaben.filter(obj => obj.ID !== retVal.ID);
+      this.socketService.sendOperation("DELETE", "", retVal.toJSONString());
+    });
     this.closeDialog();
   }
 
@@ -232,6 +267,5 @@ export class AufgabenComponent implements OnInit {
     this.Dialog.closeDialog();
   }
   //#endregion
-
   
 }

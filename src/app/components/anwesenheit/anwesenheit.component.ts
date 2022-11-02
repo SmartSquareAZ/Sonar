@@ -6,10 +6,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./anwesenheit.component.css']
 })
 export class AnwesenheitComponent implements OnInit {
+  
+  
 
   constructor() { }
 
   ngOnInit(): void {
+    
   }
 
 }

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { OnlineService } from 'src/app/service/online/online.service';
+import { AnwesendeWebsocketService } from 'src/app/service/websocket/anwesende-websocket.service';
+import { Person } from 'src/app/models/Person';
+import { AppComponent } from 'src/app/app.component';
 
 @Component({
   selector: 'app-online',
@@ -7,19 +10,18 @@ import { OnlineService } from 'src/app/service/online/online.service';
   styleUrls: ['./online.component.css']
 })
 export class OnlineComponent implements OnInit {
+  
+  
 
-  loadingOnline: boolean = false;
-  onlineList: any[] = [];
-
-  constructor(private onlineService: OnlineService) { }
+  constructor(private onlineService: OnlineService, private socketService: AnwesendeWebsocketService) { }
 
   async ngOnInit() {
-    // Flag wird gesetzt
-    this.loadingOnline = true;
-    // Daten werden geladen
-    this.onlineList = await this.onlineService.readOnlinePersons();
-    // Flag wird gesetzt
-    this.loadingOnline = false;
+    
+  }
+
+  get onlineList(): Person[] {
+    console.log(AppComponent.onlineList)
+    return AppComponent.onlineList;
   }
 
 }

@@ -53,6 +53,14 @@ export class RequestUrlService {
   public ANHANGKATEGORIE_READ: string = "";
   //#endregion
 
+  //#region Websockets
+  public WEBSOCKET_AGENDAPUNKT: string = "";
+  public WEBSOCKET_AUFGABE: string = "";
+  public WEBSOCKET_ANHANG: string = "";
+  public WEBSOCKET_ANHANGKATEGORIE: string = "";
+  public WEBSOCKET_ANWESENDE: string = "";
+  //#endregion
+
   constructor() {
       // http://localhost:8075
       let websocketProtocol = this.STATE == -1 ? "ws" : "wss";
@@ -109,6 +117,14 @@ export class RequestUrlService {
       this.ANHANGKATEGORIE_UPDATE = url + "/ANHANGKATEGORIE" + updatePath;
       this.ANHANGKATEGORIE_DELETE = url + "/ANHANGKATEGORIE" + deletePath;
       this.ANHANGKATEGORIE_READ = url + "/ANHANGKATEGORIE/READ";
+      //#endregion
+
+      //#region Websockets
+      this.WEBSOCKET_AGENDAPUNKT = websocketurl + "/AGENDAPUNKT";
+      this.WEBSOCKET_AUFGABE = websocketurl + "/AUFGABE";
+      this.WEBSOCKET_ANHANG = websocketurl + "/ANHANG";
+      this.WEBSOCKET_ANHANGKATEGORIE = websocketurl + "/ANHANGKATEGORIE";
+      this.WEBSOCKET_ANWESENDE = websocketurl + "/ANWESENDE";
       //#endregion
   }
 }

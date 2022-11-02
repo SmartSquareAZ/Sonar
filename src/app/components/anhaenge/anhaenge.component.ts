@@ -8,6 +8,8 @@ import { Anhang, Anhangkategorie } from 'src/app/models/Anhang';
 import { AnhangService } from 'src/app/service/anhang/anhang.service';
 import { saveAs } from 'file-saver';
 import { AppComponent } from 'src/app/app.component';
+import { AnhangWebsocketService } from 'src/app/service/websocket/anhang-websocket.service';
+import { AnhangKategorieWebsocketService } from 'src/app/service/websocket/anhang-kategorie-websocket.service';
 
 @Component({
   selector: 'app-anhaenge',
@@ -97,7 +99,12 @@ export class AnhaengeComponent implements OnInit {
   uploadStyleStates: string[] = ["blue", "yellow", "orange", "green", "red", "green"];
 
 
-  constructor(private confirmationService: ConfirmationService, private anhangService: AnhangService, private formBuilder: FormBuilder, private httpClient: HttpClient) { }
+  constructor(private confirmationService: ConfirmationService, 
+    private anhangService: AnhangService, 
+    private formBuilder: FormBuilder, 
+    private httpClient: HttpClient, 
+    private anhangSocketService: AnhangWebsocketService,
+    private anhangKategorieSocketService: AnhangKategorieWebsocketService) { }
 
   async ngOnInit() {
     // Flag wird gesetzt
@@ -126,6 +133,46 @@ export class AnhaengeComponent implements OnInit {
 
     // Flag wird gesetzt
     this.loadingAnhaenge = false;
+
+    this.anhangSocketService.requestCallback = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
+      if(operation != "ONLINE" && operation != "REGISTER") {
+        data = JSON.parse(data);
+      }
+      // Überprüfung, auf den richtigen Befehl
+      if (operation == "CREATE") {
+        this.anhangList.push(Anhang.buildFromObject(data));
+      }
+      if (operation == "UPDATE") {
+        this.anhangList[this.anhangList.findIndex((anhang => anhang.ID == data["ID"]))] = Anhang.buildFromObject(data);
+      }
+      if (operation == "DELETE") {
+        this.anhangList = this.anhangList.filter(anhang => anhang.ID !== data["ID"]);
+      }
+    }
+
+    this.anhangKategorieSocketService.requestCallback = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
+      if(operation != "ONLINE" && operation != "REGISTER") {
+        data = JSON.parse(data);
+      }
+      // Überprüfung, auf den richtigen Befehl
+      if (operation == "CREATE") {
+        this.kategorienList.push(Anhangkategorie.buildFromObject(data));
+        this.kategorienList = Array.from(this.kategorienList);
+      }
+      if (operation == "UPDATE") {
+        this.kategorienList[this.kategorienList.findIndex((kategorie => kategorie.ID == data["ID"]))] = Anhangkategorie.buildFromObject(data);
+        this.kategorienList = Array.from(this.kategorienList);
+      }
+      if (operation == "DELETE") {
+        this.kategorienList = this.kategorienList.filter(kategorie => kategorie.ID !== data["ID"]);
+        this.kategorienList = Array.from(this.kategorienList);
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    this.anhangSocketService.completeWebsocket();
+    this.anhangKategorieSocketService.completeWebsocket();
   }
 
   openDialog(anhang: Anhang = null as any) {
@@ -171,6 +218,7 @@ export class AnhaengeComponent implements OnInit {
       let anhang: Anhang = Anhang.buildFromObject(object);
       // Element wird aus Liste entfernt
       this.anhangList = this.anhangList.filter(x => x.ID != anhang.ID);
+      this.anhangSocketService.sendOperation("DELETE", "", anhang.toJSONString());
     });
 
     // Dialog wird geschlossen
@@ -191,6 +239,7 @@ export class AnhaengeComponent implements OnInit {
       let kategorie: Anhangkategorie = Anhangkategorie.buildFromObject(object);
       // Kategorie wird aus Array entfernt
       this.kategorienList = this.kategorienList.filter(x => x.ID != kategorie.ID);
+      this.anhangKategorieSocketService.sendOperation("DELETE", "", kategorie.toJSONString());
     });
 
     // Dialog wird geschlossen
@@ -212,6 +261,7 @@ export class AnhaengeComponent implements OnInit {
         let anhang: Anhang = Anhang.buildFromObject(object);
         // Element wird zur List hinzugefügt
         this.anhangList.push(anhang);
+        this.anhangSocketService.sendOperation("CREATE", "", anhang.toJSONString());
       });
     } else {
       this.anhangService.updateAnhang(this.choosenAnhang, (res: JSON) => {
@@ -223,6 +273,7 @@ export class AnhaengeComponent implements OnInit {
           }
         }
         this.anhangList = Array.from(this.anhangList);
+        this.anhangSocketService.sendOperation("UPDATE", "", updatedAnhang.toJSONString());
       });
     }
 
@@ -241,6 +292,7 @@ export class AnhaengeComponent implements OnInit {
         let object: any = res;
         let kategorie: Anhangkategorie = Anhangkategorie.buildFromObject(object);
         this.kategorienList.push(kategorie);
+        this.anhangKategorieSocketService.sendOperation("CREATE", "", kategorie.toJSONString());
       });
     } else {
       // Kategorie wird aktualisiert
@@ -252,7 +304,8 @@ export class AnhaengeComponent implements OnInit {
             kategorie = updatedKategorie;
           }
         }
-        this.kategorienList = Array.from(this.kategorienList)
+        this.kategorienList = Array.from(this.kategorienList);
+        this.anhangKategorieSocketService.sendOperation("UPDATE", "", updatedKategorie.toJSONString());
       });
     }
     
@@ -282,7 +335,6 @@ export class AnhaengeComponent implements OnInit {
         .pipe(catchError(err => this.handleError(err)))
         .subscribe((response: any) => {
           let responseObj = JSON.parse(JSON.stringify(response));
-          console.log(responseObj);
           this.currentUploadState = 5;
           this.choosenAnhang.filename = responseObj["NAME"];
           this.choosenAnhang.storagepath = responseObj["PATH"];

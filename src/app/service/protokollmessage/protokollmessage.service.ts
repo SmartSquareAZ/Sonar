@@ -17,44 +17,29 @@ export class ProtokollmessageService {
   /**
    * Speichert die übergebene Protokollmessage mittels Websocket
    * @param protokollmessage Protokollmessage welche gespeichert werden soll
-   * @returns 
    */
-  saveProtokollmessage(protokollmessage: Protokollmessage): Protokollmessage {
-    // Websocket Stuff
-    /*const value = <Protokollmessage>await resolveAfterXSeconds();
-
-    if (aufgabe.ID == 0) {
-      let maxID = 0;
-      this.aufgaben.forEach(element => {
-        if (maxID < element.ID) {
-          maxID = element.ID;
-        }
-      });
-      aufgabe.ID = maxID + 1;
-    }
-
-    // Daten werden aktualisiert
-    this.readAufgaben();*/
-
-    return protokollmessage;
+  saveProtokollmessage(protokollmessage: Protokollmessage, success: Function): void {
+    this.utils.POST(this.requesturl.MESSAGE_CREATE, protokollmessage.toJSONString(), success);
   }
 
+  /**
+   * Updated die Protokollmessage auf der API
+   * @param protokollMessage Protokollmessage die geupdated werden soll
+   * @param success Methode die bei erfolgreicher Ausführung als Callback ausgeführt werden soll
+   */
+  updateProtokollmessage(protokollMessage: Protokollmessage, success: Function): void {
+    this.utils.POST(this.requesturl.MESSAGE_UPDATE, protokollMessage.toJSONString(), success);
+  }
+
+  /*
   /**
    * Löscht die übergebene Protokollmessage mittels Websocket
    * @param protokollmessage Protokollmessage welche gelöscht werden soll
    * @returns 
-   */
-  deleteProtokollmessage(protokollmessage: Protokollmessage): Protokollmessage {
-    // Websocket Stuff
-    /*const value = <Protokollmessage>await resolveAfterXSeconds();
-
-    this.aufgaben.slice(this.aufgaben.indexOf(aufgabe), 1);
-
-    // Daten werden aktualisiert
-    //this.readAufgaben();*/
-
-    return protokollmessage;
-  }
+   *
+  deleteProtokollmessage(protokollmessage: Protokollmessage, success: Function): void {
+    this.utils.POST(this.requesturl.MESSAGE_DELETE, protokollmessage.toJSONString(), success);
+  }*/
 
   /*async readProtokollmessages(agendapunktID: number = 0): Promise<Protokollmessage[]> {
     // API Stuff

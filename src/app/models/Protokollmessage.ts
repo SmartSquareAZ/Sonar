@@ -1,4 +1,6 @@
+import { DatePipe } from "@angular/common";
 import moment from "moment";
+import { AppComponent } from "../app.component";
 
 // Constructor: https://marketplace.visualstudio.com/items?itemName=toanchivu.tcv-typescript-constructor-generator#:~:text=VSCode%20Extension%20Market-,Usage,-Just%20place%20your
 export class Protokollmessage {
@@ -9,6 +11,7 @@ export class Protokollmessage {
     status: number;
     ablaufdatum: Date;
     agendapunktID: number;
+    protokollID: number;
     nummer: number;
     previousProtokollmessage: Protokollmessage;
 
@@ -23,6 +26,7 @@ export class Protokollmessage {
         status: number,
         ablaufdatum: Date,
         agendapunktID: number,
+        protokollID: number,
         nummer: number,
         previousProtokollmessage: Protokollmessage
     ) {
@@ -33,6 +37,7 @@ export class Protokollmessage {
         this.status = status
         this.ablaufdatum = ablaufdatum
         this.agendapunktID = agendapunktID
+        this.protokollID = protokollID
         this.nummer = nummer
         this.previousProtokollmessage = previousProtokollmessage
     }
@@ -82,12 +87,30 @@ export class Protokollmessage {
         return roles;
     }
 
+    toJSONString(): string {
+        const datepipe: DatePipe = new DatePipe('en-US');
+
+        let retVal = JSON.parse("{}");
+        retVal["ID"] = this.ID;
+        retVal["MESSAGE"] = this.message;
+        retVal["VTYPE"] = this.vType;
+        retVal["VIDS"] = this.vIDs;
+        retVal["VID"] = AppComponent.PERSONID;
+        retVal["STATUS"] = this.status;
+        retVal["ABLAUFDATUM"] = datepipe.transform(this.ablaufdatum, "dd_MM_YYYY_HH_mm_ss");
+        retVal["AGENDAPUNKTID"] = this.agendapunktID;
+        retVal["PROTOKOLLID"] = this.protokollID;
+        retVal["NUMMER"] = this.nummer;
+        retVal["OLDID"] = this.previousProtokollmessage != null ? this.previousProtokollmessage.ID : 0;
+        return JSON.stringify(retVal);
+    }
+
     static buildFromEmpty(): Protokollmessage {
-        return new Protokollmessage(0, "", 0, [], 0, new Date(), 0, 0, null as any);
+        return new Protokollmessage(0, "", 0, [], 0, new Date(), 0, 0, 0, null as any);
     }
 
     static buildNew(agendapunktID: number, lastNummer: number): Protokollmessage {
-        return new Protokollmessage(0, "", 0, [], 0, new Date(), agendapunktID, lastNummer, null as any)
+        return new Protokollmessage(0, "", 0, [], 0, new Date(), agendapunktID, AppComponent.PROTOKOLLID, lastNummer, null as any)
     }
 
     static buildFromJSON(data: JSON): Protokollmessage {
@@ -101,7 +124,7 @@ export class Protokollmessage {
 
         return new Protokollmessage(dataObj["ID"], dataObj["MESSAGE"], dataObj["VTYPE"],
             dataObj["VIDS"], dataObj["STATUS"], parsedDate.toDate(),
-            dataObj["AGENDAPUNKTID"], dataObj["NUMMER"], oldMessage);
+            dataObj["AGENDAPUNKTID"], dataObj["PROTOKOLLID"], dataObj["NUMMER"], oldMessage);
     }
 
     static buildFromJSONArray(data: JSON): Protokollmessage[] {

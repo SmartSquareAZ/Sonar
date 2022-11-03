@@ -37,6 +37,15 @@ export class AgendapunktpanelComponent implements OnInit {
       // Protokollmessages werden geladen
       this.protokollMessage = Protokollmessage.buildFromJSONArray(data);
 
+      for(let i = 0; i < this.protokollMessage.length; i++) {
+        if(this.protokollMessage[i].previousProtokollmessage.ID != 0 && this.protokollMessage[i].previousProtokollmessage.nummer == 0) {
+          this.protokollmessageService.readProtokollmessage(this.protokollMessage[i].previousProtokollmessage.ID, (res: JSON) => {
+            this.protokollMessage[i].previousProtokollmessage = Protokollmessage.buildFromJSON(res);
+          });
+        }
+      }
+
+      console.log(this.protokollMessage)
       // Flag wird gesetzt
       this.protokollMessageLoading = false;
     });
@@ -54,6 +63,8 @@ export class AgendapunktpanelComponent implements OnInit {
     this.protokollMessage.push(Protokollmessage.buildNew(agendapunkt.ID, lastNummer));
   }
 
-
+  removeProtokollmessage(protokollMessage: Protokollmessage) {
+    this.protokollMessage = this.protokollMessage.filter(msg => msg.ID != protokollMessage.ID);
+  }
 
 }

@@ -17,7 +17,7 @@
                     [loading]="protokollMessageLoading">
 
                     <ng-template pTemplate="body" let-protokollmessage let-protokollmessageIndex="rowIndex">
-                        <app-protokollmessagerow [message]="protokollmessage" [messageIndex]="protokollmessageIndex" [editable]="true" [employee]="employee" [contacts]="contacts"></app-protokollmessagerow>
+                        <app-protokollmessagerow [message]="protokollmessage" [messageIndex]="protokollmessageIndex" [editable]="true" [employee]="employee" [contacts]="contacts" (removeProtokollmessageEvent)="removeProtokollmessage($event)"></app-protokollmessagerow>
                         <div class="finishPanel"></div>
                     </ng-template>
 

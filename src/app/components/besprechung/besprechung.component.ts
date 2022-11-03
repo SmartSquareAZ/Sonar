@@ -39,17 +39,13 @@ export class BesprechungComponent implements OnInit {
   constructor(private agendaService: AgendaService, private personService: PersonService) { }
 
   ngOnInit() {
-    /*for (let idx = 1; idx < 21; idx++) {
-      this.employee.push({ ID: idx, name: 'Mitarbeiter ' + idx, type: 0 });
-      this.contacts.push({ ID: idx, name: 'Kontakt ' + idx, type: 1 });
-    }*/
     this.personService.getMitarbeiter((res: JSON[]) => {
       for(let mitarbeiterObject of res) {
         this.employee.push(Mitarbeiter.buildFromJSON(mitarbeiterObject));
       }
     });
 
-    this.personService.getMitarbeiter((res: JSON[]) => {
+    this.personService.getKontakte((res: JSON[]) => {
       for(let kontaktObject of res) {
         this.contacts.push(Kontakt.buildFromJSON(kontaktObject));
       }

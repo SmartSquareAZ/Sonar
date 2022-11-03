@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { resolveAfterXSeconds } from 'src/app/Constants';
 import { Protokollmessage } from 'src/app/models/Protokollmessage';
 import { ProtokollmessageService } from 'src/app/service/protokollmessage/protokollmessage.service';
@@ -15,6 +15,8 @@ export class ProtokollmessagerowComponent implements OnInit {
   @Input() employee: any[] = [];
   @Input() contacts: any[] = [];
   @Input() editable: boolean = false;
+
+  @Output() removeProtokollmessageEvent = new EventEmitter<Protokollmessage>();
 
   /**
    * Array aller Verantwortlichen Typen
@@ -52,9 +54,27 @@ export class ProtokollmessagerowComponent implements OnInit {
   }
 
   saveProtokollmessage(protokollmessage: Protokollmessage) {
+    if(protokollmessage.ID == 0) {
+      this.protokollmessageService.saveProtokollmessage(protokollmessage, (retVal: JSON) => {
+        let newProtokollmessage: Protokollmessage = Protokollmessage.buildFromJSON(retVal);
+        // Bearbeitung wird beendet
+        protokollmessage.isEditing = false;
+        protokollmessage = newProtokollmessage;
+      });
+    } else {
+      this.protokollmessageService.updateProtokollmessage(protokollmessage, (retVal: JSON) => {
+        let updatedProtokollmessage: Protokollmessage = Protokollmessage.buildFromJSON(retVal);
+        protokollmessage.isEditing = false;
+        protokollmessage = updatedProtokollmessage;
+      })
+    }
+  }
 
-    // Bearbeitung wird beendet
-    protokollmessage.isEditing = false;
+  removeProtokollmessage(protokollMessage: Protokollmessage) {
+    protokollMessage.isEditing = false;
+    if(protokollMessage.ID == 0) {
+      this.removeProtokollmessageEvent.emit(protokollMessage);
+    }
   }
 
   /**

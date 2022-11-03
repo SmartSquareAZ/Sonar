@@ -4,7 +4,7 @@
     <div class="col-1">
         <button type="button" pButton pRipple class="p-button-text p-button-rounded p-button-plain"
             [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" (click)="expandProtokollmessage()"
-            style="width: 30%; width: 2rem; height: 2rem;"></button>
+            style="width: 30%; width: 2rem; height: 2rem;" *ngIf="message.ID != 0 && message.previousProtokollmessage.ID != 0"></button>
     </div>
 
     <div class="col-11">
@@ -13,7 +13,7 @@
             [employee]="employee" [contacts]="contacts"></app-protokollmessageoutput>
 
         <div class="w-100 row justify-content-between align-items-center choosen" *ngIf="message.isEditing && editable">
-            <div class="col-1">{{message.nummer}}</div>
+            <div class="col-1">{{message.nummer}}<br/>#{{message.protokollID}}</div>
             <div class="col-6 protokollmessageTextEditing">
                 <app-custom-editor [name]="'' + message.ID" [(ngModel)]="message.message">
                 </app-custom-editor>
@@ -21,7 +21,7 @@
                 <div class="w-100 d-flex justify-content-center align-items-center pt-3 pb-4">
                     <button (click)="saveProtokollmessage(message)" pButton pRipple type="button" icon="pi pi-save"
                         label="Speichern"></button>
-                    <button (click)="message.isEditing = false;" pButton pRipple type="button" icon="pi pi-times"
+                    <button (click)="removeProtokollmessage(message)" pButton pRipple type="button" icon="pi pi-times"
                         label="Abbrechen" class="ms-2 p-button-warning"></button>
                 </div>
             </div>
@@ -39,7 +39,11 @@
                         <div *ngIf="message.vType == 3 || message.vType == 4">
                             <p-listbox [options]="message.vType == 3 ? employee : contacts" [(ngModel)]="message.vIDs"
                                 [listStyle]="{'max-height':'250px'}" optionLabel="name" optionValue="ID" [filter]="true"
-                                [multiple]="true" [checkbox]="true"></p-listbox>
+                                [multiple]="true" [checkbox]="true">
+                                <ng-template let-person pTemplate="item">
+                                    <span>{{person.nachname}} {{person.vorname}}</span>
+                                </ng-template>
+                            </p-listbox>
                         </div>
                     </div>
 
@@ -67,9 +71,9 @@
         </div>
 
         <div class="w-100 row justify-content-between align-items-center ps-4"
-            *ngIf="message.previousProtokollmessage != null">
+            *ngIf="message.previousProtokollmessage != null && (message.previousProtokollmessage.ID != 0 && message.previousProtokollmessage.nummer != 0)">
 
-            <div class="col-1">{{message.previousProtokollmessage.nummer}}</div>
+            <div class="col-1">{{message.previousProtokollmessage.nummer}}<br/>#{{message.previousProtokollmessage.protokollID}}</div>
             <div class="col-6 protokollmessageText">
                 <app-html-output [text]="message.previousProtokollmessage.message"></app-html-output>
             </div>

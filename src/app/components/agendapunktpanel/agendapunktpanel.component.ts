@@ -3,6 +3,7 @@ import { LazyLoadEvent } from 'primeng/api';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 import { Protokollmessage } from 'src/app/models/Protokollmessage';
 import { ProtokollmessageService } from 'src/app/service/protokollmessage/protokollmessage.service';
+import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/protokollmessage-websocket.service';
 
 @Component({
   selector: 'app-agendapunktpanel',
@@ -21,11 +22,39 @@ export class AgendapunktpanelComponent implements OnInit {
   @Input() employee: any[] = [];
   @Input() contacts: any[] = [];
 
-  constructor(private protokollmessageService: ProtokollmessageService) { }
+  constructor(private protokollmessageService: ProtokollmessageService, private socketService: ProtokollmessageWebsocketService) { }
 
   ngOnInit(): void {
     // Styleing wird gesetzt
     this.headerStyle = "font-weight: bold; color: var(--primary-color);"
+
+    
+    /*
+    this.socketService.requestCallback = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
+      if(operation != "ONLINE" && operation != "REGISTER") {
+        data = JSON.parse(data);
+      }
+      // Überprüfung, auf den richtigen Befehl
+      if (operation == "CREATE") {
+        this.protokollMessage.push(Protokollmessage.buildFromJSON(data));
+      }
+      if (operation == "UPDATE") {
+        this.protokollMessage[this.protokollMessage.findIndex((msg => msg.ID == data["ID"]))] = Protokollmessage.buildFromJSON(data);
+      }
+    }
+    */
+    this.socketService.messagesRequestCallbacks[this.agendapunkt.ID] = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
+        if(operation != "ONLINE" && operation != "REGISTER") {
+          data = JSON.parse(data);
+        }
+        // Überprüfung, auf den richtigen Befehl
+        if (operation == "CREATE") {
+          this.protokollMessage.push(Protokollmessage.buildFromJSON(data));
+        }
+        if (operation == "UPDATE") {
+          this.protokollMessage[this.protokollMessage.findIndex((msg => msg.ID == data["ID"]))] = Protokollmessage.buildFromJSON(data);
+        }
+      }
   }
 
   async loadDataLazy(event: LazyLoadEvent, agendapunkt: AgendaPunkt) {
@@ -45,7 +74,6 @@ export class AgendapunktpanelComponent implements OnInit {
         }
       }
 
-      console.log(this.protokollMessage)
       // Flag wird gesetzt
       this.protokollMessageLoading = false;
     });

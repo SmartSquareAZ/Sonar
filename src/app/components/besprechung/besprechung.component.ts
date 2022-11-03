@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { LazyLoadEvent } from 'primeng/api';
+import { Table } from 'primeng/table';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 import { Kontakt } from 'src/app/models/Kontakt';
 import { Mitarbeiter } from 'src/app/models/Mitarbeiter';
 import { AgendaService } from 'src/app/service/agenda/agenda.service';
 import { PersonService } from 'src/app/service/person/person.service';
+import { AgendapunktpanelComponent } from '../agendapunktpanel/agendapunktpanel.component';
 
 @Component({
   selector: 'app-besprechung',

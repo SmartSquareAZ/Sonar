@@ -76,8 +76,6 @@ export class AppComponent {
       }
 
       if(operation == "OFFLINE") {
-        console.log("request")
-        console.log(JSON.parse(data))
         AppComponent.onlineList = Array.from(AppComponent.onlineList.filter(person => person.ID != JSON.parse(data)["ID"]));
       }
     }

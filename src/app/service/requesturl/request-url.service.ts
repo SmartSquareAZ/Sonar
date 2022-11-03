@@ -59,6 +59,7 @@ export class RequestUrlService {
   public WEBSOCKET_ANHANG: string = "";
   public WEBSOCKET_ANHANGKATEGORIE: string = "";
   public WEBSOCKET_ANWESENDE: string = "";
+  public WEBSOCKET_PROTOKOLLMESSAGE: string = "";
   //#endregion
 
   constructor() {
@@ -125,6 +126,7 @@ export class RequestUrlService {
       this.WEBSOCKET_ANHANG = websocketurl + "/ANHANG";
       this.WEBSOCKET_ANHANGKATEGORIE = websocketurl + "/ANHANGKATEGORIE";
       this.WEBSOCKET_ANWESENDE = websocketurl + "/ANWESENDE";
+      this.WEBSOCKET_PROTOKOLLMESSAGE = websocketurl + "/MESSAGE";
       //#endregion
   }
 }

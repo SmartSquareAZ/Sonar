@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { webSocket } from 'rxjs/webSocket';
-import { AppComponent } from 'src/app/app.component';
 import { RequestUrlService } from '../requesturl/request-url.service';
 import { WebsocketService } from './websocket.service';
 

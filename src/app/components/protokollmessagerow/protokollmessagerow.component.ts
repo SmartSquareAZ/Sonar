@@ -2,6 +2,7 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { resolveAfterXSeconds } from 'src/app/Constants';
 import { Protokollmessage } from 'src/app/models/Protokollmessage';
 import { ProtokollmessageService } from 'src/app/service/protokollmessage/protokollmessage.service';
+import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/protokollmessage-websocket.service';
 
 @Component({
   selector: 'app-protokollmessagerow',
@@ -37,7 +38,7 @@ export class ProtokollmessagerowComponent implements OnInit {
    */
   oldProtokollmessages: Protokollmessage[] = [];
 
-  constructor(private protokollmessageService: ProtokollmessageService) { }
+  constructor(private protokollmessageService: ProtokollmessageService, private socketService: ProtokollmessageWebsocketService) { }
 
   ngOnInit(): void {
   }
@@ -60,12 +61,14 @@ export class ProtokollmessagerowComponent implements OnInit {
         // Bearbeitung wird beendet
         protokollmessage.isEditing = false;
         protokollmessage = newProtokollmessage;
+        this.socketService.sendOperation("CREATE", "", protokollmessage.toJSONString());
       });
     } else {
       this.protokollmessageService.updateProtokollmessage(protokollmessage, (retVal: JSON) => {
         let updatedProtokollmessage: Protokollmessage = Protokollmessage.buildFromJSON(retVal);
         protokollmessage.isEditing = false;
         protokollmessage = updatedProtokollmessage;
+        this.socketService.sendOperation("UPDATE", "", protokollmessage.toJSONString());
       })
     }
   }

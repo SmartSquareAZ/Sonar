@@ -8,9 +8,6 @@ import { UtilsService } from '../utils/utils.service';
   providedIn: 'root'
 })
 export class ProtokollmessageService {
-  
-  private loadedData: { [agendapunktID: number]: boolean; } = {};
-  private protokollMessage: { [agendapunktID: number]: Protokollmessage[]; } = {};
 
   constructor(private requesturl: RequestUrlService, private utils: UtilsService) { }
 
@@ -30,29 +27,6 @@ export class ProtokollmessageService {
   updateProtokollmessage(protokollMessage: Protokollmessage, success: Function): void {
     this.utils.POST(this.requesturl.MESSAGE_UPDATE, protokollMessage.toJSONString(), success);
   }
-
-  /*
-  /**
-   * Löscht die übergebene Protokollmessage mittels Websocket
-   * @param protokollmessage Protokollmessage welche gelöscht werden soll
-   * @returns 
-   *
-  deleteProtokollmessage(protokollmessage: Protokollmessage, success: Function): void {
-    this.utils.POST(this.requesturl.MESSAGE_DELETE, protokollmessage.toJSONString(), success);
-  }*/
-
-  /*async readProtokollmessages(agendapunktID: number = 0): Promise<Protokollmessage[]> {
-    // API Stuff
-    if (!this.loadedData[agendapunktID]) {
-      const value = <Protokollmessage>await resolveAfterXSeconds();
-      this.protokollMessage[agendapunktID] = mock_protokollmessage(agendapunktID);
-
-      // Flag wird gesetzt
-      this.loadedData[agendapunktID] = true;
-    }
-
-    return this.protokollMessage[agendapunktID];
-  }*/
 
   readProtokollmessagesFromAgendaPunkt(agendapunktID: number, success: Function, error: Function = new Function()) {
     // Request wird ausgeführt

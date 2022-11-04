@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, AfterContentInit } from '@angular/core';
 import { LazyLoadEvent } from 'primeng/api';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 import { Protokollmessage } from 'src/app/models/Protokollmessage';
@@ -17,6 +17,30 @@ export class AgendapunktpanelComponent implements OnInit {
   protokollMessageLoading: boolean = true;
   protokollMessage: Protokollmessage[] = [];
 
+  requestCallback: Function = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
+    if(operation != "ONLINE" && operation != "REGISTER") {
+      data = JSON.parse(data);
+    }
+    // Überprüfung, auf den richtigen Befehl
+    if (operation == "CREATE") {
+      this.protokollMessage.push(Protokollmessage.buildFromJSON(data));
+    }
+    if (operation == "UPDATE") {
+      let idx: number = this.protokollMessage.findIndex((msg => msg.ID == data["ID"]));
+      let updatedProtokollMessage: Protokollmessage = Protokollmessage.buildFromJSON(data);
+
+      if(idx != -1) {
+        this.protokollMessage[idx] = updatedProtokollMessage;
+      } else {
+        for(let protokollMessage of this.protokollMessage) {
+          if(protokollMessage.previousProtokollmessage.ID == data["ID"]) {
+            protokollMessage.previousProtokollmessage = updatedProtokollMessage;
+          }
+        }
+      }   
+    }
+  };
+
   @Input() headerStyle: string = '';
   @Input() agendapunkt: any;
   @Input() employee: any[] = [];
@@ -28,33 +52,7 @@ export class AgendapunktpanelComponent implements OnInit {
     // Styleing wird gesetzt
     this.headerStyle = "font-weight: bold; color: var(--primary-color);"
 
-    
-    /*
-    this.socketService.requestCallback = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
-      if(operation != "ONLINE" && operation != "REGISTER") {
-        data = JSON.parse(data);
-      }
-      // Überprüfung, auf den richtigen Befehl
-      if (operation == "CREATE") {
-        this.protokollMessage.push(Protokollmessage.buildFromJSON(data));
-      }
-      if (operation == "UPDATE") {
-        this.protokollMessage[this.protokollMessage.findIndex((msg => msg.ID == data["ID"]))] = Protokollmessage.buildFromJSON(data);
-      }
-    }
-    */
-    this.socketService.messagesRequestCallbacks[this.agendapunkt.ID] = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
-        if(operation != "ONLINE" && operation != "REGISTER") {
-          data = JSON.parse(data);
-        }
-        // Überprüfung, auf den richtigen Befehl
-        if (operation == "CREATE") {
-          this.protokollMessage.push(Protokollmessage.buildFromJSON(data));
-        }
-        if (operation == "UPDATE") {
-          this.protokollMessage[this.protokollMessage.findIndex((msg => msg.ID == data["ID"]))] = Protokollmessage.buildFromJSON(data);
-        }
-      }
+    this.socketService.messagesRequestCallbacks[this.agendapunkt.ID] = this.requestCallback;
   }
 
   async loadDataLazy(event: LazyLoadEvent, agendapunkt: AgendaPunkt) {
@@ -67,9 +65,16 @@ export class AgendapunktpanelComponent implements OnInit {
       this.protokollMessage = Protokollmessage.buildFromJSONArray(data);
 
       for(let i = 0; i < this.protokollMessage.length; i++) {
+
+        // Die vorherige Protokollmessage wird geladen
         if(this.protokollMessage[i].previousProtokollmessage.ID != 0 && this.protokollMessage[i].previousProtokollmessage.nummer == 0) {
           this.protokollmessageService.readProtokollmessage(this.protokollMessage[i].previousProtokollmessage.ID, (res: JSON) => {
             this.protokollMessage[i].previousProtokollmessage = Protokollmessage.buildFromJSON(res);
+
+            // Für die vorherige Protokollmessage im Agendapunktpanel wird auch eine Callback Funktion hinzugefügt
+            if(this.protokollMessage[i].previousProtokollmessage.agendapunktID != this.agendapunkt) {
+              this.socketService.messagesRequestCallbacks[this.protokollMessage[i].previousProtokollmessage.agendapunktID] = this.requestCallback;
+            };
           });
         }
       }

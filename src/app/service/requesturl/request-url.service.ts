@@ -27,6 +27,7 @@ export class RequestUrlService {
   public AGENDAPUNKT_UPDATE: string = "";
   public AGENDAPUNKT_DELETE: string = "";
   public AGENDAPUNKT_READAGENDAPUNKT: string = "";
+  public AGENDAPUNKT_READAGENDAMESSAGESCOUNT: string = "";
   public AGENDAPUNKT_READAGENDAPUNKTPARENTS: string = "";
   public AGENDAPUNKT_READAGENDAPUNKTSLAVES: string = "";
   public AGENDAPUNKT_SOCKET: string = "";
@@ -94,6 +95,7 @@ export class RequestUrlService {
       this.AGENDAPUNKT_UPDATE = url + "/AGENDAPUNKT" + updatePath;
       this.AGENDAPUNKT_DELETE = url + "/AGENDAPUNKT" + deletePath;
       this.AGENDAPUNKT_READAGENDAPUNKT = url + "/AGENDAPUNKT/READ";
+      this.AGENDAPUNKT_READAGENDAMESSAGESCOUNT = url + "/AGENDAPUNKT/READ/MESSAGES"
       this.AGENDAPUNKT_READAGENDAPUNKTPARENTS = url + "/AGENDAPUNKT/READ/PARENTS";
       this.AGENDAPUNKT_READAGENDAPUNKTSLAVES = url + "/AGENDAPUNKT/READ/SLAVES";
       this.AGENDAPUNKT_SOCKET = websocketurl + "/AGENDAPUNKT"

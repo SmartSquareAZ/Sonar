@@ -79,7 +79,7 @@ export class BesprechungComponent implements OnInit {
     // Parents werden geladen
     this.agendaService.readAgendaPunkte((data: JSON) => {
       // Root wird gesetzt
-      this.root = new AgendaPunkt(0, "ROOT", "0", "#000", 1, -1, 0, AgendaPunkt.buildFromJSONArray(data));
+      this.root = new AgendaPunkt(0, "ROOT", "0", "#000", 1, -1, 0, 0, AgendaPunkt.buildFromJSONArray(data));
 
       // AgendaPunkte werden geladen
       this.agendaPunkte = this.fillAllAgendapunkte(this.root.children);

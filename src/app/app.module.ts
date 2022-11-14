@@ -49,7 +49,9 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ListboxModule } from 'primeng/listbox';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { FileUploadModule } from 'primeng/fileupload';
+import { ToastModule } from 'primeng/toast';
 import { ValidationHttpInterceptor } from './ValidationHttpInterceptor';
+import { MessageService } from 'primeng/api';
 
 
 @NgModule({
@@ -104,9 +106,10 @@ import { ValidationHttpInterceptor } from './ValidationHttpInterceptor';
     SkeletonModule,
     ListboxModule,
     InputTextareaModule,
-    FileUploadModule
+    FileUploadModule,
+    ToastModule
   ],
-  providers: [
+  providers: [ MessageService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ValidationHttpInterceptor,

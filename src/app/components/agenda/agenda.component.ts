@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ConfirmationService, TreeNode } from 'primeng/api';
+import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 import { Aufgabe } from 'src/app/models/Aufgabe';
 import { Dialog } from 'src/app/models/Dialog';
@@ -55,7 +55,7 @@ export class AgendaComponent implements OnInit {
    */
   choosenAgendaPunktNode: TreeNode<AgendaPunkt> = AgendaPunkt.createTreeNode(AgendaPunkt.buildFromEmpty(), this.showEditField);
 
-  constructor(private formBuilder: FormBuilder, private agendaService: AgendaService, private confirmationService: ConfirmationService, private router: Router) {
+  constructor(private formBuilder: FormBuilder, private agendaService: AgendaService, private confirmationService: ConfirmationService, private router: Router, private messageService: MessageService) {
     // Agenda Dialog wird gebuildet
     this.AgendaDialog = Dialog.build(this.preDialogOpenAgenda.bind(this), this.postDialogOpenAgenda.bind(this), this.preDialogCloseAgenda.bind(this), this.postDialogCloseAgenda.bind(this));
     // AgendaPunkt Dialog wird gebuildet
@@ -79,7 +79,7 @@ export class AgendaComponent implements OnInit {
     // Parents werden geladen
     this.agendaService.readAgendaPunkte((data: JSON) => {
       // Root wird gesetzt
-      this.root = AgendaPunkt.createTreeNode(new AgendaPunkt(0, "ROOT", "0", "#000", 1, -1, 0, AgendaPunkt.buildFromJSONArray(data)), this.showEditField);
+      this.root = AgendaPunkt.createTreeNode(new AgendaPunkt(0, "ROOT", "0", "#000", 1, -1, 0, 0, AgendaPunkt.buildFromJSONArray(data)), this.showEditField);
 
       // AgendaPunkte werden geladen
       this.agendaPunkteNode = this.root.children;
@@ -109,11 +109,15 @@ export class AgendaComponent implements OnInit {
     agendaPunkt.name = "Name";
 
     // Neuer AgendaPunkt wird zu Array hinzugefügt
-    this.root.children.push(AgendaPunkt.createTreeNode(agendaPunkt), this.showEditField);
+    let treeNode: TreeNode = AgendaPunkt.createTreeNode(agendaPunkt);
+    console.log(treeNode)
+    
+    //this.root.children.push(treeNode);
+    this.agendaPunkteNode.push(treeNode);
 
     // Ansicht wird aktualisiert
     this.agendaPunkteNode = Array.from(this.agendaPunkteNode);
-    this.root.children = this.agendaPunkteNode;
+    //this.root.children = this.agendaPunkteNode;
   }
 
   /**
@@ -123,19 +127,40 @@ export class AgendaComponent implements OnInit {
     if (this.choosenAgendaPunktNode.data != null) {
       // Werte der Form werden in Objekt übernommen
       this.choosenAgendaPunktNode.data.name = "" + this.agendaPunktForm.get('name')?.value;
-      this.choosenAgendaPunktNode.data.farbe = "" + this.agendaPunktForm.get('farbe')?.value;
+      this.choosenAgendaPunktNode.data.farbe = "" + this.agendaPunktForm.get('farbe')?.value?.substring(1, this.agendaPunktForm.get('farbe')?.value?.length);
       this.choosenAgendaPunktNode.data.nummer = "" + this.agendaPunktForm.get('nummer')?.value;
 
-      // Agendapunkt wird im Service gespeichert
-      this.agendaService.saveAgendaPunkt(this.choosenAgendaPunktNode.data);
+      if(this.choosenAgendaPunktNode.data.ID == 0) {
+        // Agendapunkt wird im Service gespeichert
+        this.agendaService.saveAgendaPunkt(this.choosenAgendaPunktNode.data, (res: JSON) => {
+          let newAgendapunkt = AgendaPunkt.buildFromJSON(res);
+
+          this.choosenAgendaPunktNode.data = newAgendapunkt;
+          this.choosenAgendaPunktNode.key = "" + newAgendapunkt.ID;
+          this.choosenAgendaPunktNode.label = newAgendapunkt.nummer + " " + newAgendapunkt.name;
+
+          // Ansicht wird aktualisiert
+          this.agendaPunkteNode = Array.from(this.agendaPunkteNode);
+          // Dialog wird geschlossen
+          this.closeDialogAgendaPunkt();
+        });
+      } else {
+        // Agendapunkt wird im Service geupdated
+        this.agendaService.updateAgendaPunkt(this.choosenAgendaPunktNode.data, (res: JSON) => {
+          let newAgendapunkt = AgendaPunkt.buildFromJSON(res);
+
+          this.choosenAgendaPunktNode.data = newAgendapunkt;
+          this.choosenAgendaPunktNode.key = "" + newAgendapunkt.ID;
+          this.choosenAgendaPunktNode.label = newAgendapunkt.nummer + " " + newAgendapunkt.name;
+
+          // Ansicht wird aktualisiert
+
+          this.agendaPunkteNode = Array.from(this.agendaPunkteNode);
+          // Dialog wird geschlossen
+          this.closeDialogAgendaPunkt();
+        });
+      }
     }
-
-    // Ansicht wird aktualisiert
-    this.root = AgendaPunkt.createTreeNode(this.root.data, this.showEditField);
-    this.agendaPunkteNode = this.root.children;
-
-    // Dialog wird geschlossen
-    this.closeDialogAgendaPunkt();
   }
 
   showConfirm(event: any) {
@@ -147,27 +172,44 @@ export class AgendaComponent implements OnInit {
     });
   }
 
-  private deleteAgendapunktTreeNode(element: TreeNode<AgendaPunkt> = this.choosenAgendaPunktNode) {
-    if (element.data != null) {
-      // Agendapunkt wird im Service gelöscht
-      this.agendaService.deleteAgendaPunkt(element.data);
+  deleteAgendapunktTreeNode(element: TreeNode<AgendaPunkt> = this.choosenAgendaPunktNode) {
+    if(element.children != null && element.children.length != 0) {
+      for(let i = element.children.length - 1; i >= 0; i--) {
+        this.deleteAgendapunktTreeNode(element.children[i]);
+      }
     }
 
-    if (element.parent != null && element.parent?.children != null) {
-      // Index des Elements wird gesucht
-      let index = element.parent.children.findIndex(x => x.data?.ID == element.data?.ID);
-      // Element wird aus Array entfernt
-      element.parent.children.splice(index, 1);
-      // Array wird neu erstellt
-      element.parent.children = [...element.parent.children];
+    if (element.data != null && !element.data.hasMessages) {
+      // Agendapunkt wird im Service gelöscht
+      this.agendaService.deleteAgendaPunkt(element.data, (res: JSON) => {
+        
+      },
+      (err: any) => {
+        this.messageService.add({severity:'error', summary:'Fehler beim Löschen des Agendapunktes', detail:`Für den Agendapunkt "${element.data?.nummer} ${element.data?.name}" existiert noch mindestens eine Protokollnachricht`});
+      });
+    }
+
+    if(!element.data?.hasMessages) {
+      // Wenn das element eine ChildNode ist wird sie vom parent entfernt
+      if (element.parent != null && element.parent?.children != null) {
+        // Index des Elements wird gesucht
+        let index = element.parent.children.findIndex(x => x.data?.ID == element.data?.ID);
+        // Element wird aus Array entfernt
+        element.parent.children.splice(index, 1);
+        // Array wird neu erstellt
+        element.parent.children = [...element.parent.children];
+      } else {
+        // Index des Elements wird gesucht
+        let index = this.agendaPunkteNode.findIndex(x => x.data?.ID == element.data?.ID);
+        // Element wird aus Array entfernt
+        this.agendaPunkteNode.splice(index, 1);
+        // Array wird neu erstellt
+        this.agendaPunkteNode = [...this.agendaPunkteNode];
+      }
     }
 
     // Dialog wird geschlossen
     this.closeDialogAgendaPunkt();
-  }
-
-  private deleteAgendapunkt(element: AgendaPunkt){
-    
   }
 
   nodeSelectChild(element: TreeNode<AgendaPunkt>) {
@@ -182,8 +224,25 @@ export class AgendaComponent implements OnInit {
 
   }
 
-  deleteAgendapunktChild(element: TreeNode<AgendaPunkt>) {
+  getCountMessagesFromAgendaPunkt(agendaPunkt: AgendaPunkt | undefined) {
+    if (agendaPunkt == undefined) return;
+    let agendaPunktTyped : AgendaPunkt = agendaPunkt;
 
+    for(let agendaChild of agendaPunktTyped.children) {
+      this.getCountMessagesFromAgendaPunkt(agendaChild);
+    }
+    
+    this.agendaService.readCountMessages(agendaPunktTyped, (retVal: any) => {
+      agendaPunktTyped.hasMessages = retVal;
+      if(!agendaPunktTyped.hasMessages) {
+        for(let agendaChild of agendaPunktTyped.children) {
+          if(agendaChild.hasMessages) {
+            agendaPunktTyped.hasMessages = true;
+            return;
+          }
+        }
+      }
+    })
   }
 
   //#region Agenda Dialog
@@ -205,6 +264,9 @@ export class AgendaComponent implements OnInit {
    */
   openDialogAgenda(): void {
     this.AgendaDialog.openDialog();
+    for(let agendaPunkt of this.agendaPunkteNode) {
+      this.getCountMessagesFromAgendaPunkt(agendaPunkt.data);
+    }
   }
   /**
    * Schließt den Agenda Dialog

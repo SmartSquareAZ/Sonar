@@ -21,7 +21,7 @@
                 <button class="p-button-success" pButton pRipple icon="pi pi-plus" (click)="addNewAgendaPunkt(node)"
                     [style]="{'margin-right': '.5em', 'width': '2.5rem', 'height': '2.5rem'}"></button>
                 <button class="p-button-warning" pButton pRipple icon="pi pi-trash" (click)="showConfirm($event, node)"
-                    [style]="{'width': '2.5rem', 'height': '2.5rem'}"></button>
+                    [style]="{'width': '2.5rem', 'height': '2.5rem'}" [disabled]="(node.data?.hasMessages)"></button>
             </div>
         </div>
     </div>

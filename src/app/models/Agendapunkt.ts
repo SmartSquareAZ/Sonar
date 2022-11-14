@@ -1,4 +1,5 @@
 import { TreeNode } from "primeng/api";
+import { AppComponent } from "../app.component";
 
 export class AgendaPunkt {
 
@@ -9,7 +10,9 @@ export class AgendaPunkt {
     agendaID: number;
     parentID: number;
     protokollID: number;
+    oldID: number;
     children: AgendaPunkt[];
+    hasMessages: boolean = false;
 
     constructor(
         ID: number,
@@ -19,6 +22,7 @@ export class AgendaPunkt {
         agendaID: number,
         parentID: number,
         protokollID: number,
+        oldID: number,
         children: AgendaPunkt[]
     ) {
         this.ID = ID
@@ -28,11 +32,28 @@ export class AgendaPunkt {
         this.agendaID = agendaID
         this.parentID = parentID
         this.protokollID = protokollID;
-        this.children = children
+        this.oldID = oldID;
+        this.children = children;
+        this.hasMessages = false;
+    }
+
+    toJSONString(): string {
+        let retVal = JSON.parse("{}");
+
+        retVal["ID"] = this.ID;
+        retVal["NAME"] = this.name;
+        retVal["NUMMER"] = this.nummer;
+        retVal["FARBE"] = this.farbe;
+        retVal["AGENDAID"] = this.agendaID;
+        retVal["PARENTID"] = this.parentID;
+        retVal["PROTOKOLLID"] = AppComponent.PROTOKOLLID;
+        retVal["OLDID"] = this.oldID;
+
+        return JSON.stringify(retVal);
     }
 
     static buildFromEmpty(): AgendaPunkt {
-        return new AgendaPunkt(0, "", "", "#000", 0, 0, 0, []);
+        return new AgendaPunkt(0, "", "", "#000", 0, 0, 0, 0, []);
     }
 
     static buildFromJSON(data: JSON): AgendaPunkt {
@@ -47,7 +68,7 @@ export class AgendaPunkt {
 
         return new AgendaPunkt(dataObj["ID"], dataObj["NAME"], dataObj["NUMMER"],
             "#" + dataObj["FARBE"], dataObj["AGENDAID"], dataObj["PARENTID"],
-            dataObj["PROTOKOLLID"], slaves);
+            AppComponent.PROTOKOLLID, dataObj["OLDID"], slaves);
     }
 
     static buildFromJSONArray(data: JSON): AgendaPunkt[] {

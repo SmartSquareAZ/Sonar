@@ -36,7 +36,7 @@
         <div class="pb-2 overflow-auto ps-2" style="height: calc(100% - 80px)">
             <app-agendatableentry [rowNodeList]="agendaPunkteNode" [deepth]="0"
                 (addAgendapunktEvent)="addAgendapunktChild($event)"
-                (deleteAgendapunktEvent)="deleteAgendapunktChild($event)"
+                (deleteAgendapunktEvent)="deleteAgendapunktTreeNode($event)"
                 (selectAgendapunktEvent)="nodeSelectChild($event)"></app-agendatableentry>
         </div>
     </div>

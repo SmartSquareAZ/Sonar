@@ -20,7 +20,6 @@ export class OnlineComponent implements OnInit {
   }
 
   get onlineList(): Person[] {
-    console.log(AppComponent.onlineList)
     return AppComponent.onlineList;
   }
 

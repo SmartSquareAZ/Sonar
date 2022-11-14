@@ -52,6 +52,10 @@ export class AppComponent {
         AppComponent.PERSONID = this.validateUrlParam(params['PERSONID']);
         AppComponent.PERSONTYPE = this.validateUrlParam(params['PERSONTYPE']);
 
+        if(AppComponent.PERSONID == 0) {
+          return;
+        }
+
         if(AppComponent.PERSONTYPE == 0) {
           this.personService.getMitarbeiterByID((res: JSON) => {
             AppComponent.USER_DATA = Mitarbeiter.buildFromJSON(res);

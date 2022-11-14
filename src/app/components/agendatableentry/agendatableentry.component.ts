@@ -64,7 +64,7 @@ export class AgendatableentryComponent implements OnInit {
   }
 
   deleteAgendapunkt() {
-    if (this.choosenAgendapunkt.data != null) {
+    /*if (this.choosenAgendapunkt.data != null) {
       // Agendapunkt wird im Service gelöscht
       this.agendaService.deleteAgendaPunkt(this.choosenAgendapunkt.data);
     }
@@ -74,7 +74,7 @@ export class AgendatableentryComponent implements OnInit {
     // Element wird aus Array entfernt
     this.rowNodeList.splice(index, 1);
     // Array wird neu erstellt
-    this.rowNodeList = [...this.rowNodeList];
+    this.rowNodeList = [...this.rowNodeList];*/
 
     // Event wird getriggert
     this.deleteAgendapunktEvent.emit(this.choosenAgendapunkt);

@@ -9,7 +9,7 @@ export class UtilsService {
 
   constructor(private httpClient: HttpClient) { }
 
-  GET(url: string, success: Function, error: Function = new Function()) {
+  GET(url: string, success: Function, error: Function = (res: any) => console.log(res)) {
     // Request wird ausgeführt
     this.httpClient.get<JSON>(url).subscribe((result) => {
       // Response wird geparst
@@ -26,7 +26,7 @@ export class UtilsService {
     });
   }
 
-  POST(url: string, data: string, success: Function, error: Function = new Function()) {
+  POST(url: string, data: string, success: Function, error: Function = (res: any) => console.log(res)) {
     // Request wird ausgeführt
     this.httpClient.post<JSON>(url, data).subscribe((result) => {
       // Response wird geparst

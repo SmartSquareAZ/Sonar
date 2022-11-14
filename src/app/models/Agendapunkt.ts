@@ -48,6 +48,7 @@ export class AgendaPunkt {
         retVal["PARENTID"] = this.parentID;
         retVal["PROTOKOLLID"] = AppComponent.PROTOKOLLID;
         retVal["OLDID"] = this.oldID;
+        retVal["SLAVES"] = this.children;
 
         return JSON.stringify(retVal);
     }
@@ -101,7 +102,8 @@ export class AgendaPunkt {
         let localChildren: TreeNode[] = [];
 
         agendapunkt.children.forEach(child => {
-            localChildren.push(this.createTreeNode(child, expanded));
+            let treeNode: TreeNode = this.createTreeNode(child, expanded);
+            localChildren.push(treeNode);
         });
 
         return {

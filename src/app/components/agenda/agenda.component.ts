@@ -3,9 +3,10 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
-import { Aufgabe } from 'src/app/models/Aufgabe';
 import { Dialog } from 'src/app/models/Dialog';
+import { Aufgabe } from 'src/app/models/Aufgabe';
 import { AgendaService } from 'src/app/service/agenda/agenda.service';
+import { AgendapunktWebsocketService } from 'src/app/service/websocket/agendapunkt-websocket.service';
 
 @Component({
   selector: 'app-agenda',
@@ -55,7 +56,7 @@ export class AgendaComponent implements OnInit {
    */
   choosenAgendaPunktNode: TreeNode<AgendaPunkt> = AgendaPunkt.createTreeNode(AgendaPunkt.buildFromEmpty(), this.showEditField);
 
-  constructor(private formBuilder: FormBuilder, private agendaService: AgendaService, private confirmationService: ConfirmationService, private router: Router, private messageService: MessageService) {
+  constructor(private formBuilder: FormBuilder, private agendaService: AgendaService, private confirmationService: ConfirmationService, private router: Router, private messageService: MessageService, private socketService: AgendapunktWebsocketService) {
     // Agenda Dialog wird gebuildet
     this.AgendaDialog = Dialog.build(this.preDialogOpenAgenda.bind(this), this.postDialogOpenAgenda.bind(this), this.preDialogCloseAgenda.bind(this), this.postDialogCloseAgenda.bind(this));
     // AgendaPunkt Dialog wird gebuildet
@@ -64,12 +65,68 @@ export class AgendaComponent implements OnInit {
 
   ngOnInit() {
     this.buildTree();
+
+    this.socketService.requestCallback = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
+      if(operation != "ONLINE" && operation != "REGISTER") {
+        data = JSON.parse(data);
+      }
+      // Überprüfung, auf den richtigen Befehl
+      if (operation == "CREATE") {
+        let newAgendapunkt = AgendaPunkt.createTreeNode(AgendaPunkt.buildFromJSON(data));
+        if(data["PARENTID"] == 0) {
+          this.root.children.push(newAgendapunkt);
+        } else {
+          let parentNode = this.findTreeNode(this.root, data["PARENTID"]);
+          parentNode?.children?.push(newAgendapunkt);
+        }
+      }
+      if (operation == "UPDATE") {
+        let toUpdate: TreeNode<AgendaPunkt> | undefined = this.findTreeNode(this.root, data["ID"]);
+        if(toUpdate == undefined) return;
+        let newAgendapunkt = AgendaPunkt.buildFromJSON(data);
+        toUpdate.data = newAgendapunkt;
+        toUpdate.label = newAgendapunkt.nummer + " " + newAgendapunkt.name;
+        toUpdate.key = "" + newAgendapunkt.ID;
+      }
+      if (operation == "DELETE") {
+        let nodeToDelete = this.findTreeNode(this.root, data["ID"]);
+        
+        if(nodeToDelete?.data?.parentID == 0) {
+          // Index des Elements wird gesucht
+          let index = this.agendaPunkteNode.findIndex(x => x.data?.ID == nodeToDelete?.data?.ID);
+          // Element wird aus Array entfernt
+          this.agendaPunkteNode.splice(index, 1);
+          // Array wird neu erstellt
+          this.agendaPunkteNode = [...this.agendaPunkteNode];
+        } else {
+          // Index des Elements wird gesucht
+          let index = nodeToDelete?.parent?.children?.findIndex(x => x.data?.ID == nodeToDelete?.data?.ID);
+          if(index == undefined) return;
+          // Element wird aus Array entfernt
+          nodeToDelete?.parent?.children?.splice(index, 1);
+        }
+      }
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes["showEditField"]?.currentValue != undefined) {
       this.buildTree();
     }
+  }
+
+  findTreeNode(node: TreeNode<AgendaPunkt>, agendaPunktID: number): TreeNode<AgendaPunkt> | undefined {
+    if(node.children != null && node.children.length != 0) {
+      for(let i = node.children.length - 1; i >= 0; i--) {
+        if(node.children[i].key == "" + agendaPunktID) {
+          return node.children[i];
+        }
+        let retVal = this.findTreeNode(node.children[i], agendaPunktID);
+        if(retVal == undefined) continue;
+        return retVal;
+      }
+    }
+    return undefined;
   }
 
   buildTree(): void {
@@ -110,7 +167,6 @@ export class AgendaComponent implements OnInit {
 
     // Neuer AgendaPunkt wird zu Array hinzugefügt
     let treeNode: TreeNode = AgendaPunkt.createTreeNode(agendaPunkt);
-    console.log(treeNode)
     
     //this.root.children.push(treeNode);
     this.agendaPunkteNode.push(treeNode);
@@ -134,6 +190,7 @@ export class AgendaComponent implements OnInit {
         // Agendapunkt wird im Service gespeichert
         this.agendaService.saveAgendaPunkt(this.choosenAgendaPunktNode.data, (res: JSON) => {
           let newAgendapunkt = AgendaPunkt.buildFromJSON(res);
+          this.socketService.sendOperation("CREATE", "", newAgendapunkt.toJSONString());
 
           this.choosenAgendaPunktNode.data = newAgendapunkt;
           this.choosenAgendaPunktNode.key = "" + newAgendapunkt.ID;
@@ -148,6 +205,7 @@ export class AgendaComponent implements OnInit {
         // Agendapunkt wird im Service geupdated
         this.agendaService.updateAgendaPunkt(this.choosenAgendaPunktNode.data, (res: JSON) => {
           let newAgendapunkt = AgendaPunkt.buildFromJSON(res);
+          this.socketService.sendOperation("UPDATE", "", newAgendapunkt.toJSONString());
 
           this.choosenAgendaPunktNode.data = newAgendapunkt;
           this.choosenAgendaPunktNode.key = "" + newAgendapunkt.ID;
@@ -182,7 +240,7 @@ export class AgendaComponent implements OnInit {
     if (element.data != null && !element.data.hasMessages) {
       // Agendapunkt wird im Service gelöscht
       this.agendaService.deleteAgendaPunkt(element.data, (res: JSON) => {
-        
+        this.socketService.sendOperation("DELETE", "", element.data?.toJSONString())
       },
       (err: any) => {
         this.messageService.add({severity:'error', summary:'Fehler beim Löschen des Agendapunktes', detail:`Für den Agendapunkt "${element.data?.nummer} ${element.data?.name}" existiert noch mindestens eine Protokollnachricht`});

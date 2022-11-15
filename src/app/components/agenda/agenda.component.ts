@@ -27,6 +27,8 @@ export class AgendaComponent implements OnInit {
   @Input() choosenAufgabe: Aufgabe = Aufgabe.buildFromEmpty();
   @Output() choosenAufgabeChange = new EventEmitter<Aufgabe>();
 
+  @Output() agendaChanged = new EventEmitter<{operation: string, value: AgendaPunkt}>();
+
   /**
    * Root Agendapunkt
    */
@@ -74,11 +76,12 @@ export class AgendaComponent implements OnInit {
       if (operation == "CREATE") {
         let newAgendapunkt = AgendaPunkt.createTreeNode(AgendaPunkt.buildFromJSON(data));
         if(data["PARENTID"] == 0) {
-          this.root.children.push(newAgendapunkt);
+          this.agendaPunkteNode.push(newAgendapunkt);
         } else {
           let parentNode = this.findTreeNode(this.root, data["PARENTID"]);
           parentNode?.children?.push(newAgendapunkt);
         }
+        this.agendaChanged.emit({operation: "CREATE", "value": newAgendapunkt.data});
       }
       if (operation == "UPDATE") {
         let toUpdate: TreeNode<AgendaPunkt> | undefined = this.findTreeNode(this.root, data["ID"]);
@@ -87,6 +90,8 @@ export class AgendaComponent implements OnInit {
         toUpdate.data = newAgendapunkt;
         toUpdate.label = newAgendapunkt.nummer + " " + newAgendapunkt.name;
         toUpdate.key = "" + newAgendapunkt.ID;
+
+        this.agendaChanged.emit({operation: "UPDATE", "value": newAgendapunkt});
       }
       if (operation == "DELETE") {
         let nodeToDelete = this.findTreeNode(this.root, data["ID"]);
@@ -105,6 +110,9 @@ export class AgendaComponent implements OnInit {
           // Element wird aus Array entfernt
           nodeToDelete?.parent?.children?.splice(index, 1);
         }
+
+        if(nodeToDelete?.data == undefined) return;
+        this.agendaChanged.emit({operation: "DELETE", "value": nodeToDelete?.data});
       }
     }
   }
@@ -191,6 +199,7 @@ export class AgendaComponent implements OnInit {
         this.agendaService.saveAgendaPunkt(this.choosenAgendaPunktNode.data, (res: JSON) => {
           let newAgendapunkt = AgendaPunkt.buildFromJSON(res);
           this.socketService.sendOperation("CREATE", "", newAgendapunkt.toJSONString());
+          this.agendaChanged.emit({operation: "CREATE", "value": newAgendapunkt});
 
           this.choosenAgendaPunktNode.data = newAgendapunkt;
           this.choosenAgendaPunktNode.key = "" + newAgendapunkt.ID;
@@ -206,6 +215,7 @@ export class AgendaComponent implements OnInit {
         this.agendaService.updateAgendaPunkt(this.choosenAgendaPunktNode.data, (res: JSON) => {
           let newAgendapunkt = AgendaPunkt.buildFromJSON(res);
           this.socketService.sendOperation("UPDATE", "", newAgendapunkt.toJSONString());
+          this.agendaChanged.emit({operation: "UPDATE", "value": newAgendapunkt});
 
           this.choosenAgendaPunktNode.data = newAgendapunkt;
           this.choosenAgendaPunktNode.key = "" + newAgendapunkt.ID;
@@ -237,10 +247,12 @@ export class AgendaComponent implements OnInit {
       }
     }
 
-    if (element.data != null && !element.data.hasMessages) {
+    if (element.data != null && !element.data.hasMessages && element.data.ID != 0) {
       // Agendapunkt wird im Service gelöscht
       this.agendaService.deleteAgendaPunkt(element.data, (res: JSON) => {
         this.socketService.sendOperation("DELETE", "", element.data?.toJSONString())
+        if (element.data == undefined) return;
+        this.agendaChanged.emit({operation: "DELETE", "value": element.data});
       },
       (err: any) => {
         this.messageService.add({severity:'error', summary:'Fehler beim Löschen des Agendapunktes', detail:`Für den Agendapunkt "${element.data?.nummer} ${element.data?.name}" existiert noch mindestens eine Protokollnachricht`});
@@ -290,7 +302,7 @@ export class AgendaComponent implements OnInit {
       this.getCountMessagesFromAgendaPunkt(agendaChild);
     }
     
-    this.agendaService.readCountMessages(agendaPunktTyped, (retVal: any) => {
+    /*this.agendaService.readCountMessages(agendaPunktTyped, (retVal: any) => {
       agendaPunktTyped.hasMessages = retVal;
       if(!agendaPunktTyped.hasMessages) {
         for(let agendaChild of agendaPunktTyped.children) {
@@ -300,7 +312,17 @@ export class AgendaComponent implements OnInit {
           }
         }
       }
-    })
+    })*/
+    
+    agendaPunktTyped.hasMessages = Number(document.getElementById("" + agendaPunktTyped.ID)?.getAttribute('length')) > 0;
+    if(!agendaPunktTyped.hasMessages) {
+      for(let agendaChild of agendaPunktTyped.children) {
+        if(agendaChild.hasMessages) {
+          agendaPunktTyped.hasMessages = true;
+          return;
+        }
+      }
+    }
   }
 
   //#region Agenda Dialog

@@ -1,5 +1,6 @@
 .wrapper {
-    background-color: #d8d8d8;
+    /*background-color: #d8d8d8;*/
+    background-color: transparent!important;
 }
 
 .wrapper>div {

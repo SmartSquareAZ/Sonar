@@ -62,8 +62,6 @@ export class AnhangService {
   }
 
   saveKategorie(kategorie: Anhangkategorie, success: Function): void {
-    console.log(kategorie.toJSONString());
-    console.log(this.requestURL.ANHANGKATEGORIE_CREATE);
     this.utilsService.POST(this.requestURL.ANHANGKATEGORIE_CREATE, kategorie.toJSONString(), success);
   }
 

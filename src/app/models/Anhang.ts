@@ -35,9 +35,12 @@ export class Anhang {
     }
 
     static buildFromObject(object: any, kategorienList: Anhangkategorie[] = []): Anhang {
+        console.log(object)
+        console.log(kategorienList)
         if(kategorienList.length != 0) {
             for(let kategorie of kategorienList) {
                 if(kategorie.ID == object["KATEGORIEID"]) {
+                    console.log(kategorie)
                     return new Anhang(object["ID"], object["NAME"], object["BESCHREIBUNG"], object["FILENAME"], object["STORAGEPATH"], object["MASTERID"], object["MASTERTYPE"], kategorie);
                 }
             }

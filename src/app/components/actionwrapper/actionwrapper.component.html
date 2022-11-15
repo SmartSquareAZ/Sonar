@@ -1,4 +1,4 @@
-<div class="h-100 d-flex justify-content-start flex-column p-1 customborder custombackground" *ngIf="expanded">
+<div class="h-100 d-flex justify-content-start flex-column p-1 customborder custombackground customshadow" *ngIf="expanded">
     <div class="w-100 d-flex justify-content-between align-items-center" style="height: 65px;">
         <h3 class="ps-3">{{aktuellerTitel()}}</h3>
 
@@ -13,15 +13,15 @@
     </div>
 
     <div class="action">
-        <app-agenda *ngIf="currentStage == 0" [showEditField]="true"></app-agenda>
+        <app-agenda *ngIf="currentStage == 0" [showEditField]="true" (agendaChanged)="onAgendaChanged($event)"></app-agenda>
         <app-aufgaben *ngIf="currentStage == 1"></app-aufgaben>
         <app-anhaenge *ngIf="currentStage == 2"></app-anhaenge>
-        <app-anwesenheit *ngIf="currentStage == 3 && inHector"></app-anwesenheit>
-        <app-online *ngIf="currentStage == 4 && inHector"></app-online>
+        <!--<app-anwesenheit *ngIf="currentStage == 3 && inHector"></app-anwesenheit>-->
+        <app-online *ngIf="currentStage == 3 && inHector"></app-online>
     </div>
 </div>
 
-<div class="h-100 d-flex justify-content-center align-items-center p-1 customborder custombackground minimized"
+<div class="h-100 d-flex justify-content-center align-items-center p-1 customborder custombackground customshadow minimized"
     *ngIf="!expanded">
     <button pButton type="button" class="p-button-outlined p-button-rounded" icon="pi pi-plus" iconPos="left"
         (click)="toggleSize()"></button>

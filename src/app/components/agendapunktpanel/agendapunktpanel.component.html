@@ -1,37 +1,44 @@
-<div class="mx-3 my-4 agendapunkt overflow-hidden">
-    <div class="d-flex justify-content-between align-items-center p-3" style="height: 75px;">
-        <h4 [id]="'titel_' + agendapunkt.ID" [style]="{'color': agendapunkt.farbe}">{{agendapunkt.nummer}}
-            {{agendapunkt.name}}</h4>
-        <button pButton pRipple type="button" label="Neu" icon="pi pi-plus" class="p-button-outlined"
-            (click)="addNewProtokollmessage(agendapunkt)"></button>
-    </div>
-
-    <div style="height: calc(100% - 75px) !important;">
-        <app-agendapunktheader [headerStyle]="headerStyle"></app-agendapunktheader>
-
-        <div class="w-100" style="height: calc(100% - 55px - 0.5rem) !important;">
-
-            <div class="h-100 overflow-auto pb-5 mb-5">
-                <p-table [value]="protokollMessage" [lazy]="true" [showLoader]="false"
-                    (onLazyLoad)="loadDataLazy($event, agendapunkt)" responsiveLayout="scroll" dataKey="ID" [rows]="10"
-                    [loading]="protokollMessageLoading">
-
-                    <ng-template pTemplate="body" let-protokollmessage let-protokollmessageIndex="rowIndex">
-                        <app-protokollmessagerow [message]="protokollmessage" [messageIndex]="protokollmessageIndex" [editable]="true" [employee]="employee" [contacts]="contacts" (removeProtokollmessageEvent)="removeProtokollmessage($event)"></app-protokollmessagerow>
-                        <div class="finishPanel"></div>
-                    </ng-template>
-
-                    <ng-template pTemplate="loadingbody">
-                        <app-protokollmessageskeleton></app-protokollmessageskeleton>
-                    </ng-template>
-
-                    <ng-template pTemplate="emptymessage">
-                        <div class="w-100 text-end overflow-hidden" style="height: calc(100% - 100px);">
-                            <img class="curved_arrow" src="assets/custom_arrow.svg" />
-                        </div>
-                    </ng-template>
-                </p-table>
+<div style="position: relative;" class="mx-3 my-4">
+    <div class="agendapunkt overflow-hidden" [id]="agendapunkt.ID"  [attr.length]="protokollMessage.length">
+        <div class="d-flex justify-content-between align-items-center p-3" style="height: 75px;">
+            <h4 [id]="'titel_' + agendapunkt.ID" [style]="{'color': agendapunkt.farbe}">{{agendapunkt.nummer}}
+                {{agendapunkt.name}}</h4>
+            <button pButton pRipple type="button" label="Neu" icon="pi pi-plus" class="p-button-outlined"
+                (click)="addNewProtokollmessage(agendapunkt)"></button>
+        </div>
+    
+        <div style="height: calc(100% - 75px) !important;">
+            <app-agendapunktheader [headerStyle]="headerStyle"></app-agendapunktheader>
+    
+            <div class="w-100" style="height: calc(100% - 55px - 0.5rem) !important;">
+    
+                <div class="h-100 overflow-auto pb-5 mb-5">
+                    <p-table [value]="protokollMessage" [lazy]="true" [showLoader]="false"
+                        (onLazyLoad)="loadDataLazy($event, agendapunkt)" responsiveLayout="scroll" dataKey="ID" [rows]="10"
+                        [loading]="protokollMessageLoading">
+    
+                        <ng-template pTemplate="body" let-protokollmessage let-protokollmessageIndex="rowIndex">
+                            <app-protokollmessagerow [message]="protokollmessage" [messageIndex]="protokollmessageIndex" [editable]="true" [employee]="employee" [contacts]="contacts" (removeProtokollmessageEvent)="removeProtokollmessage($event)"></app-protokollmessagerow>
+                            <div class="finishPanel"></div>
+                        </ng-template>
+    
+                        <ng-template pTemplate="loadingbody">
+                            <app-protokollmessageskeleton></app-protokollmessageskeleton>
+                        </ng-template>
+    
+                        <ng-template pTemplate="emptymessage">
+                            <div class="w-100 text-end overflow-hidden" style="height: calc(100% - 100px);">
+                                <img class="curved_arrow" src="assets/custom_arrow.svg" />
+                            </div>
+                        </ng-template>
+                    </p-table>
+                </div>
             </div>
         </div>
+    </div>
+
+    <div *ngIf="agendapunkt.blockedMessageEditing" class="agendapunkt overlay">
+        <i class="pi pi-lock" style="font-size: 2.5em; margin-bottom: 0.5em;"></i><br/>
+        <span>Agendapunkt ist durch Bearbeitung einer Protokollnachricht von einem anderen Benutzer vorübergehend gesperrt</span>
     </div>
 </div>

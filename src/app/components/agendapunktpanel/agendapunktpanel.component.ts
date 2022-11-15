@@ -39,6 +39,14 @@ export class AgendapunktpanelComponent implements OnInit {
         }
       }   
     }
+
+    if(operation == "BLOCK") {
+      this.agendapunkt.blockedMessageEditing = true;
+    }
+
+    if(operation == "UNBLOCK") {
+      this.agendapunkt.blockedMessageEditing = false;
+    }
   };
 
   @Input() headerStyle: string = '';

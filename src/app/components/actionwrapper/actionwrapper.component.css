@@ -19,6 +19,11 @@
 .custombackground {
     background: white;
 }
+.customshadow {
+    box-shadow: 0 0 15px 0 rgb(0 0 0 / 35%);
+    -webkit-box-shadow: 0 0 15px 0 rgb(0 0 0 / 35%);
+    -moz-box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.35);
+}
 .action {
     height: calc(100% - 65px);
 }

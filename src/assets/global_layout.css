@@ -5,3 +5,7 @@ i.pi.pi-info-circle {
     font-size: 15pt;
     margin-left: 5px;
 }
+
+body {
+    background-color: transparent!important;
+}

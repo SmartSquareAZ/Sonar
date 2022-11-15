@@ -13,6 +13,7 @@ export class AgendaPunkt {
     oldID: number;
     children: AgendaPunkt[];
     hasMessages: boolean = false;
+    blockedMessageEditing: boolean = false;
 
     constructor(
         ID: number,
@@ -35,6 +36,7 @@ export class AgendaPunkt {
         this.oldID = oldID;
         this.children = children;
         this.hasMessages = false;
+        this.blockedMessageEditing = false;
     }
 
     toJSONString(): string {

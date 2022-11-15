@@ -140,10 +140,10 @@ export class AnhaengeComponent implements OnInit {
       }
       // Überprüfung, auf den richtigen Befehl
       if (operation == "CREATE") {
-        this.anhangList.push(Anhang.buildFromObject(data));
+        this.anhangList.push(Anhang.buildFromObject(data, this.kategorienList));
       }
       if (operation == "UPDATE") {
-        this.anhangList[this.anhangList.findIndex((anhang => anhang.ID == data["ID"]))] = Anhang.buildFromObject(data);
+        this.anhangList[this.anhangList.findIndex((anhang => anhang.ID == data["ID"]))] = Anhang.buildFromObject(data, this.kategorienList);
       }
       if (operation == "DELETE") {
         this.anhangList = this.anhangList.filter(anhang => anhang.ID !== data["ID"]);

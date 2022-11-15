@@ -8,9 +8,9 @@ export class RequestUrlService {
   /**
    * -1 = localhost
    * 0 = test.smartsquare.at
-   * 1 = rhi-scan.rubnergroup.local
+   * 1 = sonar.smartsquare.at
    */
-  public readonly STATE: number = -1;
+  public readonly STATE: number = 1;
 
   //#region Protokollmessage
   public MESSAGE_CREATE: string = "";
@@ -67,10 +67,10 @@ export class RequestUrlService {
       // http://localhost:8075
       let websocketProtocol = this.STATE == -1 ? "ws" : "wss";
       let httpProtocol = this.STATE == -1 ? "http" : "https";
-      let domain = this.STATE == -1 ? "localhost:8075" : this.STATE == 0 ? "test.smartsquare.at" : "sonar.smartsquare.at";
+      let domain = this.STATE == -1 ? "localhost:8075" : this.STATE == 0 ? "test.smartsquare.at" : "sonarapi.smartsquare.at";
 
       // ServerPath wird gesetzt
-      let serverPath = this.STATE == 0 || this.STATE == 1 ? "/SONAR" : "";
+      let serverPath = this.STATE == 0 || this.STATE == 1 ? "/SONARAPI" : "";
 
       // Domain URLs werden zusammengesetzt
       let websocketurl = websocketProtocol + "://" + domain + serverPath + "/SOCKET";

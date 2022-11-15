@@ -62,6 +62,7 @@ export class ProtokollmessagerowComponent implements OnInit {
         protokollmessage.isEditing = false;
         protokollmessage = newProtokollmessage;
         this.socketService.sendOperation("CREATE", "", protokollmessage.toJSONString());
+        this.socketService.sendOperation("UNBLOCK", "", protokollmessage.toJSONString());
       });
     } else {
       this.protokollmessageService.updateProtokollmessage(protokollmessage, (retVal: JSON) => {
@@ -69,12 +70,14 @@ export class ProtokollmessagerowComponent implements OnInit {
         protokollmessage.isEditing = false;
         protokollmessage = updatedProtokollmessage;
         this.socketService.sendOperation("UPDATE", "", protokollmessage.toJSONString());
+        this.socketService.sendOperation("UNBLOCK", "", protokollmessage.toJSONString());
       })
     }
   }
 
   removeProtokollmessage(protokollMessage: Protokollmessage) {
     protokollMessage.isEditing = false;
+    this.socketService.sendOperation("UNBLOCK", "", protokollMessage.toJSONString());
     if(protokollMessage.ID == 0) {
       this.removeProtokollmessageEvent.emit(protokollMessage);
     }

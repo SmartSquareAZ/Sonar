@@ -63,7 +63,7 @@ export class ProtokollmessageWebsocketService extends WebsocketService {
     }
 
     // Callback wird ausgeführt
-    if(operation == "CREATE" || operation == "UPDATE") {
+    if(operation == "CREATE" || operation == "UPDATE" || operation == "BLOCK" || operation == "UNBLOCK") {
       this.messagesRequestCallbacks[JSON.parse(json['DATA'])['AGENDAPUNKTID']](operation, json['SDEV'], json['DDEV'], AppComponent.PROTOKOLLID, json['DATA']);
     }
     

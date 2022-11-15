@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 
 @Component({
   selector: 'app-actionwrapper',
@@ -8,6 +9,8 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 export class ActionwrapperComponent implements OnInit {
 
   @Output() toggleEvent = new EventEmitter<boolean>();
+
+  @Output() agendaChanged = new EventEmitter<{operation: string, value: AgendaPunkt}>();
 
   /**
    * Gibt an, ob aktuell das Menü ausgefahren oder eingeklappt ist
@@ -22,7 +25,8 @@ export class ActionwrapperComponent implements OnInit {
   /**
    * Gibt die Anzahl der Stages an
    */
-  anzahlStage: number = 5;
+  //anzahlStage: number = 5;
+  anzahlStage: number = 4;
 
   /**
    * Gibt an, ob die Besprechung in Hector ist
@@ -30,7 +34,8 @@ export class ActionwrapperComponent implements OnInit {
   inHector: boolean = true;
 
   private titelArray: string[] = [
-    "Agenda", "Aufgaben", "Anhänge", "Anwesenheit", "Online"
+    //"Agenda", "Aufgaben", "Anhänge", "Anwesenheit", "Online"
+    "Agenda", "Aufgaben", "Anhänge", "Online"
   ]
 
   constructor() { }
@@ -58,4 +63,10 @@ export class ActionwrapperComponent implements OnInit {
     this.expanded = !this.expanded;
     this.toggleEvent.emit(this.expanded);
   }
+
+  onAgendaChanged(event: any) {
+    this.agendaChanged.emit(event);
+  }
+
+
 }

@@ -49,7 +49,7 @@ export class AgendaService {
     this.utils.GET(this.requesturl.AGENDAPUNKT_READAGENDAPUNKTSLAVES + "?PARENTID=" + parent.ID, success, error);
   }
 
-  readCountMessages(agendaPunkt: AgendaPunkt, success: Function) {
+  /*readCountMessages(agendaPunkt: AgendaPunkt, success: Function) {
     this.utils.GET(this.requesturl.AGENDAPUNKT_READAGENDAMESSAGESCOUNT + "?ID=" + agendaPunkt.ID, success);
-  }
+  }*/
 }

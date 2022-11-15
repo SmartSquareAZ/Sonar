@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/protokollmessage-websocket.service';
 
 @Component({
   selector: 'app-protokollmessageoutput',
@@ -13,7 +14,7 @@ export class ProtokollmessageoutputComponent implements OnInit {
   @Input() contacts: any[] = [];
   @Input() editable: boolean = false;
 
-  constructor() { }
+  constructor(private socketService: ProtokollmessageWebsocketService) { }
 
   ngOnInit(): void {
   }
@@ -27,5 +28,10 @@ export class ProtokollmessageoutputComponent implements OnInit {
    */
   readPersonFromProtokollmessage(vtype: number, vID: number) {
     return (vtype == 3 ? this.employee : this.contacts).find(x => x.ID == vID);
+  }
+
+  checkAndSetEditing() {
+    this.message.isEditing = this.editable ? true : false;
+    this.socketService.sendOperation("BLOCK", "", this.message.toJSONString());
   }
 }

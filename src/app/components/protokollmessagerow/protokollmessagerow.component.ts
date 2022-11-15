@@ -18,6 +18,7 @@ export class ProtokollmessagerowComponent implements OnInit {
   @Input() editable: boolean = false;
 
   @Output() removeProtokollmessageEvent = new EventEmitter<Protokollmessage>();
+  @Output() saveProtokollmessageEvent = new EventEmitter();
 
   /**
    * Array aller Verantwortlichen Typen
@@ -61,6 +62,7 @@ export class ProtokollmessagerowComponent implements OnInit {
         // Bearbeitung wird beendet
         protokollmessage.isEditing = false;
         protokollmessage = newProtokollmessage;
+        this.saveProtokollmessageEvent.emit({"index": this.messageIndex, "msg": protokollmessage});
         this.socketService.sendOperation("CREATE", "", protokollmessage.toJSONString());
         this.socketService.sendOperation("UNBLOCK", "", protokollmessage.toJSONString());
       });

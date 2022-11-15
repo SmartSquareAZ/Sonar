@@ -15,7 +15,7 @@ export class AnhangKategorieWebsocketService extends WebsocketService {
 
    public override configureWebsocket(): void {
     // Websocket wird erstellt
-    this.websocket = webSocket(this.requesturlservice.WEBSOCKET_ANHANG);
+    this.websocket = webSocket(this.requesturlservice.WEBSOCKET_ANHANGKATEGORIE);
 
 
     // Nachrichten werden verarbeitet

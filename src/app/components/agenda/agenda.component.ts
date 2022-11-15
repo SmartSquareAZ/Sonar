@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 import { Dialog } from 'src/app/models/Dialog';
@@ -156,7 +156,8 @@ export class AgendaComponent implements OnInit {
 
   agendaPunktSelected(event: any) {
     if(this.showEditField) {
-      this.router.navigate([], {fragment: 'titel_' + event.node.data?.ID});
+        const element = document.getElementById(`${event.node.key}`);
+        if (element != undefined) element.scrollIntoView({behavior: 'smooth'});
     } else {
       this.choosenAufgabe.masterID = event.node.data?.ID;
       this.choosenAufgabeChange.emit(this.choosenAufgabe);

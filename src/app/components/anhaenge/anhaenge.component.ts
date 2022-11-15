@@ -118,21 +118,20 @@ export class AnhaengeComponent implements OnInit {
         retVal.push(Anhangkategorie.buildFromObject(anhangKategorieObject));
       }
       this.kategorienList = retVal;
+
+      // Anhänge werden geladen
+      this.anhangService.readAnhaenge(AppComponent.PROTOKOLLID, 1, (res: JSON) => {
+        let objectArray: any = res;
+        let retVal: Anhang[] = [];
+        for(let anhangObject of objectArray) {
+          retVal.push(Anhang.buildFromObject(anhangObject, this.kategorienList));
+        }
+        this.anhangList = retVal;
+      });
+
+      // Flag wird gesetzt
       this.loadingAnhaenge = false;
     });
-
-    // Anhänge werden geladen
-    this.anhangService.readAnhaenge(AppComponent.PROTOKOLLID, 1, (res: JSON) => {
-      let objectArray: any = res;
-      let retVal: Anhang[] = [];
-      for(let anhangObject of objectArray) {
-        retVal.push(Anhang.buildFromObject(anhangObject, this.kategorienList));
-      }
-      this.anhangList = retVal;
-    });
-
-    // Flag wird gesetzt
-    this.loadingAnhaenge = false;
 
     this.anhangSocketService.requestCallback = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
       if(operation != "ONLINE" && operation != "REGISTER") {
@@ -160,8 +159,13 @@ export class AnhaengeComponent implements OnInit {
         this.kategorienList = Array.from(this.kategorienList);
       }
       if (operation == "UPDATE") {
-        this.kategorienList[this.kategorienList.findIndex((kategorie => kategorie.ID == data["ID"]))] = Anhangkategorie.buildFromObject(data);
-        this.kategorienList = Array.from(this.kategorienList);
+        let newKategorie = Anhangkategorie.buildFromObject(data);
+        this.kategorienList[this.kategorienList.findIndex((kategorie => kategorie.ID == data["ID"]))] = newKategorie;
+        for(let anhang of this.anhangList) {
+          if(anhang.anhangkategorie.ID == newKategorie.ID) {
+            anhang.anhangkategorie = newKategorie;
+          }
+        }
       }
       if (operation == "DELETE") {
         this.kategorienList = this.kategorienList.filter(kategorie => kategorie.ID !== data["ID"]);

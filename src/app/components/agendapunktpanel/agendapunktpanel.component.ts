@@ -108,4 +108,8 @@ export class AgendapunktpanelComponent implements OnInit {
     this.protokollMessage = this.protokollMessage.filter(msg => msg.ID != protokollMessage.ID);
   }
 
+  updateSavedProtokollmessage(event: any) {
+    this.protokollMessage[event["index"]] = event["msg"];
+  }
+
 }

@@ -93,6 +93,11 @@ export class ProtokollmessagerowComponent implements OnInit {
     this.saveProtokollmessage(this.message.previousProtokollmessage);
   }
 
+  setPreviousEditingTrue() {
+    this.message.previousProtokollmessage.isEditing = true;
+    this.socketService.sendOperation("BLOCK", "", this.message.previousProtokollmessage.toJSONString());
+  }
+
   /**
    * Klappt die alten Protokollnachrichten auf oder ein
    */

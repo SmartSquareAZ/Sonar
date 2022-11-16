@@ -126,7 +126,7 @@
 
         <div class="row mt-2">
             <div class="col-12">
-                <p-fileUpload #fileUploader name="file" [url]="uploadUrl" [disabled]="anhangForm.invalid"
+                <p-fileUpload #fileUploader name="file" [url]="requestUrl.ANHANG_UPLOAD" [disabled]="anhangForm.invalid"
                     [maxFileSize]="10000000" (uploadHandler)="uploadHandler($event)" [customUpload]="true"
                     *ngIf="currentUploadState != 5">
                 </p-fileUpload>

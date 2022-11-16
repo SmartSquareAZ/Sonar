@@ -52,6 +52,8 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
 import { ValidationHttpInterceptor } from './ValidationHttpInterceptor';
 import { MessageService } from 'primeng/api';
+import {SpeedDialModule} from 'primeng/speeddial';
+import { ProtokollabschlussComponent } from './components/protokollabschluss/protokollabschluss.component';
 
 
 @NgModule({
@@ -75,7 +77,8 @@ import { MessageService } from 'primeng/api';
     AgendapunktpanelComponent,
     AgendatableentryComponent,
     ProtokollmessagerowComponent,
-    ProtokollmessageoutputComponent
+    ProtokollmessageoutputComponent,
+    ProtokollabschlussComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -107,7 +110,8 @@ import { MessageService } from 'primeng/api';
     ListboxModule,
     InputTextareaModule,
     FileUploadModule,
-    ToastModule
+    ToastModule,
+    SpeedDialModule
   ],
   providers: [ MessageService,
     {

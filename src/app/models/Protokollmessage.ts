@@ -11,7 +11,7 @@ export class Protokollmessage {
     status: number;
     ablaufdatum: Date;
     agendapunktID: number;
-    protokollID: number;
+    protokollNummer: string;
     nummer: number;
     previousProtokollmessage: Protokollmessage;
 
@@ -26,7 +26,7 @@ export class Protokollmessage {
         status: number,
         ablaufdatum: Date,
         agendapunktID: number,
-        protokollID: number,
+        protokollNummer: string,
         nummer: number,
         previousProtokollmessage: Protokollmessage
     ) {
@@ -37,7 +37,7 @@ export class Protokollmessage {
         this.status = status
         this.ablaufdatum = ablaufdatum
         this.agendapunktID = agendapunktID
-        this.protokollID = protokollID
+        this.protokollNummer = protokollNummer;
         this.nummer = nummer
         this.previousProtokollmessage = previousProtokollmessage
     }
@@ -99,18 +99,18 @@ export class Protokollmessage {
         retVal["STATUS"] = this.status;
         retVal["ABLAUFDATUM"] = datepipe.transform(this.ablaufdatum, "dd_MM_YYYY_HH_mm_ss");
         retVal["AGENDAPUNKTID"] = this.agendapunktID;
-        retVal["PROTOKOLLID"] = this.protokollID;
+        retVal["PROTKOLLNUMMER"] = this.protokollNummer;
         retVal["NUMMER"] = this.nummer;
         retVal["OLDID"] = this.previousProtokollmessage != null ? this.previousProtokollmessage.ID : 0;
         return JSON.stringify(retVal);
     }
 
     static buildFromEmpty(): Protokollmessage {
-        return new Protokollmessage(0, "", 0, [], 0, new Date(), 0, 0, 0, null as any);
+        return new Protokollmessage(0, "", 0, [], 0, new Date(), 0, "", 0, null as any);
     }
 
     static buildNew(agendapunktID: number, lastNummer: number): Protokollmessage {
-        return new Protokollmessage(0, "", 0, [], 0, new Date(), agendapunktID, AppComponent.PROTOKOLLID, lastNummer, null as any)
+        return new Protokollmessage(0, "", 0, [], 0, new Date(), agendapunktID, AppComponent.PROTOKOLLNUMMER, lastNummer, null as any)
     }
 
     static buildFromJSON(data: JSON): Protokollmessage {
@@ -121,10 +121,10 @@ export class Protokollmessage {
 
         // Date wird konvertiert
         let parsedDate = moment(dataObj["ABLAUFDATUM"], "DD_MM_YYYY_hh_mm_ss");
-
+        
         return new Protokollmessage(dataObj["ID"], dataObj["MESSAGE"], dataObj["VTYPE"],
             dataObj["VIDS"], dataObj["STATUS"], parsedDate.toDate(),
-            dataObj["AGENDAPUNKTID"], dataObj["PROTOKOLLID"], dataObj["NUMMER"], oldMessage);
+            dataObj["AGENDAPUNKTID"], dataObj["PROTOKOLLNUMMER"], dataObj["NUMMER"], oldMessage);
     }
 
     static buildFromJSONArray(data: JSON): Protokollmessage[] {

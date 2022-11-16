@@ -45,6 +45,8 @@ export class RequestUrlService {
   public ANHANG_UPDATE: string = "";
   public ANHANG_DELETE: string = "";
   public ANHANG_READ: string = "";
+  public ANHANG_UPLOAD: string = "";
+  public ANHANG_DOWNLOAD: string = "";
   //#endregion
 
   //#region Anhangkategorie
@@ -52,6 +54,13 @@ export class RequestUrlService {
   public ANHANGKATEGORIE_UPDATE: string = "";
   public ANHANGKATEGORIE_DELETE: string = "";
   public ANHANGKATEGORIE_READ: string = "";
+  //#endregion
+
+  //#region Person
+  public MITARBEITER_READ: string = "";
+  public MITARBEITER_READ_ID: string = "";
+  public KONTAKTE_READ: string = "";
+  public KONTAKTE_READ_ID: string = "";
   //#endregion
 
   //#region Websockets
@@ -113,6 +122,8 @@ export class RequestUrlService {
       this.ANHANG_UPDATE = url + "/ANHANG" + updatePath;
       this.ANHANG_DELETE = url + "/ANHANG" + deletePath;
       this.ANHANG_READ = url + "/ANHANG/READ";
+      this.ANHANG_UPLOAD = url + "/ANHANG/UPLOAD";
+      this.ANHANG_DOWNLOAD = url + "/ANHANG/DOWNLOAD";
       //#endregion
 
       //#region Anhangkategorie
@@ -120,6 +131,13 @@ export class RequestUrlService {
       this.ANHANGKATEGORIE_UPDATE = url + "/ANHANGKATEGORIE" + updatePath;
       this.ANHANGKATEGORIE_DELETE = url + "/ANHANGKATEGORIE" + deletePath;
       this.ANHANGKATEGORIE_READ = url + "/ANHANGKATEGORIE/READ";
+      //#endregion
+
+      //#region Person
+      this.MITARBEITER_READ = url + "/MITARBEITER/READ";
+      this.MITARBEITER_READ_ID = url + "/MITARBEITER/READ/ID";
+      this.KONTAKTE_READ = url + "/KONTAKTE/READ";
+      this.KONTAKTE_READ_ID = url + "/KONTAKTE/READ/ID";
       //#endregion
 
       //#region Websockets

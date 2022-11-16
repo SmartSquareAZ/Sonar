@@ -18,7 +18,7 @@ export class AgendapunktpanelComponent implements OnInit {
   protokollMessage: Protokollmessage[] = [];
 
   requestCallback: Function = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
-    if(operation != "ONLINE" && operation != "REGISTER") {
+    if(operation != "ONLINE" && operation != "REGISTER" && operation != "DONE") {
       data = JSON.parse(data);
     }
     // Überprüfung, auf den richtigen Befehl

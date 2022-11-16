@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { webSocket } from 'rxjs/webSocket';
 import { AppComponent } from 'src/app/app.component';
 import { RequestUrlService } from '../requesturl/request-url.service';
@@ -15,7 +16,7 @@ export class ProtokollmessageWebsocketService extends WebsocketService {
 
   public messagesRequestCallbacks: MessageRequestCallback = {};
 
-  constructor(protected override requesturlservice: RequestUrlService) {
+  constructor(protected override requesturlservice: RequestUrlService, private router: Router) {
     super(requesturlservice);
    }
 
@@ -62,8 +63,13 @@ export class ProtokollmessageWebsocketService extends WebsocketService {
       DATA: JSON.stringify(AppComponent.USER_DATA)
     }
 
+    if(operation == "DONE") {
+      this.router.navigate(["done"]);
+      return;
+    }
+
     // Callback wird ausgeführt
-    if(operation == "CREATE" || operation == "UPDATE" || operation == "BLOCK" || operation == "UNBLOCK") {
+    if(operation == "CREATE" || operation == "UPDATE" || operation == "BLOCK" || (operation == "UNBLOCK" && JSON.parse(json['DATA'])['AGENDAPUNKTID'] != 0)) {
       this.messagesRequestCallbacks[JSON.parse(json['DATA'])['AGENDAPUNKTID']](operation, json['SDEV'], json['DDEV'], AppComponent.PROTOKOLLID, json['DATA']);
     }
     

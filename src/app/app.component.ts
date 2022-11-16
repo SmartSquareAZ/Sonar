@@ -5,6 +5,7 @@ import { Mitarbeiter } from './models/Mitarbeiter';
 import { Person } from './models/Person';
 import { PersonService } from './service/person/person.service';
 import { AnwesendeWebsocketService } from './service/websocket/anwesende-websocket.service';
+import { ProtokollmessageWebsocketService } from './service/websocket/protokollmessage-websocket.service';
 
 @Component({
   selector: 'app-root',
@@ -20,8 +21,10 @@ export class AppComponent {
   static PROJEKTID: number = 0;
   static AGENDAID: number = 0;
   static PROTOKOLLID: number = 0;
+  static PROTOKOLLNUMMER: string = "";
   static PERSONID: number = 0;
   static PERSONTYPE: number = 0;
+  static HECTOR: number = 0;
 
   static USER_DATA: Person = Person.buildFromEmpty();
 
@@ -29,28 +32,59 @@ export class AppComponent {
 
   static METAOBJECT(): any {
     return {
-      "MANDANTID": AppComponent.MANDANTID,
-      "ABTEILUNGID": AppComponent.ABTEILUNGID,
+      "MID": AppComponent.MANDANTID,
+      "AID": AppComponent.ABTEILUNGID,
       "PROJEKTID": AppComponent.PROJEKTID,
       "AGENDAID": AppComponent.AGENDAID,
       "PROTOKOLLID": AppComponent.PROTOKOLLID,
+      "PROTOKOLLNUMMER": AppComponent.PROTOKOLLNUMMER,
       "PERSONID": AppComponent.PERSONID,
       "PERSONTYPE": AppComponent.PERSONTYPE,
+      "HECTOR": AppComponent.HECTOR,
+      "USER_DATA": AppComponent.USER_DATA
     }
   }
 
-  constructor(private route: ActivatedRoute, private personService: PersonService, private onlineSocketService: AnwesendeWebsocketService) { }
+  constructor(private route: ActivatedRoute, private personService: PersonService, private onlineSocketService: AnwesendeWebsocketService, private messageSocketService: ProtokollmessageWebsocketService) { }
 
   ngOnInit() {
     this.route.queryParams
       .subscribe(params => {
-        AppComponent.MANDANTID = this.validateUrlParam(params['MID']);
+        /*AppComponent.MANDANTID = this.validateUrlParam(params['MID']);
         AppComponent.ABTEILUNGID = this.validateUrlParam(params['AID']);
         AppComponent.PROJEKTID = this.validateUrlParam(params['PROJEKTID']);
         AppComponent.AGENDAID = this.validateUrlParam(params['AGENDAID']);
         AppComponent.PROTOKOLLID = this.validateUrlParam(params['PROTOKOLLID']);
         AppComponent.PERSONID = this.validateUrlParam(params['PERSONID']);
         AppComponent.PERSONTYPE = this.validateUrlParam(params['PERSONTYPE']);
+
+        if(AppComponent.PERSONID == 0) {
+          return;
+        }
+
+        if(AppComponent.PERSONTYPE == 0) {
+          this.personService.getMitarbeiterByID((res: JSON) => {
+            AppComponent.USER_DATA = Mitarbeiter.buildFromJSON(res);
+            this.onlineSocketService.sendOperation("ONLINE", "", JSON.stringify(AppComponent.USER_DATA));
+          });
+        } else {
+          this.personService.getKontaktByID((res: JSON) => {
+            AppComponent.USER_DATA = Kontakt.buildFromJSON(res);
+            this.onlineSocketService.sendOperation("ONLINE", "", JSON.stringify(AppComponent.USER_DATA));
+          });
+        }*/
+        let dataJSON = this.validataDataParam(params['DATA']);
+        if (dataJSON == undefined) return;
+        AppComponent.MANDANTID = dataJSON['MID'];
+        AppComponent.ABTEILUNGID = dataJSON['AID'];
+        AppComponent.PROJEKTID = dataJSON['PROJEKTID'];
+        AppComponent.AGENDAID = dataJSON['AGENDAID'];
+        AppComponent.PROTOKOLLID = dataJSON['PROTOKOLLID'];
+        AppComponent.PERSONID = dataJSON['PERSONID'];
+        AppComponent.PERSONTYPE = dataJSON['PERSONTYPE'];
+        AppComponent.HECTOR = dataJSON['HECTOR'];
+
+        
 
         if(AppComponent.PERSONID == 0) {
           return;
@@ -99,6 +133,11 @@ export class AppComponent {
     return value == undefined ? defaultValue : value;
   }
 
+  validataDataParam(value: string) : any {
+    if (value == undefined) return;
+    return JSON.parse(atob(value));
+  }
+
   private mergeArray(array: Person[]) {
     AppComponent.onlineList = [];
     for(let person of array) {
@@ -106,7 +145,8 @@ export class AppComponent {
     }
   }
 
-  deregisterOnline() {
+  deregisterOnline() { 
     this.onlineSocketService.sendOperation("OFFLINE", "", JSON.stringify(AppComponent.USER_DATA));
+    this.messageSocketService.sendOperation("OFFLINE", "", "");
   }
 }

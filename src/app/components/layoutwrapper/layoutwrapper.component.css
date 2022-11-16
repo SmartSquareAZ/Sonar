@@ -1,6 +1,7 @@
 .wrapper {
     /*background-color: #d8d8d8;*/
     background-color: transparent!important;
+    position: relative;
 }
 
 .wrapper>div {
@@ -10,4 +11,14 @@
 .wrapper .actionWrapper,
 .wrapper .besprechungWrapper {
     transition: width 0.5s;
+}
+
+p-speeddial {
+    position: absolute;
+    bottom: 85px;
+    left: 25px;
+}
+
+:host ::ng-deep .p-speeddial-action {
+    text-decoration: none;
 }

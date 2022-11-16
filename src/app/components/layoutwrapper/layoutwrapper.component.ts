@@ -1,4 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { MenuItem } from 'primeng/api';
+import { AppComponent } from 'src/app/app.component';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/protokollmessage-websocket.service';
 import { BesprechungComponent } from '../besprechung/besprechung.component';
@@ -17,9 +20,25 @@ export class LayoutwrapperComponent implements OnInit {
 
   showAction: boolean = true;
 
-  constructor(private messageSocketService: ProtokollmessageWebsocketService) { }
+  speedDialItems!: MenuItem[];
+
+  constructor(private messageSocketService: ProtokollmessageWebsocketService, private router: Router) { }
 
   ngOnInit(): void {
+    this.speedDialItems = [
+      {
+        icon: 'pi pi-arrow-left',
+        tooltip: 'Zurück'
+      },
+      {
+        icon: 'pi pi-flag-fill',
+        tooltip: 'Protokoll abschließen',
+        command: () => {
+          this.messageSocketService.sendOperation("DONE", "", "");
+          this.router.navigate(["/done"]);
+        }
+      }
+    ]
   }
 
   toggleSize(param: boolean) {
@@ -68,6 +87,10 @@ export class LayoutwrapperComponent implements OnInit {
         delete this.messageSocketService.messagesRequestCallbacks[changedPunkt.ID];
         break;
     }
+  }
+
+  speeddialVisible(): boolean {
+    return AppComponent.HECTOR == 1;
   }
 
 }

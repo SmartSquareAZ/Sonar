@@ -5,4 +5,8 @@
     <div class="h-100 besprechungWrapper" [class]="showAction ? 'col-8' : 'col-11'">
         <app-besprechung #besprechung></app-besprechung>
     </div>
+
+    <p-speedDial [model]="speedDialItems" [radius]="100" className="customspeeddial" direction="up-right" type="quarter-circle"
+            hideIcon="pi pi-times" [transitionDelay]="80" buttonClassName="p-button-success" *ngIf="speeddialVisible()">
+    </p-speedDial>
 </div>

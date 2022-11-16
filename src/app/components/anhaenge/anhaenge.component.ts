@@ -10,6 +10,7 @@ import { saveAs } from 'file-saver';
 import { AppComponent } from 'src/app/app.component';
 import { AnhangWebsocketService } from 'src/app/service/websocket/anhang-websocket.service';
 import { AnhangKategorieWebsocketService } from 'src/app/service/websocket/anhang-kategorie-websocket.service';
+import { RequestUrlService } from 'src/app/service/requesturl/request-url.service';
 
 @Component({
   selector: 'app-anhaenge',
@@ -18,20 +19,6 @@ import { AnhangKategorieWebsocketService } from 'src/app/service/websocket/anhan
   providers: [ConfirmationService]
 })
 export class AnhaengeComponent implements OnInit {
-
-  /**
-   * Allgemeiner Teil der Url
-   */
-  private domainUrl = "http://localhost:8075";
-  /**
-   * Url zu welcher die Datei hochgeladen wird
-   */
-  uploadUrl = this.domainUrl + "/ANHANG/UPLOAD";
-  /**
-   * Url von welcher die Datei heruntergeladen wird
-   */
-  downloadUrl = this.domainUrl + "/ANHANG/DOWNLOAD";
-
   /**
    * Gibt an, ob die Anhänge geladen werden
    */
@@ -104,7 +91,8 @@ export class AnhaengeComponent implements OnInit {
     private formBuilder: FormBuilder, 
     private httpClient: HttpClient, 
     private anhangSocketService: AnhangWebsocketService,
-    private anhangKategorieSocketService: AnhangKategorieWebsocketService) { }
+    private anhangKategorieSocketService: AnhangKategorieWebsocketService,
+    public requestUrl: RequestUrlService) { }
 
   async ngOnInit() {
     // Flag wird gesetzt
@@ -262,7 +250,7 @@ export class AnhaengeComponent implements OnInit {
       // Anhang wird gespeichert
       this.anhangService.saveAnhang(this.choosenAnhang, (res: JSON) => {
         let object: any = res;
-        let anhang: Anhang = Anhang.buildFromObject(object);
+        let anhang: Anhang = Anhang.buildFromObject(object, this.kategorienList);
         // Element wird zur List hinzugefügt
         this.anhangList.push(anhang);
         this.anhangSocketService.sendOperation("CREATE", "", anhang.toJSONString());
@@ -270,7 +258,7 @@ export class AnhaengeComponent implements OnInit {
     } else {
       this.anhangService.updateAnhang(this.choosenAnhang, (res: JSON) => {
         let object: any = res;
-        let updatedAnhang: Anhang = Anhang.buildFromObject(object);
+        let updatedAnhang: Anhang = Anhang.buildFromObject(object, this.kategorienList);
         for(let anhang of this.anhangList) {
           if(anhang.ID == updatedAnhang.ID) {
             anhang = updatedAnhang;
@@ -335,7 +323,7 @@ export class AnhaengeComponent implements OnInit {
     this.currentUploadState = 2;
 
     try {
-      this.httpClient.post(this.uploadUrl, formData)
+      this.httpClient.post(this.requestUrl.ANHANG_UPLOAD, formData)
         .pipe(catchError(err => this.handleError(err)))
         .subscribe((response: any) => {
           let responseObj = JSON.parse(JSON.stringify(response));
@@ -358,7 +346,7 @@ export class AnhaengeComponent implements OnInit {
   downloadAnhangFile() {
     //this.choosenAnhang.storagepath = "C:\\FILESTORAGE\\4\\5\\1\\13\\09_02_2022_15_15_52_034.txt"
 
-    this.httpClient.get(this.downloadUrl + "?path=" + btoa(this.choosenAnhang.storagepath), {
+    this.httpClient.get(this.requestUrl.ANHANG_DOWNLOAD + "?path=" + btoa(this.choosenAnhang.storagepath), {
       responseType: 'blob'
     }).subscribe(blob => saveAs(blob, this.choosenAnhang.filename));
   }

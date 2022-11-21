@@ -1,6 +1,7 @@
 import { DatePipe } from "@angular/common";
 import moment from "moment";
 import { AppComponent } from "../app.component";
+import { Person } from "./Person";
 
 // Constructor: https://marketplace.visualstudio.com/items?itemName=toanchivu.tcv-typescript-constructor-generator#:~:text=VSCode%20Extension%20Market-,Usage,-Just%20place%20your
 export class Protokollmessage {
@@ -80,7 +81,8 @@ export class Protokollmessage {
         let idx = 0;
         this.vIDs.forEach(e => {
             if (idx >= this.countDisplayVerantworliche) {
-                roles += sourceArray.find(x => x.ID == e).name + "<br/>"
+                let person: Person = sourceArray.find(x => x.ID == e);
+                roles += person.nachname + " " + person.vorname + "<br/>"
             }
             idx++;
         });
@@ -99,7 +101,7 @@ export class Protokollmessage {
         retVal["STATUS"] = this.status;
         retVal["ABLAUFDATUM"] = datepipe.transform(this.ablaufdatum, "dd_MM_YYYY_HH_mm_ss");
         retVal["AGENDAPUNKTID"] = this.agendapunktID;
-        retVal["PROTKOLLNUMMER"] = this.protokollNummer;
+        retVal["PROTOKOLLNUMMER"] = this.protokollNummer;
         retVal["NUMMER"] = this.nummer;
         retVal["OLDID"] = this.previousProtokollmessage != null ? this.previousProtokollmessage.ID : 0;
         return JSON.stringify(retVal);

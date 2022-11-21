@@ -16,7 +16,8 @@
                     <ng-template ngFor let-verantwortlicher [ngForOf]="message.vIDs" let-i="index">
                         <div *ngIf="i < message.countDisplayVerantworliche">
                             {{readPersonFromProtokollmessage(message.vType,
-                            verantwortlicher).name}}
+                            verantwortlicher).nachname}} {{readPersonFromProtokollmessage(message.vType,
+                                verantwortlicher).vorname}}
                         </div>
                         <div style="letter-spacing: 2.5px; font-weight: bold;"
                             *ngIf="i ==message.countDisplayVerantworliche"

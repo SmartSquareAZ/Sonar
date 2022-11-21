@@ -6,6 +6,7 @@ import { Person } from "./Person";
 // Constructor: https://marketplace.visualstudio.com/items?itemName=toanchivu.tcv-typescript-constructor-generator#:~:text=VSCode%20Extension%20Market-,Usage,-Just%20place%20your
 export class Protokollmessage {
     ID: number;
+    title: string;
     message: string;
     vType: number;
     vIDs: number[];
@@ -21,6 +22,7 @@ export class Protokollmessage {
 
     constructor(
         ID: number,
+        title: string,
         message: string,
         vType: number,
         vIDs: number[],
@@ -32,6 +34,7 @@ export class Protokollmessage {
         previousProtokollmessage: Protokollmessage
     ) {
         this.ID = ID
+        this.title = title;
         this.message = message
         this.vType = vType
         this.vIDs = vIDs
@@ -94,6 +97,7 @@ export class Protokollmessage {
 
         let retVal = JSON.parse("{}");
         retVal["ID"] = this.ID;
+        retVal["TITLE"] = this.title;
         retVal["MESSAGE"] = this.message;
         retVal["VTYPE"] = this.vType;
         retVal["VIDS"] = this.vIDs;
@@ -108,11 +112,11 @@ export class Protokollmessage {
     }
 
     static buildFromEmpty(): Protokollmessage {
-        return new Protokollmessage(0, "", 0, [], 0, new Date(), 0, "", 0, null as any);
+        return new Protokollmessage(0, "", "", 0, [], 0, new Date(), 0, "", 0, null as any);
     }
 
     static buildNew(agendapunktID: number, lastNummer: number): Protokollmessage {
-        return new Protokollmessage(0, "", 0, [], 0, new Date(), agendapunktID, AppComponent.PROTOKOLLNUMMER, lastNummer, null as any)
+        return new Protokollmessage(0, "", "", 0, [], 0, new Date(), agendapunktID, AppComponent.PROTOKOLLNUMMER, lastNummer, null as any)
     }
 
     static buildFromJSON(data: JSON): Protokollmessage {
@@ -123,8 +127,7 @@ export class Protokollmessage {
 
         // Date wird konvertiert
         let parsedDate = moment(dataObj["ABLAUFDATUM"], "DD_MM_YYYY_hh_mm_ss");
-        
-        return new Protokollmessage(dataObj["ID"], dataObj["MESSAGE"], dataObj["VTYPE"],
+        return new Protokollmessage(dataObj["ID"], dataObj["TITLE"], dataObj["MESSAGE"], dataObj["VTYPE"],
             dataObj["VIDS"], dataObj["STATUS"], parsedDate.toDate(),
             dataObj["AGENDAPUNKTID"], dataObj["PROTOKOLLNUMMER"], dataObj["NUMMER"], oldMessage);
     }

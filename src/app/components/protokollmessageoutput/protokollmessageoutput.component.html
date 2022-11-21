@@ -3,7 +3,8 @@
 
     <div class="col-1">{{message.nummer}}<br/>#{{message.protokollNummer}}</div>
     <div class="col-5 protokollmessageText">
-        <app-html-output [text]="message.message"></app-html-output>
+        <strong>{{message.title}}</strong>
+        <!--<app-html-output [text]="message.message"></app-html-output>-->
     </div>
     <div class="col-5">
         <div class="row w-100 d-flex justify-content-center align-items-center">

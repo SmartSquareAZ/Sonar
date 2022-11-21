@@ -2,7 +2,7 @@
     <div class="h-100 d-flex justify-content-center align-items-start pt-5" *ngIf="loadingAgenda">
         <app-loading></app-loading>
     </div>
-    <p-tree [value]="agendaPunkteNode" class="pTree h-100" *ngIf="!loadingAgenda" scrollHeight="100%" (onNodeSelect)="agendaPunktSelected($event)" selectionMode="single">
+    <p-tree [value]="agendaPunkteNode" class="pTree h-100" *ngIf="!loadingAgenda" scrollHeight="100%" (onNodeSelect)="agendaPunktSelected($event)" selectionMode="single" [(selection)]="selectedNode">
         <ng-template let-node pTemplate="default">
             <!--<a class="agendaLink" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                 <span [ngStyle]="{'color': node.farbe}" routerLink="" [fragment]="node.data.ID" preserveFragment="true">{{node.data.ID}} {{node.label}}</span>

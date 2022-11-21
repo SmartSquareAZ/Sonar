@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppComponent } from 'src/app/app.component';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
+import { ProtokollService } from 'src/app/service/protokoll/protokoll.service';
 import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/protokollmessage-websocket.service';
 import { BesprechungComponent } from '../besprechung/besprechung.component';
 
@@ -22,7 +23,7 @@ export class LayoutwrapperComponent implements OnInit {
 
   speedDialItems!: MenuItem[];
 
-  constructor(private messageSocketService: ProtokollmessageWebsocketService, private router: Router) { }
+  constructor(private messageSocketService: ProtokollmessageWebsocketService, private router: Router, private protokollService: ProtokollService) { }
 
   ngOnInit(): void {
     this.speedDialItems = [
@@ -34,8 +35,10 @@ export class LayoutwrapperComponent implements OnInit {
         icon: 'pi pi-flag-fill',
         tooltip: 'Protokoll abschließen',
         command: () => {
-          this.messageSocketService.sendOperation("DONE", "", "");
-          this.router.navigate(["/done"]);
+          this.protokollService.updateStatus(AppComponent.PROTOKOLLID, 3, () => {
+            this.messageSocketService.sendOperation("DONE", "", "");
+            this.router.navigate(["/done"]);
+          });
         }
       }
     ]

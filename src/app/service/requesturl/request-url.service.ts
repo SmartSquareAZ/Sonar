@@ -12,6 +12,10 @@ export class RequestUrlService {
    */
   public readonly STATE: number = -1;
 
+  //#region Protokoll
+  public PROTOKOLL_UPDATE_STATUS: string = "";
+  //#endregion
+
   //#region Protokollmessage
   public MESSAGE_CREATE: string = "";
   public MESSAGE_UPDATE: string = "";
@@ -88,6 +92,10 @@ export class RequestUrlService {
       let createPath = "/CREATE";
       let updatePath = "/UPDATE";
       let deletePath = "/DELETE";
+
+      //#region Protokoll
+      this.PROTOKOLL_UPDATE_STATUS = url + "/PROTOKOLL/UPDATE/STATUS"
+      //#endregion
 
       //#region Protokollmessage
       this.MESSAGE_CREATE = url + "/MESSAGE" + createPath;

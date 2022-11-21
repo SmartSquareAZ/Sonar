@@ -53,6 +53,8 @@ export class AgendaComponent implements OnInit {
     farbe: [""]
   });
 
+  selectedNode!: TreeNode;
+
   /**
    * Node welche im Dialog bearbeitet wird
    */

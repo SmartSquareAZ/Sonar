@@ -33,3 +33,8 @@
     margin-right: 15px;
     margin-block: 10px;
 }
+
+:host ::ng-deep .p-dropdown .p-dropdown-label {
+    align-items: center;
+    justify-content: center;
+}

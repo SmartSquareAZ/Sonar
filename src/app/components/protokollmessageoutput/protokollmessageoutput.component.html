@@ -2,13 +2,13 @@
     *ngIf="!message.isEditing">
 
     <div class="col-1">{{message.nummer}}<br/>#{{message.protokollNummer}}</div>
-    <div class="col-6 protokollmessageText">
+    <div class="col-5 protokollmessageText">
         <app-html-output [text]="message.message"></app-html-output>
     </div>
-    <div class="col-4">
+    <div class="col-5">
         <div class="row w-100 d-flex justify-content-center align-items-center">
 
-            <div class="col-8 d-flex justify-content-center align-items-center flex-column py-3">
+            <div class="col-6 d-flex justify-content-center align-items-center flex-column py-3">
                 <div *ngIf="message.vType != 3 && message.vType != 4">
                     {{message.readVTypeText()}}
                 </div>
@@ -27,7 +27,7 @@
                     </ng-template>
                 </div>
             </div>
-            <div class="col-4 d-flex justify-content-center align-items-center flex-column">
+            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
                 <div style="margin-bottom: 3px; word-wrap: break-word; white-space: nowrap;"
                     [class]="message.readStatusBadge()">
                     {{message.readStatusText()}}</div>

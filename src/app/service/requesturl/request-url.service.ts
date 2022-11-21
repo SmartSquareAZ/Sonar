@@ -10,7 +10,7 @@ export class RequestUrlService {
    * 0 = test.smartsquare.at
    * 1 = sonar.smartsquare.at
    */
-  public readonly STATE: number = 1;
+  public readonly STATE: number = -1;
 
   //#region Protokollmessage
   public MESSAGE_CREATE: string = "";

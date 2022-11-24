@@ -12,6 +12,8 @@ import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/prot
 })
 export class AgendapunktpanelComponent implements OnInit {
 
+  ausgeblendeteAnzeigen: boolean = true;
+
   verantwortlichenTypen = Protokollmessage.vTypeText;
 
   protokollMessageLoading: boolean = true;

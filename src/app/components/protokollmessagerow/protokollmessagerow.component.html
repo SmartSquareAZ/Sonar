@@ -81,6 +81,9 @@
                                 <label for="expireDate">Ablaufdatum</label>
                             </span>
                         </div>
+                        <div class="mt-3 w-100">
+                            <p-toggleButton [(ngModel)]="message.ausgeblendet" [onLabel]="'Ausgeblendet'" [onIcon]="'pi pi-eye'" [offLabel]="'Nicht ausgeblendet'" [offIcon]="'pi pi-times'"></p-toggleButton>
+                        </div>
                     </div>
                 </div>
             </div>

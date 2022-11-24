@@ -15,6 +15,7 @@ export class Protokollmessage {
     agendapunktID: number;
     protokollNummer: string;
     nummer: number;
+    ausgeblendet: number;
     previousProtokollmessage: Protokollmessage;
 
     isEditing: boolean = false;
@@ -31,6 +32,7 @@ export class Protokollmessage {
         agendapunktID: number,
         protokollNummer: string,
         nummer: number,
+        ausgeblendet: number,
         previousProtokollmessage: Protokollmessage
     ) {
         this.ID = ID
@@ -42,7 +44,8 @@ export class Protokollmessage {
         this.ablaufdatum = ablaufdatum
         this.agendapunktID = agendapunktID
         this.protokollNummer = protokollNummer;
-        this.nummer = nummer
+        this.nummer = nummer;
+        this.ausgeblendet = ausgeblendet;
         this.previousProtokollmessage = previousProtokollmessage
     }
 
@@ -109,15 +112,16 @@ export class Protokollmessage {
         retVal["PROTOKOLLNUMMER"] = this.protokollNummer;
         retVal["NUMMER"] = this.nummer;
         retVal["OLDID"] = this.previousProtokollmessage != null ? this.previousProtokollmessage.ID : 0;
+        retVal["AUSGEBLENDET"] = this.ausgeblendet;
         return JSON.stringify(retVal);
     }
 
     static buildFromEmpty(): Protokollmessage {
-        return new Protokollmessage(0, "", "", 0, [], 0, new Date(), 0, "", 0, null as any);
+        return new Protokollmessage(0, "", "", 0, [], 0, new Date(), 0, "", 0, 0, null as any);
     }
 
     static buildNew(agendapunktID: number, lastNummer: number): Protokollmessage {
-        return new Protokollmessage(0, "", "", 0, [], 0, new Date(), agendapunktID, AppComponent.PROTOKOLLNUMMER, lastNummer, null as any)
+        return new Protokollmessage(0, "", "", 0, [], 0, new Date(), agendapunktID, AppComponent.PROTOKOLLNUMMER, lastNummer, 0, null as any)
     }
 
     static buildFromJSON(data: JSON): Protokollmessage {
@@ -130,7 +134,7 @@ export class Protokollmessage {
         let parsedDate = moment(dataObj["ABLAUFDATUM"], "DD_MM_YYYY_hh_mm_ss");
         return new Protokollmessage(dataObj["ID"], dataObj["TITLE"], dataObj["MESSAGE"], dataObj["VTYPE"],
             dataObj["VIDS"], dataObj["STATUS"], parsedDate.toDate(),
-            dataObj["AGENDAPUNKTID"], dataObj["PROTOKOLLNUMMER"], dataObj["NUMMER"], oldMessage);
+            dataObj["AGENDAPUNKTID"], dataObj["PROTOKOLLNUMMER"], dataObj["NUMMER"], dataObj["AUSGEBLENDET"], oldMessage);
     }
 
     static buildFromJSONArray(data: JSON): Protokollmessage[] {

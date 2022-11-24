@@ -56,6 +56,11 @@ export class ProtokollmessagerowComponent implements OnInit {
 
   ngOnInit(): void {
     this.firmenList = Array.from(this.firmenMap.keys());
+    for(let firma of this.firmenList) {
+      if(this.contactMap.get(this.message.vIDs[0]) != undefined && this.contactMap.get(this.message.vIDs[0]) == firma) {
+        this.selectedFirma = firma;
+      }
+    }
   }
 
   /**
@@ -90,7 +95,6 @@ export class ProtokollmessagerowComponent implements OnInit {
         this.socketService.sendOperation("UNBLOCK", "", protokollmessage.toJSONString());
       });
     } else {
-      console.log(protokollmessage)
       this.protokollmessageService.updateProtokollmessage(protokollmessage, (retVal: JSON) => {
         let updatedProtokollmessage: Protokollmessage = Protokollmessage.buildFromJSON(retVal);
         protokollmessage.isEditing = false;

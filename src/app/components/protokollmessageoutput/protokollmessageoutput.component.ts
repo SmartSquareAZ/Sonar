@@ -40,7 +40,6 @@ export class ProtokollmessageoutputComponent implements OnInit {
     if(this.message.vType == 8) {
       let firma = this.contactMap.get(this.message.vIDs[0]);
       
-      //console.log(firma)
       if(firma == undefined) return "";
       return firma;
     }

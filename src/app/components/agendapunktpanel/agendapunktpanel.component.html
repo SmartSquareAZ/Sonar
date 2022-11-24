@@ -3,6 +3,8 @@
         <div class="d-flex justify-content-between align-items-center p-3" style="height: 75px;">
             <h4 [id]="'titel_' + agendapunkt.ID" [style]="{'color': agendapunkt.farbe}">{{agendapunkt.nummer}}
                 {{agendapunkt.name}}</h4>
+            <p-toggleButton [onLabel]="'Ausgeblendete werden anzeigt'" [offLabel]="'Ausgeblendete werden nicht anzeigt'" [(ngModel)]="ausgeblendeteAnzeigen"
+                            [onIcon]="'pi pi-eye'" [offIcon]="'pi pi-times'"></p-toggleButton>
             <button pButton pRipple type="button" label="Neu" icon="pi pi-plus" class="p-button-outlined"
                 (click)="addNewProtokollmessage(agendapunkt)"></button>
         </div>
@@ -18,7 +20,10 @@
                         [loading]="protokollMessageLoading">
     
                         <ng-template pTemplate="body" let-protokollmessage let-protokollmessageIndex="rowIndex">
-                            <app-protokollmessagerow [message]="protokollmessage" [messageIndex]="protokollmessageIndex" [editable]="true" [employee]="employee" [contacts]="contacts" [firmenMap]="firmenMap" [contactMap]="contactMap" (removeProtokollmessageEvent)="removeProtokollmessage($event)" (saveProtokollmessageEvent)="updateSavedProtokollmessage($event)"></app-protokollmessagerow>
+                            <app-protokollmessagerow *ngIf="(ausgeblendeteAnzeigen && protokollmessage.ausgeblendet) || !protokollmessage.ausgeblendet" [message]="protokollmessage" 
+                                                    [messageIndex]="protokollmessageIndex" [editable]="true" [employee]="employee" [contacts]="contacts" 
+                                                    [firmenMap]="firmenMap" [contactMap]="contactMap" (removeProtokollmessageEvent)="removeProtokollmessage($event)" 
+                                                    (saveProtokollmessageEvent)="updateSavedProtokollmessage($event)"></app-protokollmessagerow>
                             <div class="finishPanel"></div>
                         </ng-template>
     

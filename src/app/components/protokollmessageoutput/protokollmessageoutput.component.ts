@@ -13,6 +13,7 @@ export class ProtokollmessageoutputComponent implements OnInit {
   @Input() employee: any[] = [];
   @Input() contacts: any[] = [];
   @Input() editable: boolean = false;
+  @Input() contactMap: Map<number, string> = new Map<number, string>();
 
   constructor(private socketService: ProtokollmessageWebsocketService) { }
 
@@ -33,5 +34,16 @@ export class ProtokollmessageoutputComponent implements OnInit {
   checkAndSetEditing() {
     this.message.isEditing = this.editable ? true : false;
     this.socketService.sendOperation("BLOCK", "", this.message.toJSONString());
+  }
+
+  getTypeTooltip(): string {
+    if(this.message.vType == 8) {
+      let firma = this.contactMap.get(this.message.vIDs[0]);
+      
+      //console.log(firma)
+      if(firma == undefined) return "";
+      return firma;
+    }
+    return "";
   }
 }

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { resolveAfterXSeconds } from 'src/app/Constants';
+import { Person } from 'src/app/models/Person';
 import { Protokollmessage } from 'src/app/models/Protokollmessage';
 import { ProtokollmessageService } from 'src/app/service/protokollmessage/protokollmessage.service';
 import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/protokollmessage-websocket.service';
@@ -13,8 +14,10 @@ export class ProtokollmessagerowComponent implements OnInit {
 
   @Input() message: any;
   @Input() messageIndex: number = 0;
-  @Input() employee: any[] = [];
-  @Input() contacts: any[] = [];
+  @Input() employee: Person[] = [];
+  @Input() contacts: Person[] = [];
+  @Input() firmenMap: Map<string, number[]> = new Map<string, number[]>();
+  @Input() contactMap: Map<number, string> = new Map<number, string>();
   @Input() editable: boolean = false;
 
   @Output() removeProtokollmessageEvent = new EventEmitter<Protokollmessage>();
@@ -39,9 +42,20 @@ export class ProtokollmessagerowComponent implements OnInit {
    */
   oldProtokollmessages: Protokollmessage[] = [];
 
+  /**
+   * Array aller Firmen (firmenMap.keys())
+   */
+  firmenList: string[] = [];
+
+  /**
+   * Für die Listbox (um nachher mit firmenMap.get("") die IDs der Kontakte zu holen)
+   */
+  selectedFirma!: string;
+
   constructor(private protokollmessageService: ProtokollmessageService, private socketService: ProtokollmessageWebsocketService) { }
 
   ngOnInit(): void {
+    this.firmenList = Array.from(this.firmenMap.keys());
   }
 
   /**
@@ -51,11 +65,20 @@ export class ProtokollmessagerowComponent implements OnInit {
    * @param vID Verantwortlichen ID
    * @returns Personenobject
    */
-  readPersonFromProtokollmessage(vtype: number, vID: number) {
+  readPersonFromProtokollmessage(vtype: number, vID: number): Person | undefined {
     return (vtype == 3 ? this.employee : this.contacts).find(x => x.ID == vID);
   }
 
   saveProtokollmessage(protokollmessage: Protokollmessage) {
+    if(protokollmessage.vType == 8) {
+      let ids = this.firmenMap.get(this.selectedFirma);
+      if(ids == undefined) {
+        protokollmessage.vIDs = [];
+        return;
+      }
+      protokollmessage.vIDs = ids;
+    }
+
     if(protokollmessage.ID == 0) {
       this.protokollmessageService.saveProtokollmessage(protokollmessage, (retVal: JSON) => {
         let newProtokollmessage: Protokollmessage = Protokollmessage.buildFromJSON(retVal);
@@ -67,6 +90,7 @@ export class ProtokollmessagerowComponent implements OnInit {
         this.socketService.sendOperation("UNBLOCK", "", protokollmessage.toJSONString());
       });
     } else {
+      console.log(protokollmessage)
       this.protokollmessageService.updateProtokollmessage(protokollmessage, (retVal: JSON) => {
         let updatedProtokollmessage: Protokollmessage = Protokollmessage.buildFromJSON(retVal);
         protokollmessage.isEditing = false;
@@ -96,6 +120,12 @@ export class ProtokollmessagerowComponent implements OnInit {
   setPreviousEditingTrue() {
     this.message.previousProtokollmessage.isEditing = true;
     this.socketService.sendOperation("BLOCK", "", this.message.previousProtokollmessage.toJSONString());
+  }
+
+  getFirmaString(firma: string): string {
+    let ids = this.firmenMap.get(firma);
+    if(ids == undefined) return "0 Mitarbeiter";
+    return `${ids.length.toString()} Mitarbeiter`;
   }
 
   /**

@@ -10,7 +10,7 @@
     <div class="col-11">
 
         <app-protokollmessageoutput *ngIf="!message.isEditing" [message]="message" [editable]="true"
-            [employee]="employee" [contacts]="contacts"></app-protokollmessageoutput>
+            [employee]="employee" [contacts]="contacts" [contactMap]="contactMap"></app-protokollmessageoutput>
 
         <div class="w-100 row justify-content-between align-items-center choosen" *ngIf="message.isEditing && editable">
             <div class="col-1">{{message.nummer}}<br/>#{{message.protokollNummer}}</div>
@@ -47,10 +47,20 @@
                                 [listStyle]="{'max-height':'250px'}" optionLabel="name" optionValue="ID" [filter]="true"
                                 [multiple]="true" [checkbox]="true">
                                 <ng-template let-person pTemplate="item">
-                                    <span>{{person.nachname}} {{person.vorname}}</span>
+                                    <span>{{person.toOutput()}}</span>
                                 </ng-template>
                             </p-listbox>
                         </div>
+
+                        <div *ngIf="message.vType == 8">
+                            <p-listbox [options]="firmenList" [(ngModel)]="selectedFirma"
+                                [listStyle]="{'max-height':'250px'}" [filter]="true">
+                                <ng-template let-firma pTemplate="item">
+                                    <span [pTooltip]="getFirmaString(firma)">{{firma}}</span>
+                                </ng-template>
+                            </p-listbox>
+                        </div>
+
                     </div>
 
                     <div class="col-6 d-flex justify-content-center align-items-center flex-column">
@@ -97,7 +107,8 @@
                                 let-i="index">
                                 <div *ngIf="i < message.previousProtokollmessage.countDisplayVerantworliche">
                                     {{readPersonFromProtokollmessage(message.previousProtokollmessage.vType,
-                                    verantwortlicher).name}}
+                                    verantwortlicher)?.nachname}} {{readPersonFromProtokollmessage(message.previousProtokollmessage.vType,
+                                        verantwortlicher)?.vorname}}
                                 </div>
                                 <div style="letter-spacing: 2.5px; font-weight: bold;"
                                     *ngIf="i ==message.previousProtokollmessage.countDisplayVerantworliche"

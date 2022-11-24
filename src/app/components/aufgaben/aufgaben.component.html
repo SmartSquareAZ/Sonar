@@ -8,7 +8,7 @@
             style="background-color: var(--surface-b); border-bottom: 1px solid #bbb; height: 70px;">
             <div class="col-8">
                 <p-selectButton [options]="erledigtOptions" optionLabel="key"
-                    optionValue="value" [(ngModel)]="erledigt" (onChange)="loadAufgaben()" id="erledigtSelectButton"></p-selectButton>
+                    optionValue="value" [(ngModel)]="erledigt" id="erledigtSelectButton"></p-selectButton>
             </div>
             <div class="col-4 text-end">
                 <button pButton pRipple type="button" icon="pi pi-plus" label="Neu" (click)="openDialog()"
@@ -18,7 +18,7 @@
 
         <div class="ms-2 overflow-auto pt-2" style="height: calc(100% - 80px)">
 
-            <p-table [value]="aufgaben" responsiveLayout="scroll" [scrollable]="true" scrollHeight="flex"
+            <p-table [value]="this.erledigt ? this.erledigteAufgaben : this.aufgaben" responsiveLayout="scroll" [scrollable]="true" scrollHeight="flex"
                 dataKey="kurzbeschreibung">
 
                 <ng-template pTemplate="body" let-aufgabe let-expanded="expanded">
@@ -115,19 +115,7 @@
                     <app-agenda [showEditField]="false" [(choosenAufgabe)]="choosenAufgabe"></app-agenda>
                 </div>
 
-                <div class="mt-2">
-                    <label class="decorLabel">Wichtigkeit</label>
-
-                    <div *ngFor="let severity of severities" class="field-checkbox">
-                        <div class="d-flex justify-content-start align-items-center">
-                            <p-radioButton [inputId]="severity.key" [value]="severity.key"
-                                formControlName="wichtigkeit">
-                            </p-radioButton>
-                            <label [for]="severity.key"
-                                class="radioLabel status-badge status-{{severity.class}}">{{severity.name}}</label>
-                        </div>
-                    </div>
-                </div>
+                
 
 
                 <div class="mt-2">
@@ -143,21 +131,54 @@
                     <label class="decorLabel">Verantwortlicher</label><br />
 
                     <p-dropdown [options]="verantwortliche" formControlName="vID" optionLabel="nachname" optionValue="ID"
-                        [filter]="true" filterBy="name" placeholder="Person wählen" appendTo="body" (onChange)="verantwortlicheDropdownChanged($event)">
+                        [filter]="true" filterBy="name" placeholder="Person wählen" appendTo="body" (onChange)="verantwortlicheDropdownChanged($event)" panelStyleClass="dropdownPanel">
 
                         <ng-template pTemplate="selectedItem" *ngIf="selectedVerantwortlicher">
-                            <div>
+                            <div [pTooltip]="selectedVerantwortlicher.toOutput()" tooltipPosition="left">
                                 <span>{{selectedVerantwortlicher.toOutput()}}</span>
                             </div>
                         </ng-template>
 
                         <ng-template let-person pTemplate="item">
-                            <div>
+                            <div [pTooltip]="person.toOutput()" tooltipPosition="left">
                                 <span>{{person.toOutput()}}</span>
                             </div>
                         </ng-template>
                     </p-dropdown>
                 </div>
+            </div>
+        </div>
+
+        <div class="row d-flex align-items-center justify-content-center flex-row mt-2">
+            <div class="col-7 d-flex align-items-center justify-content-center flex-column">
+                <div class="d-flex justify-content-between align-items-center flex-row w-100">
+                    <label class="decorLabel">Wichtigkeit</label>
+
+                    <div *ngFor="let severity of severities" class="field-checkbox">
+                        <div class="d-flex justify-content-start align-items-center">
+                            <p-radioButton [inputId]="severity.key" [value]="severity.key"
+                                formControlName="wichtigkeit">
+                            </p-radioButton>
+                            <label [for]="severity.key"
+                                class="radioLabel status-badge status-{{severity.class}}">{{severity.name}}</label>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="col-5 d-flex align-items-center justify-content-center flex-column">
+                <div class="justify-content-start">
+                    <label class="decorLabel">Erledigt</label>
+                    <div *ngIf="choosenAufgabe.status != 2">
+                        <p-selectButton [options]="erledigtOptions" formControlName="erledigt" optionLabel="key"
+                            optionValue="value"></p-selectButton>
+                    </div>
+                    <div *ngIf="choosenAufgabe.status == 2">
+                        <span class="status-badge status-red" pTooltip="Bei abgelaufene Aufgaben können keine Statusänderungen vorgenommen werden.">Aufgabe ist bereits abgelaufen</span>
+                    </div>
+                </div>
+                
             </div>
         </div>
 

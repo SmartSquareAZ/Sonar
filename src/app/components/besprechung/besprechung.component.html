@@ -4,7 +4,7 @@
         dataKey="ID" [rows]="5" [loading]="loadingAgenda" class="h-100" [showLoader]="false">
         <ng-template pTemplate="body" let-agendapunkt>
             <app-agendapunktpanel [headerStyle]="headerStyle" [employee]="employee" [contacts]="contacts"
-                [agendapunkt]="agendapunkt"></app-agendapunktpanel>
+                [agendapunkt]="agendapunkt" [firmenMap]="firmenMap" [contactMap]="contactMap"></app-agendapunktpanel>
         </ng-template>
 
         <ng-template pTemplate="loadingbody" let-i="rowIndex">

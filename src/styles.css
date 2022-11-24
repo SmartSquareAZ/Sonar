@@ -16,3 +16,7 @@
     color: #b3b3b3 !important;
     border-color: #b3b3b3 !important;
 }
+
+.dropdownPanel {
+    max-width: 13em;
+}

@@ -14,6 +14,7 @@ import { Mitarbeiter } from 'src/app/models/Mitarbeiter';
 import { Kontakt } from 'src/app/models/Kontakt';
 import { Person } from 'src/app/models/Person';
 import { AufgabenWebsocketService } from 'src/app/service/websocket/aufgaben-websocket.service';
+import { VerteilerService } from 'src/app/service/verteiler/verteiler.service';
 
 @Component({
   selector: 'app-aufgaben',
@@ -29,9 +30,14 @@ export class AufgabenComponent implements OnInit {
   loadingAufgaben: boolean = false;
 
   /**
-   * Array aller Aufgaben
+   * Array aller nicht erledigten Aufgaben
    */
   aufgaben: Aufgabe[] = [];
+
+  /**
+   * Array aller erledigten Aufgaben
+   */
+  erledigteAufgaben: Aufgabe[] = [];
 
   /**
    * Array der AgendaPunkte im Protokoll
@@ -68,7 +74,7 @@ export class AufgabenComponent implements OnInit {
   ]
 
   erledigtOptions: any[] = [
-    { value: 0, key: "Nicht erledigt"},
+    { value: 0, key: "Offen",},
     { value: 1, key: "Erledigt"}
   ]
 
@@ -81,6 +87,7 @@ export class AufgabenComponent implements OnInit {
     kurzbeschreibung: ["", Validators.required],
     beschreibung: [""],
     wichtigkeit: [1, Validators.required],
+    erledigt: [0, Validators.required],
     vType: [0, Validators.required],
     vID: [0, Validators.required],
     expireDate: [createDefaultDate(), Validators.required],
@@ -123,7 +130,26 @@ export class AufgabenComponent implements OnInit {
         this.aufgaben.push(Aufgabe.buildFromObject(data));
       }
       if (operation == "UPDATE") {
-        this.aufgaben[this.aufgaben.findIndex((aufgabe => aufgabe.ID == data["ID"]))] = Aufgabe.buildFromObject(data);
+        //this.aufgaben[this.aufgaben.findIndex((aufgabe => aufgabe.ID == data["ID"]))] = Aufgabe.buildFromObject(data);
+        let oldStatus = data["OLDSTATUS"];
+        let retVal: Aufgabe = Aufgabe.buildFromObject(data);
+        if(oldStatus != 1 && retVal.status == 1) {
+          this.aufgaben = this.aufgaben.filter(x => x.ID != retVal.ID);
+          this.erledigteAufgaben.push(retVal);
+        }
+        if(oldStatus == 1 && retVal.status != 1) {
+          this.erledigteAufgaben = this.erledigteAufgaben.filter(x => x.ID != retVal.ID);
+          this.aufgaben.push(retVal);
+        }
+        if(oldStatus == retVal.status) {
+          if(retVal.status != 1) {
+            let index = this.aufgaben.findIndex(x => x.ID == retVal.ID);
+            this.aufgaben[index] = retVal;
+          } else {
+            let index = this.erledigteAufgaben.findIndex(x => x.ID == retVal.ID);
+            this.erledigteAufgaben[index] = retVal;
+          }
+        }
       }
       if (operation == "DELETE") {
         this.aufgaben = this.aufgaben.filter(aufgabe => aufgabe.ID !== data["ID"]);
@@ -139,14 +165,20 @@ export class AufgabenComponent implements OnInit {
   loadAufgaben(): void {
     // Flag wird gesetzt
     this.loadingAufgaben = true;
+    this.aufgaben = [];
+    this.erledigteAufgaben = [];
     // Aufgaben werden geladen 
-    this.aufgabenService.readAufgaben(this.erledigt, (res: JSON) => {
+    this.aufgabenService.readAufgaben((res: JSON) => {
       let objectArray: any = res;
-      let retVal: Aufgabe[] = [];
       for(let aufgabenObject of objectArray) {
-        retVal.push(Aufgabe.buildFromObject(aufgabenObject));
+        let aufgabe = Aufgabe.buildFromObject(aufgabenObject);
+        if(aufgabe.status == 1) {
+          this.erledigteAufgaben.push(aufgabe);
+        } else {
+          this.aufgaben.push(aufgabe);
+        }
+        
       }
-      this.aufgaben = retVal;
       this.loadingAufgaben = false;
     });
   }
@@ -170,10 +202,12 @@ export class AufgabenComponent implements OnInit {
   }
 
   saveAufgabe() {
+    let oldStatus = this.choosenAufgabe.status;
     // Werte der Form werden in Objekt übernommen
     this.choosenAufgabe.kurzbeschreibung = "" + this.aufgabenForm.get('kurzbeschreibung')?.value;
     this.choosenAufgabe.beschreibung = "" + this.aufgabenForm.get('beschreibung')?.value;
     this.choosenAufgabe.wichtigkeit = +("" + this.aufgabenForm.get('wichtigkeit')?.value);
+    this.choosenAufgabe.status = +("" + this.aufgabenForm.get('erledigt')?.value);
     this.choosenAufgabe.verantwortlicherTyp = +("" + this.aufgabenForm.get('vType')?.value);
     this.choosenAufgabe.verantwortlicherID = +("" + this.aufgabenForm.get('vID')?.value);
     this.choosenAufgabe.ablaufdatum = this.aufgabenForm.get('expireDate')?.value;
@@ -182,13 +216,34 @@ export class AufgabenComponent implements OnInit {
       // Daten wird gespeichert
       this.aufgabenService.saveAufgabe(this.choosenAufgabe, (res: object) => {
         let retVal: Aufgabe = Aufgabe.buildFromObject(res);
-        this.aufgaben.push(retVal);
+        if(retVal.status == 1) {
+          this.erledigteAufgaben.push(retVal);
+        } else {
+          this.aufgaben.push(retVal);
+        }
         this.socketService.sendOperation("CREATE", "", retVal.toJSONString());
       });
     } else {
       this.aufgabenService.updateAufgabe(this.choosenAufgabe, (res: object) => {
         let retVal: Aufgabe = Aufgabe.buildFromObject(res);
-        this.socketService.sendOperation("UPDATE", "", retVal.toJSONString());
+        if(oldStatus != 1 && retVal.status == 1) {
+          this.aufgaben = this.aufgaben.filter(x => x.ID != retVal.ID);
+          this.erledigteAufgaben.push(retVal);
+        }
+        if(oldStatus == 1 && retVal.status != 1) {
+          this.erledigteAufgaben = this.erledigteAufgaben.filter(x => x.ID != retVal.ID);
+          this.aufgaben.push(retVal);
+        }
+        if(oldStatus == retVal.status) {
+          if(retVal.status != 1) {
+            let index = this.aufgaben.findIndex(x => x.ID == retVal.ID);
+            this.aufgaben[index] = retVal;
+          } else {
+            let index = this.erledigteAufgaben.findIndex(x => x.ID == retVal.ID);
+            this.erledigteAufgaben[index] = retVal;
+          }
+        }
+        this.socketService.sendOperation("UPDATE", "", retVal.toJSONString(oldStatus));
       });
     }
 
@@ -246,6 +301,12 @@ export class AufgabenComponent implements OnInit {
     this.aufgabenForm.controls['kurzbeschreibung'].setValue(this.choosenAufgabe.kurzbeschreibung);
     this.aufgabenForm.controls['beschreibung'].setValue(this.choosenAufgabe.beschreibung);
     this.aufgabenForm.controls['wichtigkeit'].setValue(this.choosenAufgabe.wichtigkeit);
+    this.aufgabenForm.controls['erledigt'].setValue(this.choosenAufgabe.status);
+    if(this.choosenAufgabe.status == 2) {
+      this.aufgabenForm.controls['erledigt'].disable();
+    } else {
+      this.aufgabenForm.controls['erledigt'].enable();
+    }
     this.aufgabenForm.controls['vType'].setValue(this.choosenAufgabe.verantwortlicherTyp);
     this.aufgabenForm.controls['vID'].setValue(this.choosenAufgabe.verantwortlicherID);
     this.aufgabenForm.controls['expireDate'].setValue(this.choosenAufgabe.ablaufdatum);

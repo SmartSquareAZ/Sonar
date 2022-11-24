@@ -38,8 +38,8 @@ export class AufgabenService {
     this.utilsService.POST(this.requestURL.AUFGABE_DELETE, aufgabe.toJSONString(), success);
   }
 
-  readAufgaben(erledigt: number, success: Function): void {
+  readAufgaben(success: Function): void {
     // API Stuff
-    this.utilsService.GET(`${this.requestURL.AUFGABE_READ}?PROJEKTID=${AppComponent.PROJEKTID}&AGENDAID=${AppComponent.AGENDAID}&ERLEDIGT=${erledigt}`, success);
+    this.utilsService.GET(`${this.requestURL.AUFGABE_READ}?PROJEKTID=${AppComponent.PROJEKTID}&AGENDAID=${AppComponent.AGENDAID}`, success);
   }
 }

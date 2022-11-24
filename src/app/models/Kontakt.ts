@@ -20,10 +20,22 @@ export class Kontakt extends Person {
     }
 
     override toOutput(): string {
-        if(this.firmenname == "") {
-            return `${this.nachname} ${this.vorname}`;
+        let retVal: string = "";
+
+        let hasNachOrVorname = this.nachname != "" || this.vorname != "";
+
+        if(hasNachOrVorname) {
+            retVal += `${this.nachname} ${this.vorname}`;
         }
-        return `${this.nachname} ${this.vorname} - ${this.firmenname}`;
+        if(this.firmenname != "") {
+            if(hasNachOrVorname) {
+                retVal += " - "
+            }
+            
+            retVal += `${this.firmenname}`;
+        }
+
+        return retVal;
     }
 
     static buildFromJSON(json: JSON) {

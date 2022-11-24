@@ -51,7 +51,8 @@ export class Protokollmessage {
         { type: 1, label: "Alle Anwesenden" },
         { type: 2, label: "Alle Mitarbeiter" },
         { type: 3, label: "Gewählter Mitarbeiter" },
-        { type: 4, label: "Gewählter Kontakt" }
+        { type: 4, label: "Gewählter Kontakt" },
+        { type: 8, label: "Gewählte Firma"}
     ]
 
     /**

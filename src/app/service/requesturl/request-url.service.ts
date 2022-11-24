@@ -67,6 +67,10 @@ export class RequestUrlService {
   public KONTAKTE_READ_ID: string = "";
   //#endregion
 
+  //#region Verteiler
+  public VERTEILER_READ: string = "";
+  //#endregion
+
   //#region Websockets
   public WEBSOCKET_AGENDAPUNKT: string = "";
   public WEBSOCKET_AUFGABE: string = "";
@@ -147,6 +151,9 @@ export class RequestUrlService {
       this.KONTAKTE_READ = url + "/KONTAKTE/READ";
       this.KONTAKTE_READ_ID = url + "/KONTAKTE/READ/ID";
       //#endregion
+
+      //#region Verteiler
+      this.VERTEILER_READ = url + "/VERTEILER/READ";
 
       //#region Websockets
       this.WEBSOCKET_AGENDAPUNKT = websocketurl + "/AGENDAPUNKT";

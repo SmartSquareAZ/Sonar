@@ -53,6 +53,7 @@ import { ToastModule } from 'primeng/toast';
 import { ValidationHttpInterceptor } from './ValidationHttpInterceptor';
 import { MessageService } from 'primeng/api';
 import {SpeedDialModule} from 'primeng/speeddial';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ProtokollabschlussComponent } from './components/protokollabschluss/protokollabschluss.component';
 
 
@@ -111,7 +112,8 @@ import { ProtokollabschlussComponent } from './components/protokollabschluss/pro
     InputTextareaModule,
     FileUploadModule,
     ToastModule,
-    SpeedDialModule
+    SpeedDialModule,
+    ToggleButtonModule
   ],
   providers: [ MessageService,
     {

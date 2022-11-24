@@ -64,7 +64,7 @@ export class Aufgabe {
         return Aufgabe.statusText[this.status];
     }
 
-    toJSONString(): string {
+    toJSONString(oldStatus: number = this.status): string {
         const datepipe: DatePipe = new DatePipe('en-US')
         let retVal = JSON.parse("{}");
         retVal['ID'] = this.ID;
@@ -80,6 +80,7 @@ export class Aufgabe {
         retVal['ERSTELLERID'] = AppComponent.PERSONID;
         retVal['MASTERID'] = this.masterID;
         retVal['TYPE'] = this.type;
+        retVal['OLDSTATUS'] = oldStatus;
         return JSON.stringify(retVal);
     }
 

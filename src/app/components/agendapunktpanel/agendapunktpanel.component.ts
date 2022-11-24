@@ -53,6 +53,8 @@ export class AgendapunktpanelComponent implements OnInit {
   @Input() agendapunkt: any;
   @Input() employee: any[] = [];
   @Input() contacts: any[] = [];
+  @Input() firmenMap: Map<string, number[]> = new Map<string, number[]>();
+  @Input() contactMap: Map<number, string> = new Map<number, string>();
 
   constructor(private protokollmessageService: ProtokollmessageService, private socketService: ProtokollmessageWebsocketService) { }
 

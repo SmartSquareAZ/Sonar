@@ -4,8 +4,10 @@ import { Table } from 'primeng/table';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 import { Kontakt } from 'src/app/models/Kontakt';
 import { Mitarbeiter } from 'src/app/models/Mitarbeiter';
+import { Person } from 'src/app/models/Person';
 import { AgendaService } from 'src/app/service/agenda/agenda.service';
 import { PersonService } from 'src/app/service/person/person.service';
+import { VerteilerService } from 'src/app/service/verteiler/verteiler.service';
 import { AgendapunktpanelComponent } from '../agendapunktpanel/agendapunktpanel.component';
 
 @Component({
@@ -35,10 +37,13 @@ export class BesprechungComponent implements OnInit {
    */
   headerStyle: string = "font-weight: bold; color: var(--primary-color);";
 
-  employee: any[] = [];
-  contacts: any[] = [];
+  employee: Person[] = [];
+  contacts: Person[] = [];
+  contactMap: Map<number, string> = new Map<number, string>();
+  firmenMap: Map<string, number[]> = new Map<string, number[]>();
+  //verteilerKontaktIDs: object[] = [];
 
-  constructor(private agendaService: AgendaService, private personService: PersonService) { }
+  constructor(private agendaService: AgendaService, private personService: PersonService, private verteilerService: VerteilerService) { }
 
   ngOnInit() {
     this.personService.getMitarbeiter((res: JSON[]) => {
@@ -49,9 +54,36 @@ export class BesprechungComponent implements OnInit {
 
     this.personService.getKontakte((res: JSON[]) => {
       for(let kontaktObject of res) {
-        this.contacts.push(Kontakt.buildFromJSON(kontaktObject));
+        let kontakt = Kontakt.buildFromJSON(kontaktObject);
+        this.contactMap.set(kontakt.ID, kontakt.firmenname);
+        if(kontakt.toOutput() != "") {
+          this.contacts.push(kontakt);
+        }
       }
     });
+
+    this.verteilerService.getVerteilerFromProtokoll((res: any) => {
+      for(let verteiler of res) {
+        if(verteiler["KID"] != 0) {
+
+          let firma = this.contactMap.get(verteiler["KID"]);
+
+          if(firma == undefined) return;
+
+          let idsOfFirma = this.firmenMap.get(firma);
+
+          if(idsOfFirma == undefined) {
+            idsOfFirma = [];
+          }
+
+          idsOfFirma.push(verteiler["KID"]);
+
+          this.firmenMap.set(firma, idsOfFirma);
+
+        }
+      }
+    })
+
   }
 
   private fillAllAgendapunkte(agendapunktArray: AgendaPunkt[]): AgendaPunkt[] {
@@ -73,6 +105,7 @@ export class BesprechungComponent implements OnInit {
   }
 
   loadAgendaDataLazy(event: LazyLoadEvent) {
+
     // Flag wird gesetzt
     this.loadingAgenda = true;
 

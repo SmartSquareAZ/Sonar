@@ -30,3 +30,7 @@
 :host ::ng-deep p-selectbutton .p-selectbutton .p-button {
     width: 50%;
 }
+
+:host ::ng-deep p-dropdown .p-dropdown {
+    max-width: 13em;
+}

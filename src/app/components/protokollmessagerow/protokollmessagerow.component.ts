@@ -108,9 +108,7 @@ export class ProtokollmessagerowComponent implements OnInit {
   removeProtokollmessage(protokollMessage: Protokollmessage) {
     protokollMessage.isEditing = false;
     this.socketService.sendOperation("UNBLOCK", "", protokollMessage.toJSONString());
-    if(protokollMessage.ID == 0) {
-      this.removeProtokollmessageEvent.emit(protokollMessage);
-    }
+    this.removeProtokollmessageEvent.emit(protokollMessage);
   }
 
   /**

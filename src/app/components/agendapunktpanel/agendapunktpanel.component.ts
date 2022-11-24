@@ -108,8 +108,16 @@ export class AgendapunktpanelComponent implements OnInit {
     this.protokollMessage.push(Protokollmessage.buildNew(agendapunkt.ID, lastNummer));
   }
 
-  removeProtokollmessage(protokollMessage: Protokollmessage) {
-    this.protokollMessage = this.protokollMessage.filter(msg => msg.ID != protokollMessage.ID);
+  removeProtokollmessage(message: Protokollmessage) {
+    if(message.ID == 0) {
+      this.protokollMessage = this.protokollMessage.filter(msg => msg.ID != message.ID);
+    } else {
+      let index = this.protokollMessage.findIndex(x => x.ID == message.ID);
+      this.protokollmessageService.readProtokollmessage(message.ID, (res: JSON) => {
+        this.protokollMessage[index] = Protokollmessage.buildFromJSON(res);
+      });
+    }
+    
   }
 
   updateSavedProtokollmessage(event: any) {

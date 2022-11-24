@@ -26,6 +26,12 @@ export class LayoutwrapperComponent implements OnInit {
   constructor(private messageSocketService: ProtokollmessageWebsocketService, private router: Router, private protokollService: ProtokollService) { }
 
   ngOnInit(): void {
+    this.protokollService.readStatus(AppComponent.PROTOKOLLID, (res: string) => {
+        if(JSON.parse(res)["STATUS"] == 3) {
+          this.router.navigate(["/done"], {queryParamsHandling: "preserve"});
+        }
+    });
+
     this.speedDialItems = [
       {
         icon: 'pi pi-arrow-left',

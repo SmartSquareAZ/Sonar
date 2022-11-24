@@ -14,6 +14,7 @@ export class RequestUrlService {
 
   //#region Protokoll
   public PROTOKOLL_UPDATE_STATUS: string = "";
+  public PROTOKOLL_READ_STATUS: string = "";
   //#endregion
 
   //#region Protokollmessage
@@ -99,6 +100,7 @@ export class RequestUrlService {
 
       //#region Protokoll
       this.PROTOKOLL_UPDATE_STATUS = url + "/PROTOKOLL/UPDATE/STATUS"
+      this.PROTOKOLL_READ_STATUS = url + "/PROTOKOLL/READ/STATUS";
       //#endregion
 
       //#region Protokollmessage

@@ -15,4 +15,8 @@ export class ProtokollService {
     json["STATUS"] = status;
     this.utilsService.POST(this.requestURL.PROTOKOLL_UPDATE_STATUS, JSON.stringify(json), success);
   }
+
+  readStatus(protokollID: number, success: Function) {
+    this.utilsService.GET(`${this.requestURL.PROTOKOLL_READ_STATUS}?PID=${protokollID}`, success);
+  }
 }

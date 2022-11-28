@@ -15,7 +15,10 @@ export class Protokollmessage {
     agendapunktID: number;
     protokollNummer: string;
     nummer: number;
-    ausgeblendet: number;
+    ausgeblendet: boolean;
+    /**
+     * Wird verwendet, damit bei Klick auf "Ausblenden" nicht direkt die message verschwindet, sondern erst beim klick auf speichern
+     */
     previousProtokollmessage: Protokollmessage;
 
     isEditing: boolean = false;
@@ -45,7 +48,7 @@ export class Protokollmessage {
         this.agendapunktID = agendapunktID
         this.protokollNummer = protokollNummer;
         this.nummer = nummer;
-        this.ausgeblendet = ausgeblendet;
+        this.ausgeblendet = ausgeblendet == 1 ? false : true;
         this.previousProtokollmessage = previousProtokollmessage
     }
 
@@ -112,7 +115,7 @@ export class Protokollmessage {
         retVal["PROTOKOLLNUMMER"] = this.protokollNummer;
         retVal["NUMMER"] = this.nummer;
         retVal["OLDID"] = this.previousProtokollmessage != null ? this.previousProtokollmessage.ID : 0;
-        retVal["AUSGEBLENDET"] = this.ausgeblendet;
+        retVal["AUSGEBLENDET"] = this.ausgeblendet ? 0 : 1;
         return JSON.stringify(retVal);
     }
 

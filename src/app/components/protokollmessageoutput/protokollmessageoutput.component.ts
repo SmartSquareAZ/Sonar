@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Protokollmessage } from 'src/app/models/Protokollmessage';
 import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/protokollmessage-websocket.service';
 
 @Component({
@@ -15,9 +16,15 @@ export class ProtokollmessageoutputComponent implements OnInit {
   @Input() editable: boolean = false;
   @Input() contactMap: Map<number, string> = new Map<number, string>();
 
+  @Output() saveEvent: EventEmitter<Protokollmessage> = new EventEmitter<Protokollmessage>();
+
   constructor(private socketService: ProtokollmessageWebsocketService) { }
 
   ngOnInit(): void {
+  }
+
+  saveProtokollmessage(protokollmessage: Protokollmessage) {
+    this.saveEvent.emit(protokollmessage);
   }
 
   /**
@@ -44,5 +51,9 @@ export class ProtokollmessageoutputComponent implements OnInit {
       return firma;
     }
     return "";
+  }
+
+  getAusblendenTooltipFromMessage(message: Protokollmessage): string {
+    return message.ausgeblendet ? "Einblenden" : "Ausblenden"
   }
 }

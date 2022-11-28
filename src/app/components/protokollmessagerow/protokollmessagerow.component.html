@@ -1,4 +1,4 @@
-<div class="row justify-content-between align-items-center px-3 py-1 protokollmessage" [class.choosen]="expanded"
+<div class="row justify-content-between align-items-center px-1 py-1 protokollmessage" [class.choosen]="expanded"
     [style]="{'background-color': messageIndex % 2 == 0 ? 'var(--surface-100)' : 'white'}">
 
     <div class="col-1">
@@ -7,20 +7,27 @@
             style="width: 30%; width: 2rem; height: 2rem;" *ngIf="message.ID != 0 && message.previousProtokollmessage.ID != 0"></button>
     </div>
 
-    <div class="col-11">
+    <div class="col-11 pr-0 pl-0">
 
         <app-protokollmessageoutput *ngIf="!message.isEditing" [message]="message" [editable]="true"
-            [employee]="employee" [contacts]="contacts" [contactMap]="contactMap"></app-protokollmessageoutput>
+            [employee]="employee" [contacts]="contacts" [contactMap]="contactMap" (saveEvent)="saveProtokollmessage($event)"></app-protokollmessageoutput>
 
         <div class="w-100 row justify-content-between align-items-center choosen" *ngIf="message.isEditing && editable">
-            <div class="col-1">{{message.nummer}}<br/>#{{message.protokollNummer}}</div>
+            <!--<div class="col-1">{{message.nummer}}<br/>#{{message.protokollNummer}}</div>-->
             <div class="col-5 protokollmessageTextEditing">
-
-                <span class="p-float-label">
-                    <input id="float-input" type="text" pInputText [(ngModel)]="message.title">
-                    <label for="float-input">Titel</label>
-                </span>
-
+                <div class="row px-0 mx-0 w-100 d-flex justify-content-center align-items-center mt-3 mb-1">
+                    <div class="col-2 d-flex justify-content-start align-items-center">
+                        <div class="w-100">{{message.nummer}}<br/>#{{message.protokollNummer}}</div>
+                    </div>
+                    <div class="d-flex col-10">
+                        <span class="d-flex p-float-label w-100">
+                            <input id="float-input" type="text" pInputText [(ngModel)]="message.title">
+                            <label for="float-input">Titel</label>
+                        </span>
+                    </div>
+                    
+                </div>
+                
                 <app-custom-editor [name]="'' + message.ID" [(ngModel)]="message.message">
                 </app-custom-editor>
 
@@ -31,8 +38,8 @@
                         label="Abbrechen" class="ms-2 p-button-warning"></button>
                 </div>
             </div>
-            <div class="col-5">
-                <div class="row w-100 d-flex justify-content-center align-items-center">
+            <div class="col-6 mx-0 px-0">
+                <div class="row w-100 d-flex justify-content-center align-items-center px-0 mx-0">
 
                     <div class="col-6 d-flex justify-content-center align-items-center flex-column py-3">
                         <span class="p-float-label d-flex justify-content-center align-items-center mt-3">
@@ -47,7 +54,7 @@
                                 [listStyle]="{'max-height':'250px'}" optionLabel="name" optionValue="ID" [filter]="true"
                                 [multiple]="true" [checkbox]="true">
                                 <ng-template let-person pTemplate="item">
-                                    <span>{{person.toOutput()}}</span>
+                                    <span [pTooltip]="person.toOutput()" tooltipPosition="top">{{person.toOutput()}}</span>
                                 </ng-template>
                             </p-listbox>
                         </div>
@@ -81,9 +88,6 @@
                                 <label for="expireDate">Ablaufdatum</label>
                             </span>
                         </div>
-                        <div class="mt-3 w-100">
-                            <p-toggleButton [(ngModel)]="message.ausgeblendet" [onLabel]="'Ausgeblendet'" [onIcon]="'pi pi-eye'" [offLabel]="'Nicht ausgeblendet'" [offIcon]="'pi pi-times'"></p-toggleButton>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -93,11 +97,11 @@
             *ngIf="message.previousProtokollmessage != null && (message.previousProtokollmessage.ID != 0 && message.previousProtokollmessage.nummer != 0)">
 
             <div class="col-1">{{message.previousProtokollmessage.nummer}}<br/>#{{message.previousProtokollmessage.protokollNummer}}</div>
-            <div class="col-5 protokollmessageText">
+            <div class="col-4 protokollmessageText">
                 <app-html-output [text]="message.previousProtokollmessage.title"></app-html-output>
             </div>
-            <div class="col-5">
-                <div class="row w-100 d-flex justify-content-center align-items-center">
+            <div class="col-6 mx-0 px-0">
+                <div class="row w-100 d-flex justify-content-center align-items-center px-0 mx-0">
 
                     <div class="col-6 d-flex justify-content-center align-items-center flex-column py-3">
                         <div
@@ -122,7 +126,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6 d-flex justify-content-center align-items-center flex-column"
+                    <div class="col-5 d-flex justify-content-center align-items-center flex-column"
                         *ngIf="!message.previousProtokollmessage.isEditing"
                         (click)="setPreviousEditingTrue()">
                         <div style="margin-bottom: 3px; word-wrap: break-word; white-space: nowrap;"
@@ -132,7 +136,7 @@
                         <div>{{message.previousProtokollmessage.ablaufdatum | date: "HH:mm:ss"}}</div>
                     </div>
 
-                    <div class="col-6 d-flex justify-content-center align-items-center flex-column"
+                    <div class="col-5 d-flex justify-content-center align-items-center flex-column"
                         *ngIf="message.previousProtokollmessage.isEditing">
 
                         <div style="margin-bottom: 3px;">
@@ -166,8 +170,13 @@
                         </div>
                     </div>
 
+                    <div class="col-1 d-flex align-items-center justify-content-center">
+                        <!--<p-toggleButton [(ngModel)]="!message.ausgeblendet" [onIcon]="'pi pi-eye'" [offIcon]="'pi pi-eye-slash'" (click)="saveProtokollmessage(message);$event.stopPropagation()"></p-toggleButton>-->
+                    </div>
+
                 </div>
             </div>
+            
         </div>
     </div>
 </div>

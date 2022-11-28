@@ -12,7 +12,7 @@ import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/prot
 })
 export class AgendapunktpanelComponent implements OnInit {
 
-  ausgeblendeteAnzeigen: boolean = true;
+  ausgeblendeteAnzeigen: boolean = false;
 
   verantwortlichenTypen = Protokollmessage.vTypeText;
 
@@ -39,7 +39,13 @@ export class AgendapunktpanelComponent implements OnInit {
             protokollMessage.previousProtokollmessage = updatedProtokollMessage;
           }
         }
-      }   
+      }
+      
+      if(updatedProtokollMessage.previousProtokollmessage.ID != 0) {
+        this.protokollmessageService.readProtokollmessage(updatedProtokollMessage.previousProtokollmessage.ID, (res: JSON) => {
+          updatedProtokollMessage.previousProtokollmessage = Protokollmessage.buildFromJSON(res);
+        });
+      }
     }
 
     if(operation == "BLOCK") {
@@ -115,13 +121,23 @@ export class AgendapunktpanelComponent implements OnInit {
       let index = this.protokollMessage.findIndex(x => x.ID == message.ID);
       this.protokollmessageService.readProtokollmessage(message.ID, (res: JSON) => {
         this.protokollMessage[index] = Protokollmessage.buildFromJSON(res);
+
+        if(this.protokollMessage[index].previousProtokollmessage.ID != 0 && this.protokollMessage[index].previousProtokollmessage.nummer == 0) {
+          this.protokollmessageService.readProtokollmessage(this.protokollMessage[index].previousProtokollmessage.ID, (res: JSON) => {
+            this.protokollMessage[index].previousProtokollmessage = Protokollmessage.buildFromJSON(res);
+          });
+        }
       });
     }
-    
   }
+         
 
   updateSavedProtokollmessage(event: any) {
     this.protokollMessage[event["index"]] = event["msg"];
+  }
+
+  getAusgeblendetTooltip(): string {
+    return this.ausgeblendeteAnzeigen ? "Alle Objekte (inkl. ausgeblendeter) anzeigen" : "Nur eingeblendete Objekte anzeigen";
   }
 
 }

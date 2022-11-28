@@ -3,10 +3,14 @@
         <div class="d-flex justify-content-between align-items-center p-3" style="height: 75px;">
             <h4 [id]="'titel_' + agendapunkt.ID" [style]="{'color': agendapunkt.farbe}">{{agendapunkt.nummer}}
                 {{agendapunkt.name}}</h4>
-            <p-toggleButton [onLabel]="'Ausgeblendete werden anzeigt'" [offLabel]="'Ausgeblendete werden nicht anzeigt'" [(ngModel)]="ausgeblendeteAnzeigen"
-                            [onIcon]="'pi pi-eye'" [offIcon]="'pi pi-times'"></p-toggleButton>
-            <button pButton pRipple type="button" label="Neu" icon="pi pi-plus" class="p-button-outlined"
-                (click)="addNewProtokollmessage(agendapunkt)"></button>
+            <div class="d-flex flex-row justify-content-between align-items-center">
+                <div class="d-flex h-100 justify-content-center align-items-center p-3">
+                    <p-toggleButton [(ngModel)]="ausgeblendeteAnzeigen" [onIcon]="'pi pi-eye'" [offIcon]="'pi pi-eye-slash'"
+                    [pTooltip]="getAusgeblendetTooltip()" tooltipPosition="bottom"></p-toggleButton>
+                </div>
+                <button pButton pRipple type="button" label="Neu" icon="pi pi-plus" class="p-button-outlined pl-2"
+                    (click)="addNewProtokollmessage(agendapunkt)"></button>
+            </div>
         </div>
     
         <div style="height: calc(100% - 75px) !important;">
@@ -20,7 +24,7 @@
                         [loading]="protokollMessageLoading">
     
                         <ng-template pTemplate="body" let-protokollmessage let-protokollmessageIndex="rowIndex">
-                            <app-protokollmessagerow *ngIf="(ausgeblendeteAnzeigen && protokollmessage.ausgeblendet) || !protokollmessage.ausgeblendet" [message]="protokollmessage" 
+                            <app-protokollmessagerow *ngIf="(ausgeblendeteAnzeigen && !protokollmessage.ausgeblendet) || protokollmessage.ausgeblendet" [message]="protokollmessage" 
                                                     [messageIndex]="protokollmessageIndex" [editable]="true" [employee]="employee" [contacts]="contacts" 
                                                     [firmenMap]="firmenMap" [contactMap]="contactMap" (removeProtokollmessageEvent)="removeProtokollmessage($event)" 
                                                     (saveProtokollmessageEvent)="updateSavedProtokollmessage($event)"></app-protokollmessagerow>
@@ -43,7 +47,9 @@
     </div>
 
     <div *ngIf="agendapunkt.blockedMessageEditing" class="agendapunkt overlay">
-        <i class="pi pi-lock" style="font-size: 2.5em; margin-bottom: 0.5em;"></i><br/>
-        <span>Agendapunkt ist durch Bearbeitung einer Protokollnachricht von einem anderen Benutzer vorübergehend gesperrt</span>
+        <div class="text">
+            <i class="pi pi-lock" style="font-size: 1.2em"></i>
+            <span>Agendapunkt ist durch Bearbeitung einer Protokollnachricht von einem anderen Benutzer vorübergehend gesperrt</span>
+        </div>
     </div>
 </div>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AppComponent } from 'src/app/app.component';
 
 @Component({
   selector: 'app-protokollabschluss',
@@ -10,6 +11,10 @@ export class ProtokollabschlussComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  isGlassEffect() {
+    return !AppComponent.HECTOR;
   }
 
 }

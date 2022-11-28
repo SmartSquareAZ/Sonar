@@ -15,6 +15,10 @@ export class PersonService {
     this.utilsService.GET(`${this.requestURL.MITARBEITER_READ}?ABTEILUNGID=${AppComponent.ABTEILUNGID}`, success);
   }
 
+  getMitarbeiterFirma(success: Function): void {
+    this.utilsService.GET(`${this.requestURL.MITARBEITER_READ_FIRMA}?ABTEILUNGID=${AppComponent.ABTEILUNGID}`, success);
+  }
+
   getKontakte(success: Function): void {
     this.utilsService.GET(`${this.requestURL.KONTAKTE_READ}?ABTEILUNGID=${AppComponent.ABTEILUNGID}`, success);
   }

@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { AppComponent } from 'src/app/app.component';
 import { resolveAfterXSeconds } from 'src/app/Constants';
 import { Person } from 'src/app/models/Person';
 import { Protokollmessage } from 'src/app/models/Protokollmessage';
@@ -50,7 +51,7 @@ export class ProtokollmessagerowComponent implements OnInit {
   /**
    * Für die Listbox (um nachher mit firmenMap.get("") die IDs der Kontakte zu holen)
    */
-  selectedFirma!: string;
+  selectedFirma: string = "";
 
   constructor(private protokollmessageService: ProtokollmessageService, private socketService: ProtokollmessageWebsocketService) { }
 
@@ -60,6 +61,9 @@ export class ProtokollmessagerowComponent implements OnInit {
       if(this.contactMap.get(this.message.vIDs[0]) != undefined && this.contactMap.get(this.message.vIDs[0]) == firma) {
         this.selectedFirma = firma;
       }
+    }
+    if(this.selectedFirma == "") {
+      this.selectedFirma = AppComponent.FIRMA;
     }
   }
 

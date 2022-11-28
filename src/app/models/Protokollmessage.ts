@@ -40,7 +40,7 @@ export class Protokollmessage {
     ) {
         this.ID = ID
         this.title = title;
-        this.message = message
+        this.message = message;
         this.vType = vType
         this.vIDs = vIDs
         this.status = status
@@ -106,7 +106,12 @@ export class Protokollmessage {
         retVal["ID"] = this.ID;
         retVal["TITLE"] = this.title;
         retVal["MESSAGE"] = this.message;
-        retVal["VTYPE"] = this.vType;
+        if(this.vType == 8 && AppComponent.PERSONTYPE == 0 && this.vIDs.includes(AppComponent.PERSONID)) {
+            retVal["VTYPE"] = 9;
+        } else {
+            retVal["VTYPE"] = this.vType;
+        }
+
         retVal["VIDS"] = this.vIDs;
         retVal["VID"] = AppComponent.PERSONID;
         retVal["STATUS"] = this.status;

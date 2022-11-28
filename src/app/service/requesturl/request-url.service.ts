@@ -64,6 +64,7 @@ export class RequestUrlService {
   //#region Person
   public MITARBEITER_READ: string = "";
   public MITARBEITER_READ_ID: string = "";
+  public MITARBEITER_READ_FIRMA: string = "";
   public KONTAKTE_READ: string = "";
   public KONTAKTE_READ_ID: string = "";
   //#endregion
@@ -150,6 +151,7 @@ export class RequestUrlService {
       //#region Person
       this.MITARBEITER_READ = url + "/MITARBEITER/READ";
       this.MITARBEITER_READ_ID = url + "/MITARBEITER/READ/ID";
+      this.MITARBEITER_READ_FIRMA = url + "/MITARBEITER/READ/FIRMA";
       this.KONTAKTE_READ = url + "/KONTAKTE/READ";
       this.KONTAKTE_READ_ID = url + "/KONTAKTE/READ/ID";
       //#endregion

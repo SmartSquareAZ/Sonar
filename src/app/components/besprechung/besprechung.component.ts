@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LazyLoadEvent } from 'primeng/api';
 import { Table } from 'primeng/table';
+import { AppComponent } from 'src/app/app.component';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 import { Kontakt } from 'src/app/models/Kontakt';
 import { Mitarbeiter } from 'src/app/models/Mitarbeiter';
@@ -68,7 +69,7 @@ export class BesprechungComponent implements OnInit {
 
           let firma = this.contactMap.get(verteiler["KID"]);
 
-          if(firma == undefined) return;
+          if(firma == undefined) continue;
 
           let idsOfFirma = this.firmenMap.get(firma);
 
@@ -80,6 +81,17 @@ export class BesprechungComponent implements OnInit {
 
           this.firmenMap.set(firma, idsOfFirma);
 
+        } else if (verteiler["MID"] != 0) {
+          let ids = this.firmenMap.get(AppComponent.FIRMA);
+          if(ids == undefined) {
+            ids = [];
+            ids.push(verteiler["MID"]);
+            this.firmenMap.set(AppComponent.FIRMA, ids);
+            continue;
+          } else {
+            ids.push(verteiler["MID"]);
+            this.firmenMap.set(AppComponent.FIRMA, ids);
+          }
         }
       }
     })

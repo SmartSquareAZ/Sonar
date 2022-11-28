@@ -59,10 +59,10 @@
                             </p-listbox>
                         </div>
 
-                        <div *ngIf="message.vType == 8">
+                        <div *ngIf="message.vType == 8 || message.vType == 9">
                             <p-listbox [options]="firmenList" [(ngModel)]="selectedFirma"
-                                [listStyle]="{'max-height':'250px'}" [filter]="true">
-                                <ng-template let-firma pTemplate="item">
+                                [listStyle]="{'max-height':'250px'}" [filter]="true" emptyMessage="Keine Firma verfügbar">
+                                <ng-template let-firma pTemplate="item" *ngIf="getFirmaString">
                                     <span [pTooltip]="getFirmaString(firma)">{{firma}}</span>
                                 </ng-template>
                             </p-listbox>

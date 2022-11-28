@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { AppComponent } from 'src/app/app.component';
 import { Protokollmessage } from 'src/app/models/Protokollmessage';
 import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/protokollmessage-websocket.service';
 
@@ -45,16 +46,18 @@ export class ProtokollmessageoutputComponent implements OnInit {
   }
 
   getTypeTooltip(): string {
+
+    
     if(this.message.vType == 8) {
       let firma = this.contactMap.get(this.message.vIDs[0]);
-      
-      if(firma == undefined) return "";
+
+      if(firma == undefined || firma == "") return AppComponent.FIRMA;
       return firma;
     }
-    return "";
+    return AppComponent.FIRMA;
   }
 
   getAusblendenTooltipFromMessage(message: Protokollmessage): string {
-    return message.ausgeblendet ? "Einblenden" : "Ausblenden"
+    return message.ausgeblendet ? "Ausblenden" : "Einblenden"
   }
 }

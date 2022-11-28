@@ -25,6 +25,7 @@ export class AppComponent {
   static PERSONID: number = 0;
   static PERSONTYPE: number = 0;
   static HECTOR: number = 0;
+  static FIRMA: string = "";
 
   static USER_DATA: Person = Person.buildFromEmpty();
 
@@ -41,7 +42,8 @@ export class AppComponent {
       "PERSONID": AppComponent.PERSONID,
       "PERSONTYPE": AppComponent.PERSONTYPE,
       "HECTOR": AppComponent.HECTOR,
-      "USER_DATA": AppComponent.USER_DATA
+      "USER_DATA": AppComponent.USER_DATA,
+      "FIRMA": AppComponent.FIRMA
     }
   }
 
@@ -101,6 +103,10 @@ export class AppComponent {
             this.onlineSocketService.sendOperation("ONLINE", "", JSON.stringify(AppComponent.USER_DATA));
           });
         }
+
+        this.personService.getMitarbeiterFirma((res: any) => {
+          AppComponent.FIRMA = JSON.parse(res)["NAME"];
+        });
       }
       );
 

@@ -7,7 +7,7 @@
         <ng-template ngFor let-online [ngForOf]="onlineList">
             <div class="w-100 ps-3 row justify-content-start align-items-center">
                 <div class="col-4 onlineMarker"></div>
-                <div class="col-8 onlineLabel">{{online.nachname}}</div>
+                <div class="col-8 onlineLabel">{{online.nachname}} {{online.vorname}}</div>
             </div>
         </ng-template>
     </div>

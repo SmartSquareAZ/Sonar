@@ -40,7 +40,6 @@ export class Protokollmessage {
     ) {
         this.ID = ID
         this.title = title;
-        console.log(`${this.ID} ${this.title}`)
         this.message = message
         this.vType = vType
         this.vIDs = vIDs

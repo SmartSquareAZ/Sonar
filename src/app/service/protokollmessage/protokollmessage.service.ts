@@ -25,8 +25,6 @@ export class ProtokollmessageService {
    * @param success Methode die bei erfolgreicher Ausführung als Callback ausgeführt werden soll
    */
   updateProtokollmessage(protokollMessage: Protokollmessage, success: Function): void {
-    console.log(this.requesturl.MESSAGE_UPDATE)
-    console.log(protokollMessage.toJSONString())
     this.utils.POST(this.requesturl.MESSAGE_UPDATE, protokollMessage.toJSONString(), success);
   }
 

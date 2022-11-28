@@ -21,7 +21,7 @@
                     </div>
                     <div class="d-flex col-10">
                         <span class="d-flex p-float-label w-100">
-                            <input id="float-input" type="text" pInputText [(ngModel)]="message.title">
+                            <input id="float-input" type="text" pInputText [(ngModel)]="message.title" placeholder="Titel" [ngClass]="{'noTitle': message.title == ''}">
                             <label for="float-input">Titel</label>
                         </span>
                     </div>
@@ -98,7 +98,8 @@
 
             <div class="col-1">{{message.previousProtokollmessage.nummer}}<br/>#{{message.previousProtokollmessage.protokollNummer}}</div>
             <div class="col-4 protokollmessageText">
-                <app-html-output [text]="message.previousProtokollmessage.title"></app-html-output>
+                <app-html-output *ngIf="message.previousProtokollmessage.title != ''" [text]="message.previousProtokollmessage.title"></app-html-output>
+                <span *ngIf="message.previousProtokollmessage.title == ''" class="noTitle">Kein Titel</span>
             </div>
             <div class="col-6 mx-0 px-0">
                 <div class="row w-100 d-flex justify-content-center align-items-center px-0 mx-0">

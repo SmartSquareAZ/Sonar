@@ -3,7 +3,8 @@
 
     <div class="col-1">{{message.nummer}}<br/>#{{message.protokollNummer}}</div>
     <div class="col-4 protokollmessageText">
-        <strong>{{message.title}}</strong>
+        <strong *ngIf="message.title == ''" class="noTitle">Kein Titel</strong>
+        <strong *ngIf="message.title != ''">{{message.title}}</strong>
         <!--<app-html-output [text]="message.message"></app-html-output>-->
     </div>
     <div class="col-6 mx-0 px-0">

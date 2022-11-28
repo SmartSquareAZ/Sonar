@@ -75,8 +75,6 @@ export class ProtokollmessagerowComponent implements OnInit {
   }
 
   saveProtokollmessage(protokollmessage: Protokollmessage) {
-    console.log("save")
-    console.log(protokollmessage);
     //protokollmessage.ausgeblendet = !protokollmessage.ausgeblendet;
     
     if(protokollmessage.vType == 8) {
@@ -87,7 +85,6 @@ export class ProtokollmessagerowComponent implements OnInit {
       }
       protokollmessage.vIDs = ids;
     }
-    console.log(protokollmessage);
     if(protokollmessage.ID == 0) {
       this.protokollmessageService.saveProtokollmessage(protokollmessage, (retVal: JSON) => {
         let newProtokollmessage: Protokollmessage = Protokollmessage.buildFromJSON(retVal);

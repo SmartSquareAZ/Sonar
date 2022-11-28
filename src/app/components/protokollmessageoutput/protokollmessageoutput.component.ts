@@ -40,6 +40,7 @@ export class ProtokollmessageoutputComponent implements OnInit {
 
   checkAndSetEditing() {
     this.message.isEditing = this.editable ? true : false;
+    this.message.title = this.message.title == "Kein Titel" ? "" : this.message.title;
     this.socketService.sendOperation("BLOCK", "", this.message.toJSONString());
   }
 

@@ -46,3 +46,8 @@
 :host ::ng-deep .p-inputtext {
     width: 100%;
 }
+
+.noTitle {
+    color: #595959; 
+    font-style: italic;
+}

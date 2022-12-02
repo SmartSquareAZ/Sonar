@@ -54,7 +54,7 @@ export class ProtokollmessageoutputComponent implements OnInit {
       if(firma == undefined || firma == "") return AppComponent.FIRMA;
       return firma;
     }
-    return AppComponent.FIRMA;
+    return "";
   }
 
   getAusblendenTooltipFromMessage(message: Protokollmessage): string {

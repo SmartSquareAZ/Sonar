@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, AfterContentInit } from '@angular/core';
 import { LazyLoadEvent } from 'primeng/api';
+import { AppComponent } from 'src/app/app.component';
 import { AgendaPunkt } from 'src/app/models/Agendapunkt';
 import { Protokollmessage } from 'src/app/models/Protokollmessage';
 import { ProtokollmessageService } from 'src/app/service/protokollmessage/protokollmessage.service';
@@ -69,7 +70,6 @@ export class AgendapunktpanelComponent implements OnInit {
   ngOnInit(): void {
     // Styleing wird gesetzt
     this.headerStyle = "font-weight: bold; color: var(--primary-color);"
-
     this.socketService.messagesRequestCallbacks[this.agendapunkt.ID] = this.requestCallback;
   }
 

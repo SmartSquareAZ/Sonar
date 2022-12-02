@@ -23,7 +23,8 @@ export class LayoutwrapperComponent implements OnInit {
 
   speedDialItems!: MenuItem[];
 
-  constructor(private messageSocketService: ProtokollmessageWebsocketService, private router: Router, private protokollService: ProtokollService) { }
+  constructor(private messageSocketService: ProtokollmessageWebsocketService, private router: Router, private protokollService: ProtokollService) { 
+  }
 
   ngOnInit(): void {
     this.protokollService.readStatus(AppComponent.PROTOKOLLID, (res: string) => {
@@ -35,16 +36,27 @@ export class LayoutwrapperComponent implements OnInit {
     this.speedDialItems = [
       {
         icon: 'pi pi-arrow-left',
-        tooltip: 'Zurück'
+        tooltipOptions: {
+          tooltipLabel: 'Zurück',
+          tooltipPosition: 'top'
+        },
+        command: () => {
+          window.parent.postMessage('back', '*')
+        }
       },
       {
         icon: 'pi pi-flag-fill',
-        tooltip: 'Protokoll abschließen',
+        tooltipOptions: {
+          tooltipLabel: 'Beenden',
+          tooltipPosition: 'right'
+        },
         command: () => {
-          this.protokollService.updateStatus(AppComponent.PROTOKOLLID, 3, () => {
+          /*this.protokollService.updateStatus(AppComponent.PROTOKOLLID, 3, () => {
             this.messageSocketService.sendOperation("DONE", "", "");
             this.router.navigate(["/done"]);
-          });
+          });*/
+          this.messageSocketService.sendOperation("DONE", "", "");
+          this.router.navigate(["/done"]);
         }
       }
     ]

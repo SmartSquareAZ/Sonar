@@ -62,14 +62,23 @@ export class Protokollmessage {
     ]
 
     /**
-     * Auswählbare Stati
+     * Auswählbare Stati (alt)
      */
-    private static statusList: any[] = [
+    /*private static statusList: any[] = [
         { name: 'Offen', key: 0, class: 'green' },
         { name: 'In Bearbeitung', key: 1, class: 'yellow' },
         { name: 'Erledigt', key: 2, class: 'blue' },
         { name: 'Abgelaufen', key: 3, class: 'red' },
         { name: 'Urgiert', key: 4, class: 'violett' }
+    ];*/
+
+    /**
+     * Auswählbare Stati
+     */
+     private static statusList: any[] = [
+        { name: 'In Bearbeitung', key: 1, class: 'yellow' },
+        { name: 'Erledigt', key: 2, class: 'green' },
+        { name: 'Verzug', key: 3, class: 'red' }
     ];
 
     readVTypeText() {
@@ -77,13 +86,26 @@ export class Protokollmessage {
         return vType == null ? "Kein Type " + this.vType : vType.label;
     }
     readStatusBadge(status: number = this.status): string {
-        return "status-badge status-" + Protokollmessage.statusList[status].class;
+        return "status-badge status-" + this.readStatusHelper(status).class;
     }
     readStatusText(status: number = this.status): string {
-        return Protokollmessage.statusList[status].name;
+        return this.readStatusHelper(status).name;
     }
     readStatus(): any[] {
         return Protokollmessage.statusList;
+    }
+    /**
+     * Liest das Status Objekt mithilfe der Status ID
+     * (Konvertiert von Statussystem alt zu Statussystem neu)
+     * 
+     * @param status StatusID (im System alt)
+     * @returns statusobjekt (neu)
+     */
+    readStatusHelper(status: number): any {
+        if(status == 0 || status == 1 || status == 4) {
+            return Protokollmessage.statusList[0];
+        }
+        return Protokollmessage.statusList[status - 1];
     }
 
     createVerantwortlichenTooltip(sourceArray: any[]): string {
@@ -106,10 +128,16 @@ export class Protokollmessage {
         retVal["ID"] = this.ID;
         retVal["TITLE"] = this.title;
         retVal["MESSAGE"] = this.message;
+
         if(this.vType == 8 && AppComponent.PERSONTYPE == 0 && this.vIDs.includes(AppComponent.PERSONID)) {
             retVal["VTYPE"] = 9;
         } else {
             retVal["VTYPE"] = this.vType;
+        }
+
+        // Statussystem alt wird zu Statussystem neu konvertiert (Offen und Urgiert wird zu In Bearbeitung)
+        if(this.status == 0 || this.status == 4) {
+            this.status = 1;
         }
 
         retVal["VIDS"] = this.vIDs;
@@ -144,10 +172,15 @@ export class Protokollmessage {
             vType = 8;
         }
 
+        let status = dataObj["STATUS"];
+        if(status == 0 || status == 4) {
+            status = 1;
+        }
+
         // Date wird konvertiert
         let parsedDate = moment(dataObj["ABLAUFDATUM"], "DD_MM_YYYY_hh_mm_ss");
         return new Protokollmessage(dataObj["ID"], dataObj["TITLE"], dataObj["MESSAGE"], vType,
-            dataObj["VIDS"], dataObj["STATUS"], parsedDate.toDate(),
+            dataObj["VIDS"], status, parsedDate.toDate(),
             dataObj["AGENDAPUNKTID"], dataObj["PROTOKOLLNUMMER"], dataObj["NUMMER"], dataObj["AUSGEBLENDET"], oldMessage);
     }
 

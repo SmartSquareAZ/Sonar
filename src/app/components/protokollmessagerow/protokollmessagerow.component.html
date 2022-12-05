@@ -44,7 +44,7 @@
                     <div class="col-6 d-flex justify-content-center align-items-center flex-column py-3">
                         <span class="p-float-label d-flex justify-content-center align-items-center mt-3">
                             <p-dropdown class="mb-2" [options]="verantwortlichenTypen" name="vType"
-                                [(ngModel)]="message.vType" optionLabel="label" optionValue="type">
+                                [(ngModel)]="message.vType" optionLabel="label" optionValue="type" (onChange)="resetVIDs()">
                             </p-dropdown>
                             <label for="vType">Typ</label>
                         </span>

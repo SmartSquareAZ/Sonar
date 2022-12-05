@@ -124,6 +124,10 @@ export class ProtokollmessagerowComponent implements OnInit {
     this.saveProtokollmessage(this.message.previousProtokollmessage);
   }
 
+  resetVIDs() {
+    this.message.vIDs = [];
+  }
+
   setPreviousEditingTrue() {
     this.message.previousProtokollmessage.isEditing = true;
     this.socketService.sendOperation("BLOCK", "", this.message.previousProtokollmessage.toJSONString());

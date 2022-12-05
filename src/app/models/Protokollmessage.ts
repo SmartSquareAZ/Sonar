@@ -92,7 +92,7 @@ export class Protokollmessage {
         this.vIDs.forEach(e => {
             if (idx >= this.countDisplayVerantworliche) {
                 let person: Person = sourceArray.find(x => x.ID == e);
-                roles += person.nachname + " " + person.vorname + "<br/>"
+                roles += person.toOutput() + "<br/>"
             }
             idx++;
         });
@@ -138,9 +138,15 @@ export class Protokollmessage {
         let oldMessage = Protokollmessage.buildFromEmpty();
         oldMessage.ID = dataObj["OLDID"];
 
+        let vType = dataObj["VTYPE"];
+
+        if(vType == 9) {
+            vType = 8;
+        }
+
         // Date wird konvertiert
         let parsedDate = moment(dataObj["ABLAUFDATUM"], "DD_MM_YYYY_hh_mm_ss");
-        return new Protokollmessage(dataObj["ID"], dataObj["TITLE"], dataObj["MESSAGE"], dataObj["VTYPE"],
+        return new Protokollmessage(dataObj["ID"], dataObj["TITLE"], dataObj["MESSAGE"], vType,
             dataObj["VIDS"], dataObj["STATUS"], parsedDate.toDate(),
             dataObj["AGENDAPUNKTID"], dataObj["PROTOKOLLNUMMER"], dataObj["NUMMER"], dataObj["AUSGEBLENDET"], oldMessage);
     }

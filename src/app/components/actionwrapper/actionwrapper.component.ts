@@ -26,7 +26,8 @@ export class ActionwrapperComponent implements OnInit {
    * Gibt die Anzahl der Stages an
    */
   //anzahlStage: number = 5;
-  anzahlStage: number = 4;
+  //anzahlStage: number = 4;
+  anzahlStage: number = 3;
 
   /**
    * Gibt an, ob die Besprechung in Hector ist
@@ -35,7 +36,8 @@ export class ActionwrapperComponent implements OnInit {
 
   private titelArray: string[] = [
     //"Agenda", "Aufgaben", "Anhänge", "Anwesenheit", "Online"
-    "Agenda", "Aufgaben", "Anhänge", "Online"
+    //"Agenda", "Aufgaben", "Anhänge", "Online"
+    "Agenda", "Anhänge", "Online"
   ]
 
   constructor() { }

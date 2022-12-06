@@ -34,7 +34,7 @@
                     [class]="message.readStatusBadge()">
                     {{message.readStatusText()}}</div>
                 <div>{{message.ablaufdatum | date: "dd.MM.yyyy"}}</div>
-                <div>{{message.ablaufdatum | date: "HH:mm:ss"}}</div>
+                <!--<div>{{message.ablaufdatum | date: "HH:mm:ss"}}</div>-->
             </div>
             <div class="col-1 d-flex justify-content-center align-items-center">
                 <p-toggleButton [(ngModel)]="message.ausgeblendet" [onIcon]="'pi pi-eye'" [offIcon]="'pi pi-eye-slash'" (ngModelChange)="saveProtokollmessage(message)" [pTooltip]="getAusblendenTooltipFromMessage(message)" tooltipPosition="left"></p-toggleButton>

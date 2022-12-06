@@ -103,6 +103,40 @@ export class BesprechungComponent implements OnInit {
 
     // Überprüfung, ob Children vorhanden sind
     if (agendapunktArray != null && agendapunktArray.length > 0) {
+
+      agendapunktArray = agendapunktArray.sort((a, b) => {
+      
+        let numbersA = a.nummer.split('.');
+        let numbersB = b.nummer.split('.');
+  
+        if(numbersA.length - numbersB.length == 0) {
+          for(let i = 0; i < numbersA.length; i++) {
+            if(Number(numbersA[i]) - Number(numbersB[i]) == 0) {
+              continue;
+            } else {
+              return Number(numbersA[i]) - Number(numbersB[i]);
+            }
+          }
+        } else if(numbersA.length - numbersB.length > 0) {
+          for(let i = 0; i < numbersB.length; i++) {
+            if(Number(numbersA[i]) - Number(numbersB[i]) == 0) {
+              continue;
+            } else {
+              return Number(numbersA[i]) - Number(numbersB[i]);
+            }
+          }
+        } else if(numbersA.length - numbersB.length < 0) {
+          for(let i = 0; i < numbersA.length; i++) {
+            if(Number(numbersA[i]) - Number(numbersB[i]) == 0) {
+              continue;
+            } else {
+              return Number(numbersA[i]) - Number(numbersB[i]);
+            }
+          }
+        }
+        return 0;
+      })
+
       // Children werden durchlaufen
       agendapunktArray.forEach(child => {
         // Element wird Array hinzugefügt

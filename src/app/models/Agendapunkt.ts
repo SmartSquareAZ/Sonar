@@ -103,10 +103,61 @@ export class AgendaPunkt {
 
         let localChildren: TreeNode[] = [];
 
+        /*if(agendapunkt.parentID == 0 || agendapunkt.parentID == -1) {
+            agendapunkt.children = agendapunkt.children.sort((a, b) => {
+                let x = a.nummer.slice(0, -1);
+                let y = b.nummer.slice(0, -1);
+                return Number(x) - Number(y);
+            })
+        } else {
+            agendapunkt.children = agendapunkt.children.sort((a, b) => {
+                let x = a.nummer.slice(0, -1).substring(a.nummer.slice(0, - 1).lastIndexOf('.') + 1, a.nummer.length)
+                let y = b.nummer.slice(0, -1).substring(b.nummer.slice(0, - 1).lastIndexOf('.') + 1, b.nummer.length)
+                console.log(a)
+                console.log(b)
+                console.log(x)
+                console.log(y)
+                return Number(x) - Number(y);
+            })
+        }*/
+
         agendapunkt.children.forEach(child => {
             let treeNode: TreeNode = this.createTreeNode(child, expanded);
             localChildren.push(treeNode);
         });
+
+        localChildren.sort((a, b) => {
+      
+            let numbersA = a.data.nummer.split('.');
+            let numbersB = b.data.nummer.split('.');
+      
+            if(numbersA.length - numbersB.length == 0) {
+              for(let i = 0; i < numbersA.length; i++) {
+                if(Number(numbersA[i]) - Number(numbersB[i]) == 0) {
+                  continue;
+                } else {
+                  return Number(numbersA[i]) - Number(numbersB[i]);
+                }
+              }
+            } else if(numbersA.length - numbersB.length > 0) {
+              for(let i = 0; i < numbersB.length; i++) {
+                if(Number(numbersA[i]) - Number(numbersB[i]) == 0) {
+                  continue;
+                } else {
+                  return Number(numbersA[i]) - Number(numbersB[i]);
+                }
+              }
+            } else if(numbersA.length - numbersB.length < 0) {
+              for(let i = 0; i < numbersA.length; i++) {
+                if(Number(numbersA[i]) - Number(numbersB[i]) == 0) {
+                  continue;
+                } else {
+                  return Number(numbersA[i]) - Number(numbersB[i]);
+                }
+              }
+            }
+            return 0;
+          })
 
         return {
             data: agendapunkt,

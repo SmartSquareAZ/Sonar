@@ -108,6 +108,40 @@ export class LayoutwrapperComponent implements OnInit {
         delete this.messageSocketService.messagesRequestCallbacks[changedPunkt.ID];
         break;
     }
+
+    // Agendapanels werden sortiert
+    this.besprechungComponent.agendaPunkte.sort((a, b) => {
+      
+      let numbersA = a.nummer.split('.');
+      let numbersB = b.nummer.split('.');
+
+      if(numbersA.length - numbersB.length == 0) {
+        for(let i = 0; i < numbersA.length; i++) {
+          if(Number(numbersA[i]) - Number(numbersB[i]) == 0) {
+            continue;
+          } else {
+            return Number(numbersA[i]) - Number(numbersB[i]);
+          }
+        }
+      } else if(numbersA.length - numbersB.length > 0) {
+        for(let i = 0; i < numbersB.length; i++) {
+          if(Number(numbersA[i]) - Number(numbersB[i]) == 0) {
+            continue;
+          } else {
+            return Number(numbersA[i]) - Number(numbersB[i]);
+          }
+        }
+      } else if(numbersA.length - numbersB.length < 0) {
+        for(let i = 0; i < numbersA.length; i++) {
+          if(Number(numbersA[i]) - Number(numbersB[i]) == 0) {
+            continue;
+          } else {
+            return Number(numbersA[i]) - Number(numbersB[i]);
+          }
+        }
+      }
+      return 0;
+    })
   }
 
   speeddialVisible(): boolean {

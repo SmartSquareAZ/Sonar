@@ -79,6 +79,7 @@ export class AgendaComponent implements OnInit {
         let newAgendapunkt = AgendaPunkt.createTreeNode(AgendaPunkt.buildFromJSON(data));
         if(data["PARENTID"] == 0) {
           this.agendaPunkteNode.push(newAgendapunkt);
+          this.root.children = this.agendaPunkteNode;
         } else {
           let parentNode = this.findTreeNode(this.root, data["PARENTID"]);
           parentNode?.children?.push(newAgendapunkt);
@@ -126,9 +127,10 @@ export class AgendaComponent implements OnInit {
   }
 
   findTreeNode(node: TreeNode<AgendaPunkt>, agendaPunktID: number): TreeNode<AgendaPunkt> | undefined {
+    console.log(node);
     if(node.children != null && node.children.length != 0) {
       for(let i = node.children.length - 1; i >= 0; i--) {
-        if(node.children[i].key == "" + agendaPunktID) {
+        if(node.children[i].data?.ID == agendaPunktID) {
           return node.children[i];
         }
         let retVal = this.findTreeNode(node.children[i], agendaPunktID);
@@ -202,7 +204,6 @@ export class AgendaComponent implements OnInit {
         this.agendaService.saveAgendaPunkt(this.choosenAgendaPunktNode.data, (res: JSON) => {
           let newAgendapunkt = AgendaPunkt.buildFromJSON(res);
           this.socketService.sendOperation("CREATE", "", newAgendapunkt.toJSONString());
-          this.agendaChanged.emit({operation: "CREATE", "value": newAgendapunkt});
 
           this.choosenAgendaPunktNode.data = newAgendapunkt;
           this.choosenAgendaPunktNode.key = "" + newAgendapunkt.ID;
@@ -210,6 +211,10 @@ export class AgendaComponent implements OnInit {
 
           // Ansicht wird aktualisiert
           this.agendaPunkteNode = Array.from(this.agendaPunkteNode);
+          this.root.children = this.agendaPunkteNode;
+
+          this.agendaChanged.emit({operation: "CREATE", "value": newAgendapunkt});
+
           // Dialog wird geschlossen
           this.closeDialogAgendaPunkt();
         });
@@ -304,18 +309,6 @@ export class AgendaComponent implements OnInit {
     for(let agendaChild of agendaPunktTyped.children) {
       this.getCountMessagesFromAgendaPunkt(agendaChild);
     }
-    
-    /*this.agendaService.readCountMessages(agendaPunktTyped, (retVal: any) => {
-      agendaPunktTyped.hasMessages = retVal;
-      if(!agendaPunktTyped.hasMessages) {
-        for(let agendaChild of agendaPunktTyped.children) {
-          if(agendaChild.hasMessages) {
-            agendaPunktTyped.hasMessages = true;
-            return;
-          }
-        }
-      }
-    })*/
     
     agendaPunktTyped.hasMessages = Number(document.getElementById("" + agendaPunktTyped.ID)?.getAttribute('length')) > 0;
     if(!agendaPunktTyped.hasMessages) {

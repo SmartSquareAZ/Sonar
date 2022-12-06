@@ -13,7 +13,7 @@
     </div>
 
     <div class="action">
-        <app-agenda *ngIf="currentStage == 0" [showEditField]="true" (agendaChanged)="onAgendaChanged($event)"></app-agenda>
+        <app-agenda *ngIf="currentStage == 0" [showEditField]="true" (agendaChanged)="onAgendaChanged($event)" #agenda></app-agenda>
         <!--<app-aufgaben *ngIf="currentStage == 1"></app-aufgaben>-->
         <app-anhaenge *ngIf="currentStage == 1"></app-anhaenge>
         <!--<app-anwesenheit *ngIf="currentStage == 3 && inHector"></app-anwesenheit>-->

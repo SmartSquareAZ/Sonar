@@ -3,6 +3,7 @@ import { AppComponent } from 'src/app/app.component';
 import { resolveAfterXSeconds } from 'src/app/Constants';
 import { Person } from 'src/app/models/Person';
 import { Protokollmessage } from 'src/app/models/Protokollmessage';
+import { AgendaService } from 'src/app/service/agenda/agenda.service';
 import { ProtokollmessageService } from 'src/app/service/protokollmessage/protokollmessage.service';
 import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/protokollmessage-websocket.service';
 
@@ -53,7 +54,7 @@ export class ProtokollmessagerowComponent implements OnInit {
    */
   selectedFirma: string = "";
 
-  constructor(private protokollmessageService: ProtokollmessageService, private socketService: ProtokollmessageWebsocketService) { }
+  constructor(private protokollmessageService: ProtokollmessageService, private socketService: ProtokollmessageWebsocketService, private agendaService: AgendaService) { }
 
   ngOnInit(): void {
     this.firmenList = Array.from(this.firmenMap.keys());
@@ -160,5 +161,11 @@ export class ProtokollmessagerowComponent implements OnInit {
         this.loadingOld = false;
       });
     }
+  }
+
+  getAgendapunktNummer(message: Protokollmessage): string {
+    let retVal = this.agendaService.agendaPunkteMap.get(message.agendapunktID)?.nummer;
+    if(retVal == undefined) return "";
+    return retVal;
   }
 }

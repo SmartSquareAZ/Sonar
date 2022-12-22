@@ -145,6 +145,11 @@ export class BesprechungComponent implements OnInit {
         // Arraypunkte werden zu retVal hinzugefügt
         retVal = retVal.concat(this.fillAllAgendapunkte(child.children));
       });
+
+      // Agendapunkte werden zur Map hinzugefügt
+      agendapunktArray.forEach(child => {
+        this.agendaService.agendaPunkteMap.set(child.ID, child);
+      })
     }
 
     return retVal;

@@ -16,9 +16,6 @@ export class Protokollmessage {
     protokollNummer: string;
     nummer: number;
     ausgeblendet: boolean;
-    /**
-     * Wird verwendet, damit bei Klick auf "Ausblenden" nicht direkt die message verschwindet, sondern erst beim klick auf speichern
-     */
     previousProtokollmessage: Protokollmessage;
 
     isEditing: boolean = false;
@@ -55,7 +52,7 @@ export class Protokollmessage {
     static vTypeText = [
         { type: 0, label: "Info" },
         { type: 1, label: "Alle Anwesenden" },
-        { type: 2, label: "Alle Mitarbeiter" },
+        //{ type: 2, label: "Alle Mitarbeiter" },
         { type: 3, label: "Gewählter Mitarbeiter" },
         { type: 4, label: "Gewählter Kontakt" },
         { type: 8, label: "Gewählte Firma"}

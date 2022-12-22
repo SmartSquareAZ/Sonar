@@ -4,6 +4,7 @@ import { Kontakt } from './models/Kontakt';
 import { Mitarbeiter } from './models/Mitarbeiter';
 import { Person } from './models/Person';
 import { PersonService } from './service/person/person.service';
+import { ProtokollService } from './service/protokoll/protokoll.service';
 import { AnwesendeWebsocketService } from './service/websocket/anwesende-websocket.service';
 import { ProtokollmessageWebsocketService } from './service/websocket/protokollmessage-websocket.service';
 
@@ -47,7 +48,7 @@ export class AppComponent {
     }
   }
 
-  constructor(private route: ActivatedRoute, private personService: PersonService, private onlineSocketService: AnwesendeWebsocketService, private messageSocketService: ProtokollmessageWebsocketService) { }
+  constructor(private route: ActivatedRoute, private personService: PersonService, private onlineSocketService: AnwesendeWebsocketService, private messageSocketService: ProtokollmessageWebsocketService, private protokollService: ProtokollService) { }
 
   ngOnInit() {
     this.route.queryParams
@@ -86,7 +87,9 @@ export class AppComponent {
         AppComponent.PERSONTYPE = dataJSON['PERSONTYPE'];
         AppComponent.HECTOR = dataJSON['HECTOR'];
 
-        
+        this.protokollService.readNummer(AppComponent.PROTOKOLLID, (retVal: any) => {
+          AppComponent.PROTOKOLLNUMMER = JSON.parse(retVal)["NUMMER"];
+        });
 
         if(AppComponent.PERSONID == 0) {
           return;

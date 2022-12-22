@@ -17,7 +17,7 @@
             <div class="col-5 protokollmessageTextEditing">
                 <div class="row px-0 mx-0 w-100 d-flex justify-content-center align-items-center mt-3 mb-1">
                     <div class="col-2 d-flex justify-content-start align-items-center">
-                        <div class="w-100">{{message.nummer}}<br/>#{{message.protokollNummer}}</div>
+                        <div class="w-100">{{message.protokollNummer}}.{{getAgendapunktNummer(message)}}{{message.nummer}}</div>
                     </div>
                     <div class="d-flex col-10">
                         <span class="d-flex p-float-label w-100">
@@ -95,7 +95,7 @@
         <div class="w-100 row justify-content-between align-items-center ps-4"
             *ngIf="message.previousProtokollmessage != null && (message.previousProtokollmessage.ID != 0 && message.previousProtokollmessage.nummer != 0)">
 
-            <div class="col-1">{{message.previousProtokollmessage.nummer}}<br/>#{{message.previousProtokollmessage.protokollNummer}}</div>
+            <div class="col-1">#{{message.previousProtokollmessage.protokollNummer}}</div>
             <div class="col-4 protokollmessageText">
                 <app-html-output *ngIf="message.previousProtokollmessage.title != ''" [text]="message.previousProtokollmessage.title"></app-html-output>
                 <span *ngIf="message.previousProtokollmessage.title == ''" class="noTitle">Kein Titel</span>

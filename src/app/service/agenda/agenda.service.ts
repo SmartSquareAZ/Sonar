@@ -12,6 +12,9 @@ export class AgendaService {
 
   constructor(private requesturl: RequestUrlService, private utils: UtilsService) { }
 
+  agendaPunkteMap: Map<number, AgendaPunkt> = new Map<number, AgendaPunkt>();
+
+
   /**
    * Speichert den übergebenen AgendaPunkt mittels Websocket
    * @param agendaPunkt AgendaPunkt welcher gespeichert werden soll

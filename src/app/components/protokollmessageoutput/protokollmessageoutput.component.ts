@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { AppComponent } from 'src/app/app.component';
 import { Protokollmessage } from 'src/app/models/Protokollmessage';
+import { AgendaService } from 'src/app/service/agenda/agenda.service';
 import { ProtokollmessageWebsocketService } from 'src/app/service/websocket/protokollmessage-websocket.service';
 
 @Component({
@@ -19,7 +20,7 @@ export class ProtokollmessageoutputComponent implements OnInit {
 
   @Output() saveEvent: EventEmitter<Protokollmessage> = new EventEmitter<Protokollmessage>();
 
-  constructor(private socketService: ProtokollmessageWebsocketService) { }
+  constructor(private socketService: ProtokollmessageWebsocketService, private agendaService: AgendaService) { }
 
   ngOnInit(): void {
   }
@@ -59,5 +60,15 @@ export class ProtokollmessageoutputComponent implements OnInit {
 
   getAusblendenTooltipFromMessage(message: Protokollmessage): string {
     return message.ausgeblendet ? "Ausblenden" : "Einblenden"
+  }
+
+  getAgendapunktNummer(message: Protokollmessage): string {
+    let retVal = this.agendaService.agendaPunkteMap.get(message.agendapunktID)?.nummer;
+    if(retVal == undefined) return "";
+    return retVal;
+  }
+
+  isPreviousMessage() {
+    return this.message.protokollNummer != AppComponent.PROTOKOLLNUMMER;
   }
 }

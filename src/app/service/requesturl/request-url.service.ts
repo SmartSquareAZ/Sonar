@@ -10,11 +10,12 @@ export class RequestUrlService {
    * 0 = test.smartsquare.at
    * 1 = sonar.smartsquare.at
    */
-  public readonly STATE: number = -1;
+  public readonly STATE: number = 1;
 
   //#region Protokoll
   public PROTOKOLL_UPDATE_STATUS: string = "";
   public PROTOKOLL_READ_STATUS: string = "";
+  public PROTOKOLL_READ_NUMMER: string = "";
   //#endregion
 
   //#region Protokollmessage
@@ -102,6 +103,7 @@ export class RequestUrlService {
       //#region Protokoll
       this.PROTOKOLL_UPDATE_STATUS = url + "/PROTOKOLL/UPDATE/STATUS"
       this.PROTOKOLL_READ_STATUS = url + "/PROTOKOLL/READ/STATUS";
+      this.PROTOKOLL_READ_NUMMER = url + "/PROTOKOLL/READ/NUMMER";
       //#endregion
 
       //#region Protokollmessage

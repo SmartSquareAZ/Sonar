@@ -19,4 +19,8 @@ export class ProtokollService {
   readStatus(protokollID: number, success: Function) {
     this.utilsService.GET(`${this.requestURL.PROTOKOLL_READ_STATUS}?PID=${protokollID}`, success);
   }
+
+  readNummer(protokollID: number, success: Function) {
+    this.utilsService.GET(`${this.requestURL.PROTOKOLL_READ_NUMMER}?PID=${protokollID}`, success);
+  }
 }

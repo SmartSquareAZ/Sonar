@@ -4,30 +4,34 @@
     <div class="col-1">
         <button type="button" pButton pRipple class="p-button-text p-button-rounded p-button-plain"
             [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" (click)="expandProtokollmessage()"
-            style="width: 30%; width: 2rem; height: 2rem;" *ngIf="message.ID != 0 && message.previousProtokollmessage.ID != 0"></button>
+            style="width: 30%; width: 2rem; height: 2rem;"
+            *ngIf="message.ID != 0 && message.previousProtokollmessage.ID != 0"></button>
     </div>
 
     <div class="col-11 pr-0 pl-0">
 
         <app-protokollmessageoutput *ngIf="!message.isEditing" [message]="message" [editable]="true"
-            [employee]="employee" [contacts]="contacts" [contactMap]="contactMap" (saveEvent)="saveProtokollmessage($event)"></app-protokollmessageoutput>
+            [employee]="employee" [contacts]="contacts" [contactMap]="contactMap"
+            (saveEvent)="saveProtokollmessage($event)"></app-protokollmessageoutput>
 
         <div class="w-100 row justify-content-between align-items-center choosen" *ngIf="message.isEditing && editable">
             <!--<div class="col-1">{{message.nummer}}<br/>#{{message.protokollNummer}}</div>-->
             <div class="col-5 protokollmessageTextEditing">
                 <div class="row px-0 mx-0 w-100 d-flex justify-content-center align-items-center mt-3 mb-1">
                     <div class="col-2 d-flex justify-content-start align-items-center">
-                        <div class="w-100">{{message.protokollNummer}}.{{getAgendapunktNummer(message)}}{{message.nummer}}</div>
+                        <div class="w-100">
+                            {{getAgendapunktNummer(message)}}{{message.protokollNummer}}.{{message.nummer}}</div>
                     </div>
                     <div class="d-flex col-10">
                         <span class="d-flex p-float-label w-100">
-                            <input id="float-input" type="text" pInputText [(ngModel)]="message.title" placeholder="Titel" [ngClass]="{'noTitle': message.title == ''}">
+                            <input id="float-input" type="text" pInputText [(ngModel)]="message.title"
+                                placeholder="Titel" [ngClass]="{'noTitle': message.title == ''}">
                             <label for="float-input">Titel</label>
                         </span>
                     </div>
-                    
+
                 </div>
-                
+
                 <app-custom-editor [name]="'' + message.ID" [(ngModel)]="message.message">
                 </app-custom-editor>
 
@@ -36,6 +40,10 @@
                         label="Speichern"></button>
                     <button (click)="removeProtokollmessage(message)" pButton pRipple type="button" icon="pi pi-times"
                         label="Abbrechen" class="ms-2 p-button-warning"></button>
+                    <button (click)="deleteProtokollmessage(message)" pButton pRipple type="button" icon="pi pi-trash"
+                        *ngIf="message.previousProtokollmessage == null || message.previousProtokollmessage.ID == 0"
+                        [disabled]="message.title != '' || message.message != ''" label="Löschen"
+                        class="ms-2 p-button-danger"></button>
                 </div>
             </div>
             <div class="col-6 mx-0 px-0">
@@ -44,7 +52,8 @@
                     <div class="col-6 d-flex justify-content-center align-items-center flex-column py-3">
                         <span class="p-float-label d-flex justify-content-center align-items-center mt-3">
                             <p-dropdown class="mb-2" [options]="verantwortlichenTypen" name="vType"
-                                [(ngModel)]="message.vType" optionLabel="label" optionValue="type" (onChange)="resetVIDs()">
+                                [(ngModel)]="message.vType" optionLabel="label" optionValue="type"
+                                (onChange)="resetVIDs()">
                             </p-dropdown>
                             <label for="vType">Typ</label>
                         </span>
@@ -54,14 +63,16 @@
                                 [listStyle]="{'max-height':'250px'}" optionLabel="name" optionValue="ID" [filter]="true"
                                 [multiple]="true" [checkbox]="true">
                                 <ng-template let-person pTemplate="item">
-                                    <span [pTooltip]="person.toOutput()" tooltipPosition="top">{{person.toOutput()}}</span>
+                                    <span [pTooltip]="person.toOutput()"
+                                        tooltipPosition="top">{{person.toOutput()}}</span>
                                 </ng-template>
                             </p-listbox>
                         </div>
 
                         <div *ngIf="message.vType == 8 || message.vType == 9">
                             <p-listbox [options]="firmenList" [(ngModel)]="selectedFirma"
-                                [listStyle]="{'max-height':'250px'}" [filter]="true" emptyMessage="Keine Firma verfügbar">
+                                [listStyle]="{'max-height':'250px'}" [filter]="true"
+                                emptyMessage="Keine Firma verfügbar">
                                 <ng-template let-firma pTemplate="item" *ngIf="getFirmaString">
                                     <span [pTooltip]="getFirmaString(firma)">{{firma}}</span>
                                 </ng-template>
@@ -83,7 +94,8 @@
                         </div>
                         <div>
                             <span class="p-float-label w-100 mt-3">
-                                <p-calendar [(ngModel)]="message.ablaufdatum" name="expireDate" dateFormat="dd.mm.yy" appendTo="body"></p-calendar>
+                                <p-calendar [(ngModel)]="message.ablaufdatum" name="expireDate" dateFormat="dd.mm.yy"
+                                    appendTo="body"></p-calendar>
                                 <label for="expireDate">Ablaufdatum</label>
                             </span>
                         </div>
@@ -97,7 +109,8 @@
 
             <div class="col-1">#{{message.previousProtokollmessage.protokollNummer}}</div>
             <div class="col-4 protokollmessageText">
-                <app-html-output *ngIf="message.previousProtokollmessage.title != ''" [text]="message.previousProtokollmessage.title"></app-html-output>
+                <app-html-output *ngIf="message.previousProtokollmessage.title != ''"
+                    [text]="message.previousProtokollmessage.title"></app-html-output>
                 <span *ngIf="message.previousProtokollmessage.title == ''" class="noTitle">Kein Titel</span>
             </div>
             <div class="col-6 mx-0 px-0">
@@ -114,8 +127,9 @@
                                 let-i="index">
                                 <div *ngIf="i < message.previousProtokollmessage.countDisplayVerantworliche">
                                     {{readPersonFromProtokollmessage(message.previousProtokollmessage.vType,
-                                    verantwortlicher)?.nachname}} {{readPersonFromProtokollmessage(message.previousProtokollmessage.vType,
-                                        verantwortlicher)?.vorname}}
+                                    verantwortlicher)?.nachname}}
+                                    {{readPersonFromProtokollmessage(message.previousProtokollmessage.vType,
+                                    verantwortlicher)?.vorname}}
                                 </div>
                                 <div style="letter-spacing: 2.5px; font-weight: bold;"
                                     *ngIf="i ==message.previousProtokollmessage.countDisplayVerantworliche"
@@ -127,13 +141,12 @@
                     </div>
 
                     <div class="col-5 d-flex justify-content-center align-items-center flex-column"
-                        *ngIf="!message.previousProtokollmessage.isEditing"
-                        (click)="setPreviousEditingTrue()">
+                        *ngIf="!message.previousProtokollmessage.isEditing" (click)="setPreviousEditingTrue()">
                         <div style="margin-bottom: 3px; word-wrap: break-word; white-space: nowrap;"
                             [class]="message.previousProtokollmessage.readStatusBadge()">
                             {{message.previousProtokollmessage.readStatusText()}}</div>
                         <div>{{message.previousProtokollmessage.ablaufdatum | date: "dd.MM.yyyy"}}</div>
-                       <!--<div>{{message.previousProtokollmessage.ablaufdatum | date: "HH:mm:ss"}}</div>-->
+                        <!--<div>{{message.previousProtokollmessage.ablaufdatum | date: "HH:mm:ss"}}</div>-->
                     </div>
 
                     <div class="col-5 d-flex justify-content-center align-items-center flex-column"
@@ -142,24 +155,27 @@
                         <div style="margin-bottom: 3px;">
                             <span class="p-float-label d-flex justify-content-center align-items-center mt-3">
                                 <div class="row d-flex justify-content-center align-items-center flex-row">
-                                    <p-dropdown class="mb-2 col-10 d-flex justify-content-center align-items-center flex-row" [options]="message.previousProtokollmessage.readStatus()"
-                                    name="oldStatus" [(ngModel)]="message.previousProtokollmessage.status"
-                                    optionLabel="name" optionValue="key" (onChange)="oldStatusChanged()">
-                                    <ng-template pTemplate="selectedItem">
-                                        <div style="word-wrap: break-word; white-space: nowrap;"
-                                            [class]="message.previousProtokollmessage.readStatusBadge()">
-                                            {{message.previousProtokollmessage.readStatusText()}}</div>
-                                    </ng-template>
-                                    <ng-template let-status pTemplate="item">
-                                        <div style="word-wrap: break-word; white-space: nowrap;"
-                                            [class]="message.previousProtokollmessage.readStatusBadge(status.key)">
-                                            {{message.previousProtokollmessage.readStatusText(status.key)}}</div>
-                                    </ng-template>
-                                </p-dropdown>
-                                <label for="oldStatus">Status</label>
-                                <div class="d-flex mb-2 col-2 justify-content-center align-items-center flex-row">
-                                    <i class="pi pi-times" (click)="oldStatusChanged()" pTooltip="Bearbeitung abbrechen" tooltipPosition="top"></i>
-                                </div>
+                                    <p-dropdown
+                                        class="mb-2 col-10 d-flex justify-content-center align-items-center flex-row"
+                                        [options]="message.previousProtokollmessage.readStatus()" name="oldStatus"
+                                        [(ngModel)]="message.previousProtokollmessage.status" optionLabel="name"
+                                        optionValue="key" (onChange)="oldStatusChanged()">
+                                        <ng-template pTemplate="selectedItem">
+                                            <div style="word-wrap: break-word; white-space: nowrap;"
+                                                [class]="message.previousProtokollmessage.readStatusBadge()">
+                                                {{message.previousProtokollmessage.readStatusText()}}</div>
+                                        </ng-template>
+                                        <ng-template let-status pTemplate="item">
+                                            <div style="word-wrap: break-word; white-space: nowrap;"
+                                                [class]="message.previousProtokollmessage.readStatusBadge(status.key)">
+                                                {{message.previousProtokollmessage.readStatusText(status.key)}}</div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                    <label for="oldStatus">Status</label>
+                                    <div class="d-flex mb-2 col-2 justify-content-center align-items-center flex-row">
+                                        <i class="pi pi-times" (click)="oldStatusChanged()"
+                                            pTooltip="Bearbeitung abbrechen" tooltipPosition="top"></i>
+                                    </div>
                                 </div>
                             </span>
                         </div>
@@ -176,7 +192,7 @@
 
                 </div>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -196,8 +212,7 @@
 
         <ng-template ngFor let-oldMessage [ngForOf]="oldProtokollmessages">
             <div class="w-100 row justify-content-between align-items-center px-3 py-1 protokollmessage">
-                <app-protokollmessageoutput [message]="oldMessage" [employee]="employee"
-                    [contacts]="contacts">
+                <app-protokollmessageoutput [message]="oldMessage" [employee]="employee" [contacts]="contacts">
                 </app-protokollmessageoutput>
             </div>
         </ng-template>

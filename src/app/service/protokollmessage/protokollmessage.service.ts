@@ -28,6 +28,15 @@ export class ProtokollmessageService {
     this.utils.POST(this.requesturl.MESSAGE_UPDATE, protokollMessage.toJSONString(), success);
   }
 
+  /**
+   * Löscht die Protokollmessage auf der API
+   * @param protokollMessage Protokollmessage die gelöscht werden soll
+   * @param success Methode die bei erfolgreicher Ausführung als Callback ausgeführt werden soll
+   */
+  deleteProtokollmessage(protokollMessage: Protokollmessage, success: Function): void {
+    this.utils.POST(this.requesturl.MESSAGE_DELETE, protokollMessage.toJSONString(), success);
+  }
+
   readProtokollmessagesFromAgendaPunkt(agendapunktID: number, success: Function, error: Function = new Function()) {
     // Request wird ausgeführt
     this.utils.GET(this.requesturl.MESSAGE_READAGENDAPUNKT + "?ID=" + agendapunktID, success, error);

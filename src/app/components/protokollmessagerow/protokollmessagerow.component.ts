@@ -22,6 +22,7 @@ export class ProtokollmessagerowComponent implements OnInit {
   @Input() contactMap: Map<number, string> = new Map<number, string>();
   @Input() editable: boolean = false;
 
+  @Output() deleteProtokollmessageEvent = new EventEmitter<Protokollmessage>();
   @Output() removeProtokollmessageEvent = new EventEmitter<Protokollmessage>();
   @Output() saveProtokollmessageEvent = new EventEmitter();
 
@@ -58,12 +59,12 @@ export class ProtokollmessagerowComponent implements OnInit {
 
   ngOnInit(): void {
     this.firmenList = Array.from(this.firmenMap.keys());
-    for(let firma of this.firmenList) {
-      if(this.contactMap.get(this.message.vIDs[0]) != undefined && this.contactMap.get(this.message.vIDs[0]) == firma) {
+    for (let firma of this.firmenList) {
+      if (this.contactMap.get(this.message.vIDs[0]) != undefined && this.contactMap.get(this.message.vIDs[0]) == firma) {
         this.selectedFirma = firma;
       }
     }
-    if(this.selectedFirma == "") {
+    if (this.selectedFirma == "") {
       this.selectedFirma = AppComponent.FIRMA;
     }
   }
@@ -81,22 +82,23 @@ export class ProtokollmessagerowComponent implements OnInit {
 
   saveProtokollmessage(protokollmessage: Protokollmessage) {
     //protokollmessage.ausgeblendet = !protokollmessage.ausgeblendet;
-    
-    if(protokollmessage.vType == 8) {
+
+    if (protokollmessage.vType == 8) {
       let ids = this.firmenMap.get(this.selectedFirma);
-      if(ids == undefined) {
+      if (ids == undefined) {
         protokollmessage.vIDs = [];
         return;
       }
       protokollmessage.vIDs = ids;
     }
-    if(protokollmessage.ID == 0) {
+    if (protokollmessage.ID == 0) {
       this.protokollmessageService.saveProtokollmessage(protokollmessage, (retVal: JSON) => {
         let newProtokollmessage: Protokollmessage = Protokollmessage.buildFromJSON(retVal);
         // Bearbeitung wird beendet
         protokollmessage.isEditing = false;
         protokollmessage = newProtokollmessage;
-        this.saveProtokollmessageEvent.emit({"index": this.messageIndex, "msg": protokollmessage});
+        this.saveProtokollmessageEvent.emit({ "index": this.messageIndex, "msg": protokollmessage });
+        // Protokollmessage wird erstellt
         this.socketService.sendOperation("CREATE", "", protokollmessage.toJSONString());
         this.socketService.sendOperation("UNBLOCK", "", protokollmessage.toJSONString());
       });
@@ -105,10 +107,22 @@ export class ProtokollmessagerowComponent implements OnInit {
         let updatedProtokollmessage: Protokollmessage = Protokollmessage.buildFromJSON(retVal);
         protokollmessage.isEditing = false;
         protokollmessage = updatedProtokollmessage;
+        // Protokollmessage wird aktualisiert
         this.socketService.sendOperation("UPDATE", "", protokollmessage.toJSONString());
         this.socketService.sendOperation("UNBLOCK", "", protokollmessage.toJSONString());
       })
     }
+  }
+
+  deleteProtokollmessage(protokollMessage: Protokollmessage) {
+    // Protokollmessage wird aktualisiert
+    this.socketService.sendOperation("UPDATE", "", protokollMessage.toJSONString());
+    // Protokollmessage wird gelöscht
+    this.socketService.sendOperation("DELETE", "", protokollMessage.toJSONString());
+    // Event wird getriggert
+    this.deleteProtokollmessageEvent.emit(protokollMessage);
+    // Agendapunkt wird nicht mehr blockiert
+    this.removeProtokollmessage(protokollMessage);
   }
 
   removeProtokollmessage(protokollMessage: Protokollmessage) {
@@ -136,7 +150,7 @@ export class ProtokollmessagerowComponent implements OnInit {
 
   getFirmaString(firma: string): string {
     let ids = this.firmenMap.get(firma);
-    if(ids == undefined) return "0 Mitarbeiter";
+    if (ids == undefined) return "0 Mitarbeiter";
     return `${ids.length.toString()} Mitarbeiter`;
   }
 
@@ -165,7 +179,7 @@ export class ProtokollmessagerowComponent implements OnInit {
 
   getAgendapunktNummer(message: Protokollmessage): string {
     let retVal = this.agendaService.agendaPunkteMap.get(message.agendapunktID)?.nummer;
-    if(retVal == undefined) return "";
+    if (retVal == undefined) return "";
     return retVal;
   }
 }

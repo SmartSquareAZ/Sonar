@@ -21,39 +21,52 @@ export class AgendapunktpanelComponent implements OnInit {
   protokollMessage: Protokollmessage[] = [];
 
   requestCallback: Function = (operation: any, sourceDevice: any, destinationDevice: any, pid: any, data: any) => {
-    if(operation != "ONLINE" && operation != "REGISTER" && operation != "DONE") {
+    if (operation != "ONLINE" && operation != "REGISTER" && operation != "DONE") {
       data = JSON.parse(data);
     }
+
     // Überprüfung, auf den richtigen Befehl
     if (operation == "CREATE") {
+      // Protokollmessage wird in Array eingefügt
       this.protokollMessage.push(Protokollmessage.buildFromJSON(data));
     }
+
+    if (operation == "DELETE") {
+      // Index der Protokollmessage wird geladen
+      let idx: number = this.protokollMessage.findIndex((msg => msg.ID == data["ID"]));
+
+      if (idx != -1) {
+        // Nachricht wird aus Array entfernt
+        this.protokollMessage.splice(idx, 1);
+      }
+    }
+
     if (operation == "UPDATE") {
       let idx: number = this.protokollMessage.findIndex((msg => msg.ID == data["ID"]));
       let updatedProtokollMessage: Protokollmessage = Protokollmessage.buildFromJSON(data);
 
-      if(idx != -1) {
+      if (idx != -1) {
         this.protokollMessage[idx] = updatedProtokollMessage;
       } else {
-        for(let protokollMessage of this.protokollMessage) {
-          if(protokollMessage.previousProtokollmessage.ID == data["ID"]) {
+        for (let protokollMessage of this.protokollMessage) {
+          if (protokollMessage.previousProtokollmessage.ID == data["ID"]) {
             protokollMessage.previousProtokollmessage = updatedProtokollMessage;
           }
         }
       }
-      
-      if(updatedProtokollMessage.previousProtokollmessage.ID != 0) {
+
+      if (updatedProtokollMessage.previousProtokollmessage.ID != 0) {
         this.protokollmessageService.readProtokollmessage(updatedProtokollMessage.previousProtokollmessage.ID, (res: JSON) => {
           updatedProtokollMessage.previousProtokollmessage = Protokollmessage.buildFromJSON(res);
         });
       }
     }
 
-    if(operation == "BLOCK") {
+    if (operation == "BLOCK") {
       this.agendapunkt.blockedMessageEditing = true;
     }
 
-    if(operation == "UNBLOCK") {
+    if (operation == "UNBLOCK") {
       this.agendapunkt.blockedMessageEditing = false;
     }
   };
@@ -82,15 +95,15 @@ export class AgendapunktpanelComponent implements OnInit {
       // Protokollmessages werden geladen
       this.protokollMessage = Protokollmessage.buildFromJSONArray(data);
 
-      for(let i = 0; i < this.protokollMessage.length; i++) {
+      for (let i = 0; i < this.protokollMessage.length; i++) {
 
         // Die vorherige Protokollmessage wird geladen
-        if(this.protokollMessage[i].previousProtokollmessage.ID != 0 && this.protokollMessage[i].previousProtokollmessage.nummer == 0) {
+        if (this.protokollMessage[i].previousProtokollmessage.ID != 0 && this.protokollMessage[i].previousProtokollmessage.nummer == 0) {
           this.protokollmessageService.readProtokollmessage(this.protokollMessage[i].previousProtokollmessage.ID, (res: JSON) => {
             this.protokollMessage[i].previousProtokollmessage = Protokollmessage.buildFromJSON(res);
 
             // Für die vorherige Protokollmessage im Agendapunktpanel wird auch eine Callback Funktion hinzugefügt
-            if(this.protokollMessage[i].previousProtokollmessage.agendapunktID != this.agendapunkt) {
+            if (this.protokollMessage[i].previousProtokollmessage.agendapunktID != this.agendapunkt) {
               this.socketService.messagesRequestCallbacks[this.protokollMessage[i].previousProtokollmessage.agendapunktID] = this.requestCallback;
             };
           });
@@ -114,15 +127,23 @@ export class AgendapunktpanelComponent implements OnInit {
     this.protokollMessage.push(Protokollmessage.buildNew(agendapunkt.ID, lastNummer));
   }
 
+  deleteProtokollmessage(message: Protokollmessage) {
+    this.protokollmessageService.deleteProtokollmessage(message, (res: JSON) => {
+      let tempMessage = Protokollmessage.buildFromJSON(res);
+
+      this.protokollMessage = this.protokollMessage.filter(msg => msg.ID != tempMessage.ID);
+    });
+  }
+
   removeProtokollmessage(message: Protokollmessage) {
-    if(message.ID == 0) {
+    if (message.ID == 0) {
       this.protokollMessage = this.protokollMessage.filter(msg => msg.ID != message.ID);
     } else {
       let index = this.protokollMessage.findIndex(x => x.ID == message.ID);
       this.protokollmessageService.readProtokollmessage(message.ID, (res: JSON) => {
         this.protokollMessage[index] = Protokollmessage.buildFromJSON(res);
 
-        if(this.protokollMessage[index].previousProtokollmessage.ID != 0 && this.protokollMessage[index].previousProtokollmessage.nummer == 0) {
+        if (this.protokollMessage[index].previousProtokollmessage.ID != 0 && this.protokollMessage[index].previousProtokollmessage.nummer == 0) {
           this.protokollmessageService.readProtokollmessage(this.protokollMessage[index].previousProtokollmessage.ID, (res: JSON) => {
             this.protokollMessage[index].previousProtokollmessage = Protokollmessage.buildFromJSON(res);
           });
@@ -130,7 +151,7 @@ export class AgendapunktpanelComponent implements OnInit {
       });
     }
   }
-         
+
 
   updateSavedProtokollmessage(event: any) {
     this.protokollMessage[event["index"]] = event["msg"];

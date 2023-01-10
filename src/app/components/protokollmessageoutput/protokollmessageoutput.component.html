@@ -1,7 +1,7 @@
 <div class="w-100 row justify-content-between align-items-center" (click)="checkAndSetEditing()"
     *ngIf="!message.isEditing">
 
-    <div class="col-1" *ngIf="!isPreviousMessage()">{{message.protokollNummer}}.{{getAgendapunktNummer(message)}}{{message.nummer}}</div>
+    <div class="col-1" *ngIf="!isPreviousMessage()">{{getAgendapunktNummer(message)}}{{message.protokollNummer}}.{{message.nummer}}</div>
     <div class="col-1" *ngIf="isPreviousMessage()">#{{message.protokollNummer}}</div>
     <div class="col-4 protokollmessageText">
         <strong *ngIf="message.title == ''" class="noTitle">Kein Titel</strong>

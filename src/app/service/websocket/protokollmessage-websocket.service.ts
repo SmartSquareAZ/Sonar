@@ -18,9 +18,9 @@ export class ProtokollmessageWebsocketService extends WebsocketService {
 
   constructor(protected override requesturlservice: RequestUrlService, private router: Router) {
     super(requesturlservice);
-   }
+  }
 
-   public override configureWebsocket(): void {
+  public override configureWebsocket(): void {
     // Websocket wird erstellt
     this.websocket = webSocket(this.requesturlservice.WEBSOCKET_PROTOKOLLMESSAGE);
 
@@ -63,16 +63,16 @@ export class ProtokollmessageWebsocketService extends WebsocketService {
       DATA: JSON.stringify(AppComponent.USER_DATA)
     }
 
-    if(operation == "DONE") {
+    if (operation == "DONE") {
       this.router.navigate(["done"]);
       return;
     }
 
     // Callback wird ausgeführt
-    if(operation == "CREATE" || operation == "UPDATE" || operation == "BLOCK" || (operation == "UNBLOCK" && JSON.parse(json['DATA'])['AGENDAPUNKTID'] != 0)) {
+    if (operation == "CREATE" || operation == "UPDATE" || operation == "DELETE" || operation == "BLOCK" || (operation == "UNBLOCK" && JSON.parse(json['DATA'])['AGENDAPUNKTID'] != 0)) {
       this.messagesRequestCallbacks[JSON.parse(json['DATA'])['AGENDAPUNKTID']](operation, json['SDEV'], json['DDEV'], AppComponent.PROTOKOLLID, json['DATA']);
     }
-    
+
     // Überprüfung, ob Response gesendet werden soll
     if (operation == "REGISTER" || operation == "ONLINE") {
       // Message wird gesendet

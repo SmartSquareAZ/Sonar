@@ -69,7 +69,7 @@ export abstract class WebsocketService {
       PID: AppComponent.PROTOKOLLID,
       DATA: data
     }
-
+    
     // Nachricht wird versendet
     this.sendMessage(request);
   }
